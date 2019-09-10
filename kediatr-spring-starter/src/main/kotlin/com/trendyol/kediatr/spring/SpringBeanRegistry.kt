@@ -6,11 +6,10 @@ import org.springframework.core.GenericTypeResolver
 import java.util.*
 
 class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
-
-    private val commandMap = HashMap<Class<out Command>, CommandHandler<*>>()
-    private val queryMap = HashMap<Class<out Query<*>>, QueryHandler<*, *>>()
-    private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandHandler<*>>()
-    private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryHandler<*, *>>()
+    private val commandMap = HashMap<Class<out Command>, CommandProvider<CommandHandler<*>>>()
+    private val queryMap = HashMap<Class<out Query<*>>, QueryProvider<QueryHandler<*, *>>>()
+    private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandProvider<AsyncCommandHandler<*>>>()
+    private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
 
     init {
         val commandNames = applicationContext.getBeanNamesForType(CommandHandler::class.java)
@@ -18,7 +17,7 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val handlerClass = applicationContext.getType(name) as Class<CommandHandler<*>>
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, CommandHandler::class.java)
             val commandType = generics!![0] as Class<Command>
-            commandMap[commandType] = applicationContext.getBean(handlerClass)
+            commandMap[commandType] = CommandProvider(applicationContext, handlerClass)
         }
 
         val queryNames = applicationContext.getBeanNamesForType(QueryHandler::class.java)
@@ -26,7 +25,7 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val handlerClass = applicationContext.getType(name) as Class<QueryHandler<*, *>>
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, QueryHandler::class.java)
             val queryType = generics!![1] as Class<Query<*>>
-            queryMap[queryType] = applicationContext.getBean(handlerClass)
+            queryMap[queryType] = QueryProvider(applicationContext, handlerClass)
         }
 
         val asyncCommandNames = applicationContext.getBeanNamesForType(AsyncCommandHandler::class.java)
@@ -34,7 +33,7 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val handlerClass = applicationContext.getType(name) as Class<AsyncCommandHandler<*>>
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, AsyncCommandHandler::class.java)
             val commandType = generics!![0] as Class<Command>
-            asyncCommandMap[commandType] = applicationContext.getBean(handlerClass)
+            asyncCommandMap[commandType] = AsyncCommandProvider(applicationContext, handlerClass)
         }
 
         val asyncQueryNames = applicationContext.getBeanNamesForType(AsyncQueryHandler::class.java)
@@ -42,33 +41,32 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val handlerClass = applicationContext.getType(name) as Class<AsyncQueryHandler<*, *>>
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, AsyncQueryHandler::class.java)
             val queryType = generics!![1] as Class<Query<*>>
-            asyncQueryMap[queryType] = applicationContext.getBean(handlerClass)
+            asyncQueryMap[queryType] = AsyncQueryProvider(applicationContext, handlerClass)
         }
     }
 
     override fun <TCommand : Command> resolveCommandHandler(commandClass: Class<TCommand>): CommandHandler<TCommand> {
-        val handler = commandMap[commandClass]
+        val handler = commandMap[commandClass]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${commandClass.name}")
         return handler as CommandHandler<TCommand>
     }
 
     override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TResult, TQuery> {
-        val handler = queryMap[classOfQuery]
+        val handler = queryMap[classOfQuery]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfQuery.name}")
         return handler as QueryHandler<TResult, TQuery>
     }
 
     override fun <TCommand : Command> resolveAsyncCommandHandler(classOfCommand: Class<TCommand>): AsyncCommandHandler<TCommand> {
-        val handler = asyncCommandMap[classOfCommand]
+        val handler = asyncCommandMap[classOfCommand]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfCommand.name}")
         return handler as AsyncCommandHandler<TCommand>
     }
 
     override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TResult, TQuery> {
-        val handler = asyncQueryMap[classOfQuery]
+        val handler = asyncQueryMap[classOfQuery]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfQuery.name}")
         return handler as AsyncQueryHandler<TResult, TQuery>
     }
 
 }
-
