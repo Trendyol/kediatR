@@ -1,0 +1,23 @@
+
+language: java
+
+# Skip "install" stage:
+install: true
+
+# Use container-based infrastructure:
+sudo: false
+
+# Keep Maven local repository between builds:
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8
+  - openjdk10
+  - openjdk11
+
+script:
+  - mvn clean install
