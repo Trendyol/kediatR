@@ -54,6 +54,8 @@ class GetSomeDataQueryHandler: QueryHandler<String, GetSomeDataQuery> {
 * add kediatr-spring dependency to your POM and enjoy yourself
 
 ```kotlin
+
+@Service
 class UserService(private val commandBus: CommandBus){
     fun findUser(id: Long){
         return commandBus.executeQuery(GetUserByIdQuery(id))
@@ -62,6 +64,7 @@ class UserService(private val commandBus: CommandBus){
 
 class GetUserByIdQuery(private val id: Long): Query<UserDto>
 
+@Component
 class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<UserDto, GetUserByIdQuery> {
     fun handle(query: GetUserByIdQuery): UserDto { 
         val user = userRepository.findById(query.id)
@@ -73,6 +76,7 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
 
 ## Async Usage with Kotlin Coroutine Support
 ```kotlin
+ 
 class UserService(private val commandBus: CommandBus ){
     suspend fun findUser(id: Long){
         return commandBus.executeQueryAsync(GetUserByIdQuery(id))

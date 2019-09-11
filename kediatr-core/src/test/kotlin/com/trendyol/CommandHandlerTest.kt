@@ -30,7 +30,6 @@ class CommandHandlerTest {
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
         val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
-
         bus.executeCommandAsync(MyAsyncCommand()).join()
 
         assertTrue {
@@ -39,8 +38,7 @@ class CommandHandlerTest {
     }
 }
 
-class MyCommand : Command {
-}
+class MyCommand : Command
 
 class MyCommandHandler : CommandHandler<MyCommand> {
     override fun handle(command: MyCommand) {
@@ -48,9 +46,7 @@ class MyCommandHandler : CommandHandler<MyCommand> {
     }
 }
 
-class MyAsyncCommand : Command {
-}
-
+class MyAsyncCommand : Command
 
 class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
     override suspend fun handleAsync(command: MyAsyncCommand) {
