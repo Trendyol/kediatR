@@ -1,4 +1,4 @@
-# kediatR
+# kediatR  [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/master/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
 
 Mediator implementation in kotlin with native coroutine support.
 
