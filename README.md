@@ -3,7 +3,7 @@
 Mediator implementation in kotlin with native coroutine support.
 
 Supports synchronous and async (using kotlin [coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
-) command and query handling, native java implementation and spring-boot configuration
+) command and query handling, native kotlin implementation and spring-boot configuration
 
 kediatR has two implementations: kediatR-core and kediatR-spring 
 
