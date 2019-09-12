@@ -19,10 +19,18 @@
     <licenses>
         <license>
             <name>The MIT License (MIT)</name>
-            <url>http://opensource.org/licenses/MIT</url>
+            <url>https://github.com/Trendyol/kediatR/blob/master/LICENCE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+
+    <scm>
+        <connection>scm:git:git@github.com:Trendyol/kediatR.git</connection>
+        <developerConnection>scm:git:git@github.com:Trendyol/kediatR.git</developerConnection>
+        <url>https://github.com/Trendyol/kediatR</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
