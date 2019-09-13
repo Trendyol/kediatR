@@ -20,7 +20,7 @@ class QueryHandlerTest {
     @Test
     fun `async queryHandler should retrieve result`() = runBlocking {
         val bus: CommandBus = CommandBusBuilder(TestQuery::class.java).build()
-        val result = bus.executeQueryAsync(TestQuery(1)).await()
+        val result = bus.executeQueryAsync(TestQuery(1))
 
         assertTrue {
             result == "hello 1"

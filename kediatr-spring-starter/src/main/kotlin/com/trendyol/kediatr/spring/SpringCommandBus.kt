@@ -7,14 +7,18 @@ import kotlinx.coroutines.*
 
 class SpringCommandBus(private val springBeanRegistry: SpringBeanRegistry) : CommandBus {
 
-    override suspend fun <R, Q : Query<R>> executeQueryAsync(query: Q, dispatcher: CoroutineDispatcher): Deferred<R> =
-        CoroutineScope(dispatcher).async {
-            springBeanRegistry.resolveAsyncQueryHandler(query.javaClass).handleAsync(query)
+    override suspend fun <R, Q : Query<R>> executeQueryAsync(query: Q, dispatcher: CoroutineDispatcher): R =
+        coroutineScope {
+            withContext(dispatcher) {
+                springBeanRegistry.resolveAsyncQueryHandler(query.javaClass).handleAsync(query)
+            }
         }
 
-    override suspend fun <TCommand : Command> executeCommandAsync(command: TCommand, dispatcher: CoroutineDispatcher): Job =
-        CoroutineScope(dispatcher).launch {
-            springBeanRegistry.resolveAsyncCommandHandler(command.javaClass).handleAsync(command)
+    override suspend fun <TCommand : Command> executeCommandAsync(command: TCommand, dispatcher: CoroutineDispatcher) =
+        coroutineScope {
+            withContext(dispatcher){
+                springBeanRegistry.resolveAsyncCommandHandler(command.javaClass).handleAsync(command)
+            }
         }
 
     override fun <R, Q : Query<R>> executeQuery(query: Q): R =

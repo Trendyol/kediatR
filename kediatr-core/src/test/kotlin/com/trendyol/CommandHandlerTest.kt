@@ -30,7 +30,7 @@ class CommandHandlerTest {
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
         val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
-        bus.executeCommandAsync(MyAsyncCommand()).join()
+        bus.executeCommandAsync(MyAsyncCommand())
 
         assertTrue {
             asyncTestCounter == 1

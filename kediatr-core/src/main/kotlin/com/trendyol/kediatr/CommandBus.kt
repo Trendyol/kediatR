@@ -10,8 +10,8 @@ interface CommandBus {
 
     fun <R, Q : Query<R>> executeQuery(query: Q): R
 
-    suspend fun <TCommand : Command> executeCommandAsync(command: TCommand, dispatcher: CoroutineDispatcher = Dispatchers.IO) : Job
+    suspend fun <TCommand : Command> executeCommandAsync(command: TCommand, dispatcher: CoroutineDispatcher = Dispatchers.IO)
 
-    suspend fun <R, Q : Query<R>> executeQueryAsync(query: Q, dispatcher: CoroutineDispatcher = Dispatchers.IO): Deferred<R>
+    suspend fun <R, Q : Query<R>> executeQueryAsync(query: Q, dispatcher: CoroutineDispatcher = Dispatchers.IO): R
 }
 

@@ -40,7 +40,7 @@ class CommandHandlerTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.executeCommandAsync(MyCommand()).join()
+        commandBus.executeCommandAsync(MyCommand())
 
         assertTrue {
             springAsyncTestCounter == 1
