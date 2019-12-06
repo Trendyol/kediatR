@@ -7,6 +7,24 @@ Supports synchronous and async (using kotlin [coroutines](https://kotlinlang.org
 
 kediatR has two implementations: kediatR-core and kediatR-spring 
 
+#### kediatR-core
+```
+<dependency>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-core</artifactId>
+  <version>1.0.7-SNAPSHOT</version>
+</dependency>
+```
+
+#### kediatR-spring-starter 
+```
+<dependency>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-spring-starter</artifactId>
+  <version>1.0.7</version>
+</dependency>
+```
+
 ## Usage
 * add kediatr-core dependency to your POM
 #### Command dispatching
