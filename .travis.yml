@@ -1,24 +1,22 @@
-
 language: java
-
-# Skip "install" stage:
 install: true
-
-# Use container-based infrastructure:
 sudo: false
-
-# Keep Maven local repository between builds:
 cache:
   directories:
-    - '$HOME/.m2/repository'
-
+  - "$HOME/.m2/repository"
 jdk:
-  - openjdk8
-  - openjdk10
-  - openjdk11
-
+- openjdk8
+- openjdk10
+- openjdk11
 script:
-  - mvn clean install
-
+- mvn clean install
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+env:
+  global:
+  - secure: v/O1khsc0YzptLVDyBC+EJbcUp5B4LZVBYxGi9eTol06GykoG3Mzz+oaOiYPomx4llvjj18JBBcRZZV49OOuQKXB2Tt7gx50KZ/LjK2NzdEVM1M2PTVW8T4wB0+rExbyFkTZxvO3fwfsaQYoqXjhC/Pnqw21XXjISgSkLZaZrmxZGpvCG2TqRqegXLcr20OYUAZF5lnxt8SCObnjZ77rLQZluc61YMEFlwlaBjv1fbDUTw8fdHIDTxWDrIapB33ujtslBH62IaoyPtjhsRisAoLz0067+Gy8T9Z14uFnKN54QSsO6MQ1+41rEFz/T3uuWfkkiBPbVSHaKWdMzPCpOKYGW7T8jf1h28+Iug6Cn3lPc8AHDnfIdN5pCCgk04zaiVTEO5W2+r5MIn1NxkzYIi4/i33n65WRSzXw0iOKD/54a9C1bzGLcPT9Jjh05MGHYBG1Aa17oc6Ymq0Z8HBRaXb5L6f5SQdKwWfjZaEFOSbE7X1rqmvjzPYL99ytdKvqzDC9WA0vQK2CpLxoVwztvTaypuI+px9MBu6gfboMXL3OMau8BM/fOTs7QNMnjaubh9f6qwr3YADQcO0D3NmdncMpwSTjkEhZUsyKJ6GzeBZEUbO1FcppaIJQYFBQlg90f2EMA8ob7x3QFnjrcQbByI0ynPYX0WQqFJLc2wbU5cg=
+  - secure: Ee27VRsV/Cw24d9lBzSbusr5GQu9OLfSsiCDqy9Mqb3/NI/6N9xh+KzLwvo5+j8AQMAgS34JBae8DwkzVsww0GDCe8oTtp4qdTQzFaOjypyuz414oNovJ57+njwThk3EwQI/zN1cCRkwcWWePWpDy64PupLNgbfM7/7qhG1JgiiCXRV0p/NeHo56DbfCMpdHp6HnmEddMxmQb29DBio0/0bV4osbv4+avYiOcsxhx4N2EE+rBcWwJnFaPcWVvT971uGomYZadKq+nlOA1+y6YRzasQtEDeMThtrvqvsPJM4yVDMbJ/vXt7oSCSVcv0Nn+lwPvkIbo6Xw2h9qFjJVlQCqLVPScodE/CgRvkTjrreoAx1SC+LeMlDkmXWfOXPpmC5ziUY2Ch9vgMWK4Fe4ws+Ub2Gud8NvyAy5OI3OOpigQ27/JxveFMBy9xqtvjOhPn8oompiXdJCMiXfZEnrInV9tzGMBpz0QF+mEDkDGL0L5LTTXhms0dLZYzsonVLlu4CeWK4MsCNu+zxemP+A9logU8RSZ6DIwb3Iv+KjUl6jyVpz6/kzSaeLqSPnbVLdjN33/13mj+QdGDYahPSKJOtVq5ICumQC6ohDU4kbqZNDiGduRK2+5MHKh0SEBLupyAPYAL36/tYoGqNma1fCYYiWqQD1HibozOvoqlDhlyE=
+  - secure: NziutKX8KpdYdXVYITbZmu4wGJzekoxjjUMHCr+wFZw8wHKQFaaYyCgjAbhEQF8hvd8EKHmYfnx1wh/oufmWK0nhNHyym1dxtprjdU6pA73cR8xk+RkZX1a4dzSiSKcSAWVGXaq9+kOiqa4+aLmK35NE7fyJAWUV3fuR77e1KzrLcDJNL1+9g4FgIlrLDXRwN/qXMLKJXIYHdPwdPCfx8946hyxHhDq9qymFShsH0j4K9v2QTBUC2wU3RWNY7s2xxdclROeQ1et1DomqXGsuF9gPQfnougo97r3/Kq2SEhwpA/ZhCqOGsZ2zKJZmKtT7TlV7SNJmFy+hbRPo0QUDkY7BmqQFPiAFz/VFAiIk29vDe/7pndRSFeVfLmrksgHBhRxYltoUQWUWjZLfVgR6EVEz/Gxk+Rf3zBXmp21lG2VnvImevhUr6A1N8Lef1lsXHOyixTmdVV3WFcHzHvasQ0xmGiWCqqVBqAY4ynQ/8BA7HSRhT55hGum8iHL1pTS02eCkbeGS4KfpCtZHLczM5unsdak+otgnDmN4jC/NW/pD550j1wyY3Yv6KyETgQcgcSGpgd+gHKmjYny0qQWcXmCbC63DTXcuCtuYLOzytXpxjlNpsACBPcsEBuFeQPdSO6YuvnKe112+PHOGbSjZhZeffkDg5sOGvcQaBAjr32Q=
+before_install:
+- openssl aes-256-cbc -K $encrypted_f2174865dde6_key -iv $encrypted_f2174865dde6_iv
+  -in deployment/signingkey.asc.enc -out deployment/signingkey.asc -d
