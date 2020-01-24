@@ -1,6 +1,5 @@
 language: java
-install: true
-sudo: false
+install: mvn -Dgpg.skip install
 cache:
   directories:
   - "$HOME/.m2/repository"
@@ -8,9 +7,12 @@ jdk:
 - openjdk8
 - openjdk10
 - openjdk11
-script:
-- mvn clean install
 after_success:
+- gpg2 --keyring=$TRAVIS_BUILD_DIR/pubring.gpg --no-default-keyring --import deployment/signingkey.asc
+- gpg2 --allow-secret-key-import --keyring=$TRAVIS_BUILD_DIR/secring.gpg --no-default-keyring
+  --import deployment/signingkey.asc
+- mvn clean deploy --settings deployment/settings.xml -Dgpg.executable=gpg2 -Dgpg.keyname=8B5A5EF880AC4E1F1A75FA0BDA10728C21A3C514
+  -Dgpg.passphrase=$PASSPHRASE -Dgpg.publicKeyring=$TRAVIS_BUILD_DIR/pubring.gpg -Dgpg.secretKeyring=$TRAVIS_BUILD_DIR/secring.gpg
 - bash <(curl -s https://codecov.io/bash)
 env:
   global:
