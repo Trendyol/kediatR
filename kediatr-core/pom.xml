@@ -168,7 +168,7 @@
                         <checkModificationExclude>settings.xml</checkModificationExclude>
                         <checkModificationExclude>kediatr-core/javadoc/overview.html</checkModificationExclude>
                     </checkModificationExcludes>
-                    <arguments>-Dgpg.passphrase=1234qwerty</arguments>
+                    <arguments>-Dgpg.passphrase=${env.PASSPHRASE}</arguments>
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <mavenExecutorId>forked-path</mavenExecutorId>
