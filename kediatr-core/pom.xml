@@ -3,15 +3,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.trendyol</groupId>
     <artifactId>kediatr-core</artifactId>
     <version>1.0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
+        <groupId>com.trendyol</groupId>
+        <artifactId>kediatR</artifactId>
+        <version>1.0.4</version>
     </parent>
 
     <licenses>
