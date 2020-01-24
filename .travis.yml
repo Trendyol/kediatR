@@ -1,5 +1,5 @@
 language: java
-install: mvn -Dgpg.skip install
+install: true
 cache:
   directories:
   - "$HOME/.m2/repository"
@@ -8,6 +8,7 @@ jdk:
 - openjdk10
 - openjdk11
 after_success:
+- cd kediatr-core
 - gpg2 --keyring=$TRAVIS_BUILD_DIR/pubring.gpg --no-default-keyring --import deployment/signingkey.asc
 - gpg2 --allow-secret-key-import --keyring=$TRAVIS_BUILD_DIR/secring.gpg --no-default-keyring
   --import deployment/signingkey.asc
