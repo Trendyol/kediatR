@@ -1,0 +1,3 @@
+# Register EnableAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
+com.trendyol.kediatr.spring.KediatrConfiguration
