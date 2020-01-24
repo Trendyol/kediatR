@@ -166,7 +166,7 @@
                         <checkModificationExclude>kediatr-spring-starter/settings.xml</checkModificationExclude>
                         <checkModificationExclude>kediatr-spring-starter/javadoc/overview.html</checkModificationExclude>
                     </checkModificationExcludes>
-                    <arguments>-Dgpg.passphrase=qwerty1234</arguments>
+                    <arguments>-Dgpg.passphrase=${env.PASSPHRASE}</arguments>
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <mavenExecutorId>forked-path</mavenExecutorId>
