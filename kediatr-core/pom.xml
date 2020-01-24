@@ -8,9 +8,9 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>com.trendyol</groupId>
-        <artifactId>kediatR</artifactId>
-        <version>1.0.4</version>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
     </parent>
 
     <licenses>
