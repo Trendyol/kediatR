@@ -3,7 +3,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.trendyol</groupId>
     <artifactId>kediatr-core</artifactId>
     <version>1.0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -168,7 +167,7 @@
                         <checkModificationExclude>settings.xml</checkModificationExclude>
                         <checkModificationExclude>kediatr-core/javadoc/overview.html</checkModificationExclude>
                     </checkModificationExcludes>
-                    <arguments>-Dgpg.passphrase=1234qwerty</arguments>
+                    <arguments>-Dgpg.passphrase=${env.PASSPHRASE}</arguments>
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <mavenExecutorId>forked-path</mavenExecutorId>

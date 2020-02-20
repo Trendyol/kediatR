@@ -5,7 +5,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatr-spring-starter</artifactId>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.10</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:Trendyol/kediatR.git</connection>
         <developerConnection>scm:git:git@github.com:Trendyol/kediatR.git</developerConnection>
         <url>https://github.com/Trendyol/kediatR</url>
-        <tag>kediatr-spring-starter-1.0.7</tag>
+        <tag>kediatr-spring-starter-1.0.10</tag>
     </scm>
 
     <distributionManagement>
@@ -166,7 +166,7 @@
                         <checkModificationExclude>kediatr-spring-starter/settings.xml</checkModificationExclude>
                         <checkModificationExclude>kediatr-spring-starter/javadoc/overview.html</checkModificationExclude>
                     </checkModificationExcludes>
-                    <arguments>-Dgpg.passphrase=1234qwerty</arguments>
+                    <arguments>-Dgpg.passphrase=${env.PASSPHRASE}</arguments>
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <mavenExecutorId>forked-path</mavenExecutorId>
