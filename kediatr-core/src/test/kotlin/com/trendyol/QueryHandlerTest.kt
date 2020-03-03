@@ -30,13 +30,13 @@ class QueryHandlerTest {
 
 class TestQuery(val id: Int) : Query<String>
 
-class TestQueryHandler(): QueryHandler<String, TestQuery> {
+class TestQueryHandler : QueryHandler<String, TestQuery> {
     override fun handle(query: TestQuery): String {
         return "hello " + query.id
     }
 }
 
-class AsyncTestQueryHandler(): AsyncQueryHandler<String, TestQuery> {
+class AsyncTestQueryHandler : AsyncQueryHandler<String, TestQuery> {
     override suspend fun handleAsync(query: TestQuery): String {
         return "hello " + query.id
     }
