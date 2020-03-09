@@ -8,8 +8,13 @@ import java.util.*
 class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
     private val commandMap = HashMap<Class<out Command>, CommandProvider<CommandHandler<*>>>()
     private val queryMap = HashMap<Class<out Query<*>>, QueryProvider<QueryHandler<*, *>>>()
+    private val notificationMap =
+        HashMap<Class<out Notification>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
+
     private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandProvider<AsyncCommandHandler<*>>>()
     private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
+    private val asyncNotificationMap =
+        HashMap<Class<out Notification>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
 
     init {
         val commandNames = applicationContext.getBeanNamesForType(CommandHandler::class.java)
@@ -28,6 +33,15 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             queryMap[queryType] = QueryProvider(applicationContext, handlerClass)
         }
 
+        val notificationHandlerNames = applicationContext.getBeanNamesForType(NotificationHandler::class.java)
+        for (name in notificationHandlerNames) {
+            val handlerClass = applicationContext.getType(name) as Class<NotificationHandler<*>>
+            val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, NotificationHandler::class.java)
+            val notificationType = generics!![0] as Class<Notification>
+            notificationMap.getOrPut(notificationType) { mutableListOf() }
+                .add(NotificationProvider(applicationContext, handlerClass))
+        }
+
         val asyncCommandNames = applicationContext.getBeanNamesForType(AsyncCommandHandler::class.java)
         for (name in asyncCommandNames) {
             val handlerClass = applicationContext.getType(name) as Class<AsyncCommandHandler<*>>
@@ -43,12 +57,31 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val queryType = generics!![1] as Class<Query<*>>
             asyncQueryMap[queryType] = AsyncQueryProvider(applicationContext, handlerClass)
         }
+
+        val asyncNotificationHandlerNames = applicationContext.getBeanNamesForType(AsyncNotificationHandler::class.java)
+        for (name in asyncNotificationHandlerNames) {
+            val handlerClass = applicationContext.getType(name) as Class<AsyncNotificationHandler<*>>
+            val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, AsyncNotificationHandler::class.java)
+            val notificationType = generics!![0] as Class<Notification>
+            asyncNotificationMap.getOrPut(notificationType) { mutableListOf() }
+                .add(AsyncNotificationProvider(applicationContext, handlerClass))
+        }
     }
 
     override fun <TCommand : Command> resolveCommandHandler(commandClass: Class<TCommand>): CommandHandler<TCommand> {
         val handler = commandMap[commandClass]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${commandClass.name}")
         return handler as CommandHandler<TCommand>
+    }
+
+    override fun <TNotification : Notification> resolveNotificationHandlers(classOfNotification: Class<TNotification>): Collection<NotificationHandler<TNotification>> {
+        val notificationHandlers = mutableListOf<NotificationHandler<TNotification>>()
+        notificationMap.forEach { (k, v) ->
+            if (k.isAssignableFrom(classOfNotification)) {
+                v.forEach { notificationHandlers.add(it.get() as NotificationHandler<TNotification>) }
+            }
+        }
+        return notificationHandlers
     }
 
     override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TResult, TQuery> {
@@ -63,10 +96,19 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         return handler as AsyncCommandHandler<TCommand>
     }
 
+    override fun <TNotification : Notification> resolveAsyncNotificationHandlers(classOfNotification: Class<TNotification>): Collection<AsyncNotificationHandler<TNotification>> {
+        val asyncNotificationHandlers = mutableListOf<AsyncNotificationHandler<TNotification>>()
+        asyncNotificationMap.forEach { (k, v) ->
+            if (k.isAssignableFrom(classOfNotification)) {
+                v.forEach { asyncNotificationHandlers.add(it.get() as AsyncNotificationHandler<TNotification>) }
+            }
+        }
+        return asyncNotificationHandlers
+    }
+
     override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TResult, TQuery> {
         val handler = asyncQueryMap[classOfQuery]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfQuery.name}")
         return handler as AsyncQueryHandler<TResult, TQuery>
     }
-
 }
