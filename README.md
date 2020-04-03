@@ -12,7 +12,7 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-core</artifactId>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.10</version>
 </dependency>
 ```
 
@@ -21,7 +21,7 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-spring-starter</artifactId>
-  <version>1.0.10</version>
+  <version>1.0.11</version>
 </dependency>
 ```
 
