@@ -1,6 +1,7 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
+import com.trendyol.kediatr.spring.HandlerBeanNotFoundException
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -8,6 +9,9 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @RunWith(SpringRunner::class)
@@ -34,8 +38,32 @@ class QueryHandlerTest {
             result == "hello 1"
         }
     }
+
+
+    @Test
+    fun `should throw exception if given async query does not have handler bean`() {
+        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+            runBlocking {
+                commandBus.executeQueryAsync(NonExistQuery())
+            }
+        }
+
+        assertNotNull(exception)
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistQuery")
+    }
+
+    @Test
+    fun `should throw exception if given query does not have handler bean`() {
+        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+            commandBus.executeQuery(NonExistQuery())
+        }
+
+        assertNotNull(exception)
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistQuery")
+    }
 }
 
+class NonExistQuery() : Query<String>
 class TestQuery(val id: Int) : Query<String>
 
 class TestQueryHandler(): QueryHandler<String, TestQuery> {
