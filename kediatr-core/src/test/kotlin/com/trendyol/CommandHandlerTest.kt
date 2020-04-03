@@ -4,6 +4,9 @@ import com.trendyol.kediatr.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
@@ -36,7 +39,36 @@ class CommandHandlerTest {
             asyncTestCounter == 1
         }
     }
+
+    @Test
+    fun `should throw exception if given async command has not been registered before`() {
+        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+
+        val exception = assertFailsWith(HandlerNotFoundException::class) {
+            runBlocking {
+                bus.executeCommandAsync(NonExistCommand())
+            }
+        }
+
+        assertNotNull(exception)
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+    }
+
+    @Test
+    fun `should throw exception if given command has not been registered before`() {
+        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+
+        val exception = assertFailsWith(HandlerNotFoundException::class) {
+            bus.executeCommand(NonExistCommand())
+        }
+
+        assertNotNull(exception)
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+    }
 }
+
+class NonExistCommand : Command
+
 
 class MyCommand : Command
 
