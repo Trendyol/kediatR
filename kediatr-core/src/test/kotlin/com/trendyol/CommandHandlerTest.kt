@@ -1,6 +1,7 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
+import com.trendyol.kediatr.PipelineBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test

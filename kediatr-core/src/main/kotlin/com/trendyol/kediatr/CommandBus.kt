@@ -1,7 +1,7 @@
 package com.trendyol.kediatr
 
 interface CommandBus {
-    fun <R, Q : Query<R>> executeQuery(query: Q): R
+    fun <TQuery : Query<TResponse>, TResponse> executeQuery(query: TQuery): TResponse
 
     fun <TCommand : Command> executeCommand(command: TCommand)
 
@@ -13,7 +13,7 @@ interface CommandBus {
      */
     fun <T : Notification> publishNotification(notification: T)
 
-    suspend fun <R, Q : Query<R>> executeQueryAsync(query: Q): R
+    suspend fun <TQuery : Query<TResponse>, TResponse> executeQueryAsync(query: TQuery): TResponse
 
     suspend fun <TCommand : Command> executeCommandAsync(command: TCommand)
 
@@ -24,5 +24,19 @@ interface CommandBus {
      * @param T  any [Notification] subclass to publish
      */
     suspend fun <T : Notification> publishNotificationAsync(notification: T)
+
+    fun <TRequest, TResponse> processPipeline(pipelineBehaviors: Collection<PipelineBehavior>, request: TRequest, act: () -> TResponse): TResponse {
+        pipelineBehaviors.forEach { it.preProcess(request) }
+        val result = act()
+        pipelineBehaviors.forEach { it.postProcess(request) }
+        return result
+    }
+
+    suspend fun <TRequest, TResponse> processAsyncPipeline(pipelineBehaviors: Collection<AsyncPipelineBehavior>, request: TRequest, act: suspend () -> TResponse): TResponse {
+        pipelineBehaviors.forEach { it.preProcess(request) }
+        val result = act()
+        pipelineBehaviors.forEach { it.postProcess(request) }
+        return result
+    }
 }
 

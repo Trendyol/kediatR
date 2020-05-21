@@ -2,25 +2,27 @@ package com.trendyol.kediatr
 
 import org.reflections.Reflections
 import java.lang.reflect.ParameterizedType
-import java.util.*
+import kotlin.collections.HashMap
 
 class RegistryImpl(anyClazz: Class<*>) : Registry {
 
     private val commandMap = HashMap<Class<out Command>, CommandHandler<*>>()
     private val queryMap = HashMap<Class<out Query<*>>, QueryHandler<*, *>>()
     private val notificationMap = HashMap<Class<out Notification>, MutableCollection<NotificationHandler<*>>>()
+    private val pipelineSet = HashSet<PipelineBehavior>()
 
     private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandHandler<*>>()
     private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryHandler<*, *>>()
     private val asyncNotificationMap =
         HashMap<Class<out Notification>, MutableCollection<AsyncNotificationHandler<*>>>()
+    private val asyncPipelineSet = HashSet<AsyncPipelineBehavior>()
 
     init {
         val reflections = Reflections(anyClazz.`package`.name)
         reflections.getSubTypesOf(QueryHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == QueryHandler::class.java) {
-                    val queryClazz = genericInterface.actualTypeArguments[1]
+                    val queryClazz = genericInterface.actualTypeArguments[0]
 
                     queryMap[queryClazz as Class<out Query<*>>] =
                         (it as Class<out QueryHandler<*, *>>).newInstance() as QueryHandler<*, *>
@@ -55,7 +57,7 @@ class RegistryImpl(anyClazz: Class<*>) : Registry {
         reflections.getSubTypesOf(AsyncQueryHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncQueryHandler::class.java) {
-                    val queryClazz = genericInterface.actualTypeArguments[1]
+                    val queryClazz = genericInterface.actualTypeArguments[0]
 
                     asyncQueryMap[queryClazz as Class<out Query<*>>] =
                         (it as Class<out AsyncQueryHandler<*, *>>).newInstance() as AsyncQueryHandler<*, *>
@@ -86,6 +88,24 @@ class RegistryImpl(anyClazz: Class<*>) : Registry {
                 }
             }
         }
+
+        reflections.getSubTypesOf(PipelineBehavior::class.java).forEach {
+            (it.genericInterfaces).forEach { genericInterface ->
+                if (genericInterface as Class<*> == PipelineBehavior::class.java) {
+                    val pipelineBehaviorClazz = (it as Class<PipelineBehavior>).newInstance() as PipelineBehavior
+                    pipelineSet.add(pipelineBehaviorClazz)
+                }
+            }
+        }
+
+        reflections.getSubTypesOf(AsyncPipelineBehavior::class.java).forEach {
+            (it.genericInterfaces).forEach { genericInterface ->
+                if (genericInterface as Class<*> == AsyncPipelineBehavior::class.java) {
+                    val pipelineBehaviorClazz = (it as Class<AsyncPipelineBehavior>).newInstance() as AsyncPipelineBehavior
+                    asyncPipelineSet.add(pipelineBehaviorClazz)
+                }
+            }
+        }
     }
 
     override fun <TCommand : Command> resolveCommandHandler(classOfCommand: Class<TCommand>): CommandHandler<TCommand> {
@@ -94,10 +114,10 @@ class RegistryImpl(anyClazz: Class<*>) : Registry {
         return handler as CommandHandler<TCommand>
     }
 
-    override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TResult, TQuery> {
+    override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {
         val handler = queryMap[classOfQuery]
             ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
-        return handler as QueryHandler<TResult, TQuery>
+        return handler as QueryHandler<TQuery, TResult>
     }
 
     override fun <TNotification : Notification> resolveNotificationHandlers(classOfNotification: Class<TNotification>): Collection<NotificationHandler<TNotification>> {
@@ -116,10 +136,10 @@ class RegistryImpl(anyClazz: Class<*>) : Registry {
         return handler as AsyncCommandHandler<TCommand>
     }
 
-    override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TResult, TQuery> {
+    override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TQuery, TResult> {
         val handler = asyncQueryMap[classOfQuery]
             ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
-        return handler as AsyncQueryHandler<TResult, TQuery>
+        return handler as AsyncQueryHandler<TQuery, TResult>
     }
 
     override fun <TNotification : Notification> resolveAsyncNotificationHandlers(classOfNotification: Class<TNotification>): Collection<AsyncNotificationHandler<TNotification>> {
@@ -130,6 +150,14 @@ class RegistryImpl(anyClazz: Class<*>) : Registry {
             }
         }
         return asyncNotificationHandlers
+    }
+
+    override fun getPipelineBehaviors(): Collection<PipelineBehavior> {
+        return pipelineSet
+    }
+
+    override fun getAsyncPipelineBehaviors(): Collection<AsyncPipelineBehavior> {
+        return asyncPipelineSet
     }
 }
 

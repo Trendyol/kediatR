@@ -10,11 +10,14 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
     private val queryMap = HashMap<Class<out Query<*>>, QueryProvider<QueryHandler<*, *>>>()
     private val notificationMap =
         HashMap<Class<out Notification>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
+    private val pipelineSet = HashSet<PipelineProvider<PipelineBehavior>>()
+
 
     private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandProvider<AsyncCommandHandler<*>>>()
     private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
     private val asyncNotificationMap =
         HashMap<Class<out Notification>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
+    private val asyncPipelineSet = HashSet<AsyncPipelineProvider<AsyncPipelineBehavior>>()
 
     init {
         val commandNames = applicationContext.getBeanNamesForType(CommandHandler::class.java)
@@ -29,7 +32,7 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         for (name in queryNames) {
             val handlerClass = applicationContext.getType(name) as Class<QueryHandler<*, *>>
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, QueryHandler::class.java)
-            val queryType = generics!![1] as Class<Query<*>>
+            val queryType = generics!![0] as Class<Query<*>>
             queryMap[queryType] = QueryProvider(applicationContext, handlerClass)
         }
 
@@ -54,7 +57,7 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         for (name in asyncQueryNames) {
             val handlerClass = applicationContext.getType(name) as Class<AsyncQueryHandler<*, *>>
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, AsyncQueryHandler::class.java)
-            val queryType = generics!![1] as Class<Query<*>>
+            val queryType = generics!![0] as Class<Query<*>>
             asyncQueryMap[queryType] = AsyncQueryProvider(applicationContext, handlerClass)
         }
 
@@ -65,6 +68,18 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val notificationType = generics!![0] as Class<Notification>
             asyncNotificationMap.getOrPut(notificationType) { mutableListOf() }
                 .add(AsyncNotificationProvider(applicationContext, handlerClass))
+        }
+
+        val pipelineBehaviorNames = applicationContext.getBeanNamesForType(PipelineBehavior::class.java)
+        for (name in pipelineBehaviorNames) {
+            val pipelineBehaviorClazz = applicationContext.getType(name) as Class<PipelineBehavior>
+            pipelineSet.add(PipelineProvider(applicationContext, pipelineBehaviorClazz))
+        }
+
+        val asyncPipelineBehaviorNames = applicationContext.getBeanNamesForType(AsyncPipelineBehavior::class.java)
+        for (name in asyncPipelineBehaviorNames) {
+            val asyncPipelineBehaviorClazz = applicationContext.getType(name) as Class<AsyncPipelineBehavior>
+            asyncPipelineSet.add(AsyncPipelineProvider(applicationContext, asyncPipelineBehaviorClazz))
         }
     }
 
@@ -84,10 +99,10 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         return notificationHandlers
     }
 
-    override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TResult, TQuery> {
+    override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {
         val handler = queryMap[classOfQuery]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfQuery.name}")
-        return handler as QueryHandler<TResult, TQuery>
+        return handler as QueryHandler<TQuery, TResult>
     }
 
     override fun <TCommand : Command> resolveAsyncCommandHandler(classOfCommand: Class<TCommand>): AsyncCommandHandler<TCommand> {
@@ -106,9 +121,17 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         return asyncNotificationHandlers
     }
 
-    override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TResult, TQuery> {
+    override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TQuery, TResult> {
         val handler = asyncQueryMap[classOfQuery]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfQuery.name}")
-        return handler as AsyncQueryHandler<TResult, TQuery>
+        return handler as AsyncQueryHandler<TQuery, TResult>
+    }
+
+    override fun getPipelineBehaviors(): Collection<PipelineBehavior> {
+        return pipelineSet.map { it.get() }
+    }
+
+    override fun getAsyncPipelineBehaviors(): Collection<AsyncPipelineBehavior> {
+        return asyncPipelineSet.map { it.get() }
     }
 }
