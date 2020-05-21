@@ -1,4 +1,4 @@
-name: Release kediatR-spring-start
+name: Release kediatR-spring-starter
 
 # Run workflow on commits to the `master` branch
 on:
