@@ -7,23 +7,27 @@ class SpringCommandBus(
     private val publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
 ) : CommandBus {
 
-    override fun <TCommand : Command> executeCommand(command: TCommand) =
+    override fun <TCommand : Command> executeCommand(command: TCommand) = processPipeline(springBeanRegistry.getPipelineBehaviors(), command) {
         springBeanRegistry.resolveCommandHandler(command.javaClass).handle(command)
+    }
 
-    override suspend fun <TCommand : Command> executeCommandAsync(command: TCommand) =
+    override suspend fun <TCommand : Command> executeCommandAsync(command: TCommand) = processAsyncPipeline(springBeanRegistry.getAsyncPipelineBehaviors(), command) {
         springBeanRegistry.resolveAsyncCommandHandler(command.javaClass).handleAsync(command)
+    }
 
-    override fun <R, Q : Query<R>> executeQuery(query: Q): R =
+    override fun <Q : Query<R>, R> executeQuery(query: Q): R = processPipeline(springBeanRegistry.getPipelineBehaviors(), query) {
         springBeanRegistry.resolveQueryHandler(query.javaClass).handle(query)
+    }
 
-    override suspend fun <R, Q : Query<R>> executeQueryAsync(query: Q): R =
+    override suspend fun <Q : Query<R>, R> executeQueryAsync(query: Q): R = processAsyncPipeline(springBeanRegistry.getAsyncPipelineBehaviors(), query) {
         springBeanRegistry.resolveAsyncQueryHandler(query.javaClass).handleAsync(query)
+    }
 
-    override fun <T : Notification> publishNotification(notification: T) {
+    override fun <T : Notification> publishNotification(notification: T) = processPipeline(springBeanRegistry.getPipelineBehaviors(), notification) {
         publishStrategy.publish(notification, springBeanRegistry.resolveNotificationHandlers(notification.javaClass))
     }
 
-    override suspend fun <T : Notification> publishNotificationAsync(notification: T) {
+    override suspend fun <T : Notification> publishNotificationAsync(notification: T) = processAsyncPipeline(springBeanRegistry.getAsyncPipelineBehaviors(), notification) {
         publishStrategy.publishAsync(
             notification,
             springBeanRegistry.resolveAsyncNotificationHandlers(notification.javaClass)
