@@ -1,4 +1,4 @@
-# kediatR [![Build Status](https://travis-ci.org/Trendyol/kediatR.svg?branch=master)](https://travis-ci.org/Trendyol/kediatR) [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/master/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
+# kediatR ![Release kediatR-core](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-core/badge.svg?branch=master) ![Release kediatR-spring-starter](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-spring-starter/badge.svg?branch=master)[![codecov](https://codecov.io/gh/trendyol/kediatr/branch/master/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
 
 Mediator implementation in kotlin with native coroutine support.
 
