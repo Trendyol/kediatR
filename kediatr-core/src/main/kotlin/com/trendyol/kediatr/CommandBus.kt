@@ -26,17 +26,27 @@ interface CommandBus {
     suspend fun <T : Notification> publishNotificationAsync(notification: T)
 
     fun <TRequest, TResponse> processPipeline(pipelineBehaviors: Collection<PipelineBehavior>, request: TRequest, act: () -> TResponse): TResponse {
-        pipelineBehaviors.forEach { it.preProcess(request) }
-        val result = act()
-        pipelineBehaviors.forEach { it.postProcess(request) }
-        return result
+        try {
+            pipelineBehaviors.forEach { it.preProcess(request) }
+            val result = act()
+            pipelineBehaviors.forEach { it.postProcess(request) }
+            return result
+        } catch (ex: Exception) {
+            pipelineBehaviors.forEach { it.handleExceptionProcess(request, ex) }
+            throw ex
+        }
     }
 
-    suspend fun <TRequest, TResponse> processAsyncPipeline(pipelineBehaviors: Collection<AsyncPipelineBehavior>, request: TRequest, act: suspend () -> TResponse): TResponse {
-        pipelineBehaviors.forEach { it.preProcess(request) }
-        val result = act()
-        pipelineBehaviors.forEach { it.postProcess(request) }
-        return result
+    suspend fun <TRequest, TResponse> processAsyncPipeline(asyncPipelineBehaviors: Collection<AsyncPipelineBehavior>, request: TRequest, act: suspend () -> TResponse): TResponse {
+        try {
+            asyncPipelineBehaviors.forEach { it.preProcess(request) }
+            val result = act()
+            asyncPipelineBehaviors.forEach { it.postProcess(request) }
+            return result
+        }catch (ex: Exception) {
+            asyncPipelineBehaviors.forEach { it.handleException(request, ex) }
+            throw ex
+        }
     }
 }
 
