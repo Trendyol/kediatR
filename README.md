@@ -1,4 +1,4 @@
-# kediatR ![Release kediatR-core](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-core/badge.svg?branch=master) ![Release kediatR-spring-starter](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-spring-starter/badge.svg?branch=master)[![codecov](https://codecov.io/gh/trendyol/kediatr/branch/master/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
+# kediatR ![Release kediatR-core](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-core/badge.svg?branch=master) ![Release kediatR-spring-starter](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-spring-starter/badge.svg?branch=master) [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/master/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
 
 Mediator implementation in kotlin with native coroutine support.
 
@@ -10,18 +10,18 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 #### kediatR-core
 ```
 <dependency>
-  <groupId>com.trendyol</groupId>
-  <artifactId>kediatr-core</artifactId>
-  <version>1.0.10</version>
+    <groupId>com.trendyol</groupId>
+    <artifactId>kediatr-core</artifactId>
+    <version>1.0.13</version>
 </dependency>
 ```
 
 #### kediatR-spring-starter 
 ```
 <dependency>
-  <groupId>com.trendyol</groupId>
-  <artifactId>kediatr-spring-starter</artifactId>
-  <version>1.0.11</version>
+    <groupId>com.trendyol</groupId>
+    <artifactId>kediatr-spring-starter</artifactId>
+    <version>1.0.14</version>
 </dependency>
 ```
 
@@ -66,8 +66,23 @@ class GetSomeDataQueryHandler: QueryHandler<String, GetSomeDataQuery> {
         return "hello"
     }
 }
-
 ```
+#### Pipeline Behavior 
+
+```kotlin
+class CommandProcessingPipeline : PipelineBehavior {
+    override fun <TRequest> preProcess(request: TRequest) {
+        println("Starting process.")
+    }
+    override fun <TRequest> postProcess(request: TRequest) {
+        println("Ending process.")
+    }
+    override fun <TRequest, TException : Exception> handleExceptionProcess(request: TRequest, exception: TException) {
+        println("Some exception occurred during process. Error: $exception")
+    }
+}
+```
+
 ## Usage with Spring
 * add kediatr-spring dependency to your POM and enjoy yourself
 
@@ -108,6 +123,18 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Asyn
         val user = userRepository.findByIdAsync(query.id)
         // do some operation on user
         return UserDto(user.id, user.name, user.surname)
+    }
+}
+
+class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
+    override suspend fun <TRequest> preProcess(request: TRequest) {
+        println("Starting process.")
+    }
+    override suspend fun <TRequest> postProcess(request: TRequest) {
+        println("Ending process.")
+    }
+    override suspend fun <TRequest, TException : Exception> handleException(request: TRequest, exception: TException) {
+        println("Some exception occurred during process. Error: $exception")
     }
 }
 ```
