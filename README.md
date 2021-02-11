@@ -138,3 +138,13 @@ class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
     }
 }
 ```
+
+## Review Our IntelliJ Plugin
+
+https://plugins.jetbrains.com/plugin/16017-kediatr-helper 
+
+![Screencast 1](https://plugins.jetbrains.com/files/16017/screenshot_cf56bd23-3de8-41fe-814a-64f69ae0a7c4)
+
+![Screencast 2](https://plugins.jetbrains.com/files/16017/screenshot_c3a51b67-807c-46a1-a44c-91b6f0963aea)
+
+
