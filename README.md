@@ -57,7 +57,7 @@ fun main(){
 
 class GetSomeDataQuery(val id: Int) : Query<String>
 
-class GetSomeDataQueryHandler: QueryHandler<String, GetSomeDataQuery> {
+class GetSomeDataQueryHandler: QueryHandler<GetSomeDataQuery, String> {
     override fun handle(query: GetSomeDataQuery): String {
         // you can use properties in the query object to retrieve data from somewhere
         // val result = getDataFromSomewhere(query.id)
@@ -98,7 +98,7 @@ class UserService(private val commandBus: CommandBus){
 class GetUserByIdQuery(private val id: Long): Query<UserDto>
 
 @Component
-class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<UserDto, GetUserByIdQuery> {
+class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
     fun handle(query: GetUserByIdQuery): UserDto { 
         val user = userRepository.findById(query.id)
         // do some operation on user
@@ -118,7 +118,7 @@ class UserService(private val commandBus: CommandBus ){
 
 class GetUserByIdQuery(private val id: Long): Query<UserDto>
 
-class GetUserByIdQueryHandler(private val userRepository: UserRepository) : AsyncQueryHandler<UserDto, GetUserByIdQuery> {
+class GetUserByIdQueryHandler(private val userRepository: UserRepository) : AsyncQueryHandler<GetUserByIdQuery, UserDto> {
     suspend fun handleAsync(query: GetUserByIdQuery): UserDto { 
         val user = userRepository.findByIdAsync(query.id)
         // do some operation on user
