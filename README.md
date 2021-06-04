@@ -147,4 +147,6 @@ https://plugins.jetbrains.com/plugin/16017-kediatr-helper
 
 ![Screencast 2](https://plugins.jetbrains.com/files/16017/screenshot_c3a51b67-807c-46a1-a44c-91b6f0963aea)
 
+Source: https://github.com/bilal-kilic/kediatr-helper 
+
 
