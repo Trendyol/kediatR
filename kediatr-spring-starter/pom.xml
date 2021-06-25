@@ -204,7 +204,7 @@
         <dependency>
             <groupId>com.trendyol</groupId>
             <artifactId>kediatr-core</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.15</version>
         </dependency>
 
         <dependency>
