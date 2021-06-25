@@ -1,6 +1,10 @@
 package com.trendyol.kediatr
 
-class CommandBusBuilder(private val clazzOfAnyHandler: Class<*>) {
+import com.trendyol.kediatr.common.RegistryImpl
+
+class CommandBusBuilder(
+    private val dependencyProvider: DependencyProvider
+) {
     private var publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
 
     /**
@@ -20,6 +24,6 @@ class CommandBusBuilder(private val clazzOfAnyHandler: Class<*>) {
     }
 
     fun build(): CommandBus {
-        return CommandBusImpl(RegistryImpl(clazzOfAnyHandler), publishStrategy)
+        return CommandBusImpl(RegistryImpl(dependencyProvider), publishStrategy)
     }
 }

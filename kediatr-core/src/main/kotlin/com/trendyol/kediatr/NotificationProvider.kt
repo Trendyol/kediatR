@@ -1,25 +1,25 @@
-package com.trendyol.kediatr.spring
+package com.trendyol.kediatr.common
 
 import com.trendyol.kediatr.AsyncNotificationHandler
+import com.trendyol.kediatr.DependencyProvider
 import com.trendyol.kediatr.NotificationHandler
-import org.springframework.context.ApplicationContext
 
 internal class NotificationProvider<H : NotificationHandler<*>>(
-    private val applicationContext: ApplicationContext,
+    private val dependencyProvider: DependencyProvider,
     private val type: Class<H>
 ) {
 
     fun get(): H {
-        return applicationContext.getBean(type)
+        return dependencyProvider.getTypeFor(type)
     }
 }
 
 internal class AsyncNotificationProvider<H : AsyncNotificationHandler<*>>(
-    private val applicationContext: ApplicationContext,
+    private val dependencyProvider: DependencyProvider,
     private val type: Class<H>
 ) {
 
     fun get(): H {
-        return applicationContext.getBean(type)
+        return dependencyProvider.getTypeFor(type)
     }
 }

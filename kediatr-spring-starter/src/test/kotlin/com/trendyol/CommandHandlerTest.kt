@@ -1,7 +1,6 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.HandlerBeanNotFoundException
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -51,7 +50,7 @@ class CommandHandlerTest {
     @Test
     fun `should throw exception if given async command does not have handler bean`() {
 
-        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+        val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
                 commandBus.executeCommandAsync(NonExistCommand())
             }
@@ -64,7 +63,7 @@ class CommandHandlerTest {
     @Test
     fun `should throw exception if given command does not have handler bean`() {
 
-        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+        val exception = assertFailsWith(HandlerNotFoundException::class) {
             commandBus.executeCommand(NonExistCommand())
         }
 
@@ -76,7 +75,9 @@ class CommandHandlerTest {
 class NonExistCommand: Command
 class MyCommand : Command
 
-class MyCommandHandler : CommandHandler<MyCommand> {
+class MyCommandHandler(
+    private val commandBus: CommandBus
+) : CommandHandler<MyCommand> {
     override fun handle(command: MyCommand) {
         springTestCounter++
     }

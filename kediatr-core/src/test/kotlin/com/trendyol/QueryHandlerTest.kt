@@ -8,6 +8,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+/*
 class QueryHandlerTest {
 
     @Test
@@ -71,4 +72,4 @@ class AsyncTestQueryHandler : AsyncQueryHandler<TestQuery, String> {
     override suspend fun handleAsync(query: TestQuery): String {
         return "hello " + query.id
     }
-}
+}*/

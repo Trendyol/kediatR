@@ -1,6 +1,8 @@
 package com.trendyol.kediatr
 
-class CommandBusImpl(private val registry: RegistryImpl, private val publishStrategy: PublishStrategy) : CommandBus {
+import com.trendyol.kediatr.common.RegistryImpl
+
+class CommandBusImpl(private val registry: RegistryImpl, private val publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()) : CommandBus {
     override fun <TQuery : Query<TResponse>, TResponse> executeQuery(query: TQuery): TResponse = processPipeline(registry.getPipelineBehaviors(), query) {
         registry.resolveQueryHandler(query.javaClass).handle(query)
     }

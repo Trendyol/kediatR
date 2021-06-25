@@ -9,6 +9,7 @@ import kotlin.test.assertTrue
 private val asyncCountDownLatch = CountDownLatch(2)
 private val countDownLatch = CountDownLatch(2)
 
+/*
 open class Ping : Notification
 class ExtendedPing : Ping()
 
@@ -52,4 +53,4 @@ class NotificationHandlerTest {
             asyncCountDownLatch.count == 0L
         }
     }
-}
+}*/

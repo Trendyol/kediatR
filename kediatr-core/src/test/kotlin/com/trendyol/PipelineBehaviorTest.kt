@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertTrue
 
+/*
 var asyncPipelinePreProcessCounter = 0
 var asyncPipelinePostProcessCounter = 0
 var pipelinePreProcessCounter = 0
@@ -109,4 +110,4 @@ class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
         delay(500)
         asyncPipelineExceptionCounter++
     }
-}
+}*/
