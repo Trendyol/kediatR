@@ -10,18 +10,18 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 #### kediatR-core
 ```
 <dependency>
-    <groupId>com.trendyol</groupId>
-    <artifactId>kediatr-core</artifactId>
-    <version>1.0.13</version>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-core</artifactId>
+  <version>1.0.15</version>
 </dependency>
 ```
 
 #### kediatR-spring-starter 
 ```
 <dependency>
-    <groupId>com.trendyol</groupId>
-    <artifactId>kediatr-spring-starter</artifactId>
-    <version>1.0.14</version>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-spring-starter</artifactId>
+  <version>1.0.15</version>
 </dependency>
 ```
 
