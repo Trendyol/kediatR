@@ -5,6 +5,8 @@ interface CommandBus {
 
     fun <TCommand : Command> executeCommand(command: TCommand)
 
+    fun <TCommand : CommandWithResult<TResult>, TResult> executeCommand(command: TCommand) : TResult
+
     /**
      * Publishes the given notification to appropriate notification handlers
      *
@@ -16,6 +18,8 @@ interface CommandBus {
     suspend fun <TQuery : Query<TResponse>, TResponse> executeQueryAsync(query: TQuery): TResponse
 
     suspend fun <TCommand : Command> executeCommandAsync(command: TCommand)
+
+    suspend fun <TCommand : CommandWithResult<TResult>, TResult> executeCommandAsync(command: TCommand) : TResult
 
     /**
      * Publishes the given notification to appropriate notification handlers

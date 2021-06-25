@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 private var counter = 0
 private var asyncTestCounter = 0
 
-class CommandHandlerTest {
+class CommandWithResultHandlerTest {
 
     init {
         counter = 0
@@ -23,8 +23,8 @@ class CommandHandlerTest {
 
     @Test
     fun `commandHandler should be fired`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
-        bus.executeCommand(MyCommand())
+        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
+        bus.executeCommand(MyCommandR())
 
         assertTrue {
             counter == 1
@@ -33,8 +33,8 @@ class CommandHandlerTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
-        bus.executeCommandAsync(MyAsyncCommand())
+        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
+        bus.executeCommandAsync(MyAsyncCommandR())
 
         assertTrue {
             asyncTestCounter == 1
@@ -43,45 +43,50 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given async command has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                bus.executeCommandAsync(NonExistCommand())
+                bus.executeCommandAsync(NonExistCommandR())
             }
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
     }
 
     @Test
     fun `should throw exception if given command has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
-            bus.executeCommand(NonExistCommand())
+            bus.executeCommand(NonExistCommandR())
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
     }
 }
 
-class NonExistCommand : Command
-class MyCommand : Command
+class Result
+class NonExistCommandR : Command
+class MyCommandR : CommandWithResult<Result>
 
-class MyCommandHandler : CommandHandler<MyCommand> {
-    override fun handle(command: MyCommand) {
+class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
+    override fun handle(command: MyCommandR): Result {
         counter++
+
+        return Result()
     }
 }
 
-class MyAsyncCommand : Command
+class MyAsyncCommandR : CommandWithResult<Result>
 
-class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
-    override suspend fun handleAsync(command: MyAsyncCommand) {
+class AsyncMyCommandRHandler : AsyncCommandWithResultHandler<MyAsyncCommandR, Result> {
+    override suspend fun handleAsync(command: MyAsyncCommandR): Result {
         delay(500)
         asyncTestCounter++
+
+        return Result()
     }
 }

@@ -6,7 +6,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatR</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <modules>
         <module>kediatr-core</module>
         <module>kediatr-spring-starter</module>
@@ -96,7 +96,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.3.50</kotlin.version>
+        <kotlin.version>1.5.20</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <junit.version>4.13.1</junit.version>
     </properties>

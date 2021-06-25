@@ -7,6 +7,7 @@ import java.util.*
 
 class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
     private val commandMap = HashMap<Class<out Command>, CommandProvider<CommandHandler<*>>>()
+    private val commandWithResultMap = HashMap<Class<out CommandWithResult<*>>, CommandWithResultProvider<CommandWithResultHandler<*, *>>>()
     private val queryMap = HashMap<Class<out Query<*>>, QueryProvider<QueryHandler<*, *>>>()
     private val notificationMap =
         HashMap<Class<out Notification>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
@@ -14,6 +15,7 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
 
 
     private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandProvider<AsyncCommandHandler<*>>>()
+    private val asyncCommandWithResultMap = HashMap<Class<out CommandWithResult<*>>, AsyncCommandWithResultProvider<AsyncCommandWithResultHandler<*, *>>>()
     private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
     private val asyncNotificationMap =
         HashMap<Class<out Notification>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
@@ -26,6 +28,14 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, CommandHandler::class.java)
             val commandType = generics!![0] as Class<Command>
             commandMap[commandType] = CommandProvider(applicationContext, handlerClass)
+        }
+
+        val commandWithResultNames = applicationContext.getBeanNamesForType(CommandWithResultHandler::class.java)
+        for (name in commandWithResultNames) {
+            val handlerClass = applicationContext.getType(name) as Class<CommandWithResultHandler<*, *>>
+            val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, CommandWithResultHandler::class.java)
+            val commandType = generics!![0] as Class<CommandWithResult<*>>
+            commandWithResultMap[commandType] = CommandWithResultProvider(applicationContext, handlerClass)
         }
 
         val queryNames = applicationContext.getBeanNamesForType(QueryHandler::class.java)
@@ -51,6 +61,14 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
             val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, AsyncCommandHandler::class.java)
             val commandType = generics!![0] as Class<Command>
             asyncCommandMap[commandType] = AsyncCommandProvider(applicationContext, handlerClass)
+        }
+
+        val asyncCommandWithResultNames = applicationContext.getBeanNamesForType(AsyncCommandWithResultHandler::class.java)
+        for (name in asyncCommandWithResultNames) {
+            val handlerClass = applicationContext.getType(name) as Class<AsyncCommandWithResultHandler<*, *>>
+            val generics = GenericTypeResolver.resolveTypeArguments(handlerClass, AsyncCommandWithResultHandler::class.java)
+            val commandType = generics!![0] as Class<CommandWithResult<*>>
+            asyncCommandWithResultMap[commandType] = AsyncCommandWithResultProvider(applicationContext, handlerClass)
         }
 
         val asyncQueryNames = applicationContext.getBeanNamesForType(AsyncQueryHandler::class.java)
@@ -89,6 +107,12 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         return handler as CommandHandler<TCommand>
     }
 
+    override fun <TCommand : CommandWithResult<TResult>, TResult> resolveCommandWithResultHandler(classOfCommand: Class<TCommand>): CommandWithResultHandler<TCommand, TResult> {
+        val handler = commandWithResultMap[classOfCommand]?.get()
+            ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfCommand.name}")
+        return handler as CommandWithResultHandler<TCommand, TResult>
+    }
+
     override fun <TNotification : Notification> resolveNotificationHandlers(classOfNotification: Class<TNotification>): Collection<NotificationHandler<TNotification>> {
         val notificationHandlers = mutableListOf<NotificationHandler<TNotification>>()
         notificationMap.forEach { (k, v) ->
@@ -109,6 +133,12 @@ class SpringBeanRegistry(applicationContext: ApplicationContext) : Registry {
         val handler = asyncCommandMap[classOfCommand]?.get()
             ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfCommand.name}")
         return handler as AsyncCommandHandler<TCommand>
+    }
+
+    override fun <TCommand : CommandWithResult<TResult>, TResult> resolveAsyncCommandWithResultHandler(classOfCommand: Class<TCommand>): AsyncCommandWithResultHandler<TCommand, TResult> {
+        val handler = asyncCommandWithResultMap[classOfCommand]?.get()
+            ?: throw HandlerBeanNotFoundException("handler could not be found for ${classOfCommand.name}")
+        return handler as AsyncCommandWithResultHandler<TCommand, TResult>
     }
 
     override fun <TNotification : Notification> resolveAsyncNotificationHandlers(classOfNotification: Class<TNotification>): Collection<AsyncNotificationHandler<TNotification>> {
