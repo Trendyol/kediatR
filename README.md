@@ -12,7 +12,7 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-core</artifactId>
-  <version>1.0.15</version>
+  <version>1.0.16</version>
 </dependency>
 ```
 
@@ -21,7 +21,7 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-spring-starter</artifactId>
-  <version>1.0.15</version>
+  <version>1.0.16</version>
 </dependency>
 ```
 
@@ -83,7 +83,7 @@ class CommandProcessingPipeline : PipelineBehavior {
 }
 ```
 
-## Usage with Spring
+## Usage with SpringBoot
 * add kediatr-spring dependency to your POM and enjoy yourself
 
 ```kotlin
