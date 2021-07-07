@@ -20,8 +20,8 @@ private var springTestCounter = 0
 private var springAsyncTestCounter = 0
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyCommandHandler::class])
-class CommandHandlerTest {
+@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandRHandler::class, MyCommandRHandler::class])
+class CommandWithResultHandlerTest {
 
     init {
         springTestCounter = 0
@@ -33,7 +33,7 @@ class CommandHandlerTest {
 
     @Test
     fun `commandHandler should be fired`() {
-        commandBus.executeCommand(MyCommand())
+        commandBus.executeCommand(MyCommandR())
         assertTrue {
             springTestCounter == 1
         }
@@ -41,7 +41,7 @@ class CommandHandlerTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.executeCommandAsync(MyCommand())
+        commandBus.executeCommandAsync(MyCommandR())
 
         assertTrue {
             springAsyncTestCounter == 1
@@ -53,39 +53,45 @@ class CommandHandlerTest {
 
         val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
             runBlocking {
-                commandBus.executeCommandAsync(NonExistCommand())
+                commandBus.executeCommandAsync(NonExistCommandR())
             }
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
     }
 
     @Test
     fun `should throw exception if given command does not have handler bean`() {
 
         val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
-            commandBus.executeCommand(NonExistCommand())
+            commandBus.executeCommand(NonExistCommandR())
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
     }
 }
 
-class NonExistCommand: Command
-class MyCommand : Command
+private class Result
 
-class MyCommandHandler : CommandHandler<MyCommand> {
-    override fun handle(command: MyCommand) {
+private class NonExistCommandR : CommandWithResult<Result>
+private class MyCommandR : CommandWithResult<Result>
+
+private class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
+    override fun handle(command: MyCommandR): Result {
         springTestCounter++
+
+        return Result()
     }
 }
 
-class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
-    override suspend fun handleAsync(command: MyCommand) {
+private class MyAsyncCommandRHandler : AsyncCommandWithResultHandler<MyCommandR, Result> {
+    override suspend fun handleAsync(command: MyCommandR): Result {
         delay(500)
         springAsyncTestCounter++
+
+        return Result()
     }
 }
 

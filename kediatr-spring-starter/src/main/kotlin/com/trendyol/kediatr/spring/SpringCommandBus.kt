@@ -11,8 +11,16 @@ class SpringCommandBus(
         springBeanRegistry.resolveCommandHandler(command.javaClass).handle(command)
     }
 
+    override fun <TCommand : CommandWithResult<TResult>, TResult> executeCommand(command: TCommand): TResult = processPipeline(springBeanRegistry.getPipelineBehaviors(), command) {
+        springBeanRegistry.resolveCommandWithResultHandler(command.javaClass).handle(command)
+    }
+
     override suspend fun <TCommand : Command> executeCommandAsync(command: TCommand) = processAsyncPipeline(springBeanRegistry.getAsyncPipelineBehaviors(), command) {
         springBeanRegistry.resolveAsyncCommandHandler(command.javaClass).handleAsync(command)
+    }
+
+    override suspend fun <TCommand : CommandWithResult<TResult>, TResult> executeCommandAsync(command: TCommand): TResult = processAsyncPipeline(springBeanRegistry.getAsyncPipelineBehaviors(), command) {
+        springBeanRegistry.resolveAsyncCommandWithResultHandler(command.javaClass).handleAsync(command)
     }
 
     override fun <Q : Query<R>, R> executeQuery(query: Q): R = processPipeline(springBeanRegistry.getPipelineBehaviors(), query) {

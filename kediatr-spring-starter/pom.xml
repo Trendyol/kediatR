@@ -5,7 +5,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatr-spring-starter</artifactId>
-    <version>1.0.15</version>
+    <version>1.0.16</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:Trendyol/kediatR.git</connection>
         <developerConnection>scm:git:git@github.com:Trendyol/kediatR.git</developerConnection>
         <url>https://github.com/Trendyol/kediatR</url>
-        <tag>kediatr-spring-starter-1.0.15</tag>
+        <tag>kediatr-spring-starter-1.0.16</tag>
     </scm>
 
     <profiles>
@@ -137,7 +137,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.3.72</kotlin.version>
+        <kotlin.version>1.5.20</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <junit.version>5.7.0-M1</junit.version>
 
@@ -204,7 +204,7 @@
         <dependency>
             <groupId>com.trendyol</groupId>
             <artifactId>kediatr-core</artifactId>
-            <version>1.0.15</version>
+            <version>1.0.16</version>
         </dependency>
 
         <dependency>
