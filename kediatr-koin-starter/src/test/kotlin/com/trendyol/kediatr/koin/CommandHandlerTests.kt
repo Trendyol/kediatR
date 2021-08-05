@@ -1,34 +1,39 @@
-package com.trendyol
+package kediatrkoinstarter
 
+import com.kediatrkoinstarter.KediatrKoinProvider
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
+import org.junit.jupiter.api.BeforeAll
+import org.koin.core.context.startKoin
+import org.koin.core.module.Module
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class CommandHandlerTests {
 
-private var springTestCounter = 0
-private var springAsyncTestCounter = 0
-
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyCommandHandler::class])
-class CommandHandlerTest {
-
-    init {
-        springTestCounter = 0
-        springAsyncTestCounter = 0
+    private val helloModule: Module = module {
+        single { MyCommandHandler() } bind CommandHandler::class
+        single { MyAsyncCommandHandler() } bind MyAsyncCommandHandler::class
+        single { commandBus }
     }
 
-    @Autowired
     lateinit var commandBus: CommandBus
+
+    @BeforeAll
+    fun initialize() {
+        val koinApp = startKoin {
+            modules(helloModule)
+        }
+        commandBus = CommandBusBuilder(KediatrKoinProvider(koinApp.koin)).build()
+    }
 
     @Test
     fun `commandHandler should be fired`() {
@@ -72,11 +77,13 @@ class CommandHandlerTest {
     }
 }
 
-class NonExistCommand: Command
+private var springTestCounter = 0
+private var springAsyncTestCounter = 0
+
+class NonExistCommand : Command
 class MyCommand : Command
 
 class MyCommandHandler(
-    private val commandBus: CommandBus
 ) : CommandHandler<MyCommand> {
     override fun handle(command: MyCommand) {
         springTestCounter++
@@ -89,5 +96,3 @@ class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
         springAsyncTestCounter++
     }
 }
-
-

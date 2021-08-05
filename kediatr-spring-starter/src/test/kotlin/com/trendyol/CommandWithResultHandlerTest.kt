@@ -1,6 +1,7 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
+import com.trendyol.kediatr.spring.HandlerBeanNotFoundException
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -19,8 +20,8 @@ private var springTestCounter = 0
 private var springAsyncTestCounter = 0
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyCommandHandler::class])
-class CommandHandlerTest {
+@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandRHandler::class, MyCommandRHandler::class])
+class CommandWithResultHandlerTest {
 
     init {
         springTestCounter = 0
@@ -32,7 +33,7 @@ class CommandHandlerTest {
 
     @Test
     fun `commandHandler should be fired`() {
-        commandBus.executeCommand(MyCommand())
+        commandBus.executeCommand(MyCommandR())
         assertTrue {
             springTestCounter == 1
         }
@@ -40,7 +41,7 @@ class CommandHandlerTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.executeCommandAsync(MyCommand())
+        commandBus.executeCommandAsync(MyCommandR())
 
         assertTrue {
             springAsyncTestCounter == 1
@@ -50,43 +51,47 @@ class CommandHandlerTest {
     @Test
     fun `should throw exception if given async command does not have handler bean`() {
 
-        val exception = assertFailsWith(HandlerNotFoundException::class) {
+        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
             runBlocking {
-                commandBus.executeCommandAsync(NonExistCommand())
+                commandBus.executeCommandAsync(NonExistCommandR())
             }
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
     }
 
     @Test
     fun `should throw exception if given command does not have handler bean`() {
 
-        val exception = assertFailsWith(HandlerNotFoundException::class) {
-            commandBus.executeCommand(NonExistCommand())
+        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+            commandBus.executeCommand(NonExistCommandR())
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
     }
 }
 
-class NonExistCommand: Command
-class MyCommand : Command
+private class Result
 
-class MyCommandHandler(
-    private val commandBus: CommandBus
-) : CommandHandler<MyCommand> {
-    override fun handle(command: MyCommand) {
+private class NonExistCommandR : CommandWithResult<Result>
+private class MyCommandR : CommandWithResult<Result>
+
+private class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
+    override fun handle(command: MyCommandR): Result {
         springTestCounter++
+
+        return Result()
     }
 }
 
-class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
-    override suspend fun handleAsync(command: MyCommand) {
+private class MyAsyncCommandRHandler : AsyncCommandWithResultHandler<MyCommandR, Result> {
+    override suspend fun handleAsync(command: MyCommandR): Result {
         delay(500)
         springAsyncTestCounter++
+
+        return Result()
     }
 }
 

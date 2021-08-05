@@ -11,6 +11,10 @@ class CommandBusImpl(private val registry: RegistryImpl, private val publishStra
         registry.resolveCommandHandler(command.javaClass).handle(command)
     }
 
+    override fun <TCommand : CommandWithResult<TResult>, TResult> executeCommand(command: TCommand): TResult = processPipeline(registry.getPipelineBehaviors(), command) {
+        registry.resolveCommandWithResultHandler(command.javaClass).handle(command)
+    }
+
     override fun <T : Notification> publishNotification(notification: T) = processPipeline(registry.getPipelineBehaviors(), notification) {
         publishStrategy.publish(notification, registry.resolveNotificationHandlers(notification.javaClass))
     }
@@ -21,6 +25,10 @@ class CommandBusImpl(private val registry: RegistryImpl, private val publishStra
 
     override suspend fun <TCommand : Command> executeCommandAsync(command: TCommand) = processAsyncPipeline(registry.getAsyncPipelineBehaviors(), command) {
         registry.resolveAsyncCommandHandler(command.javaClass).handleAsync(command)
+    }
+
+    override suspend fun <TCommand : CommandWithResult<TResult>, TResult> executeCommandAsync(command: TCommand): TResult = processAsyncPipeline(registry.getAsyncPipelineBehaviors(), command) {
+        registry.resolveAsyncCommandWithResultHandler(command.javaClass).handleAsync(command)
     }
 
     override suspend fun <T : Notification> publishNotificationAsync(notification: T) = processAsyncPipeline(registry.getAsyncPipelineBehaviors(), notification) {

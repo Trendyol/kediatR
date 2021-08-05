@@ -10,18 +10,18 @@ kediatR has two implementations: kediatR-core and kediatR-spring
 #### kediatR-core
 ```
 <dependency>
-    <groupId>com.trendyol</groupId>
-    <artifactId>kediatr-core</artifactId>
-    <version>1.0.13</version>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-core</artifactId>
+  <version>1.0.16</version>
 </dependency>
 ```
 
 #### kediatR-spring-starter 
 ```
 <dependency>
-    <groupId>com.trendyol</groupId>
-    <artifactId>kediatr-spring-starter</artifactId>
-    <version>1.0.14</version>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-spring-starter</artifactId>
+  <version>1.0.16</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ fun main(){
 
 class GetSomeDataQuery(val id: Int) : Query<String>
 
-class GetSomeDataQueryHandler: QueryHandler<String, GetSomeDataQuery> {
+class GetSomeDataQueryHandler: QueryHandler<GetSomeDataQuery, String> {
     override fun handle(query: GetSomeDataQuery): String {
         // you can use properties in the query object to retrieve data from somewhere
         // val result = getDataFromSomewhere(query.id)
@@ -83,7 +83,7 @@ class CommandProcessingPipeline : PipelineBehavior {
 }
 ```
 
-## Usage with Spring
+## Usage with SpringBoot
 * add kediatr-spring dependency to your POM and enjoy yourself
 
 ```kotlin
@@ -98,7 +98,7 @@ class UserService(private val commandBus: CommandBus){
 class GetUserByIdQuery(private val id: Long): Query<UserDto>
 
 @Component
-class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<UserDto, GetUserByIdQuery> {
+class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
     fun handle(query: GetUserByIdQuery): UserDto { 
         val user = userRepository.findById(query.id)
         // do some operation on user
@@ -118,7 +118,7 @@ class UserService(private val commandBus: CommandBus ){
 
 class GetUserByIdQuery(private val id: Long): Query<UserDto>
 
-class GetUserByIdQueryHandler(private val userRepository: UserRepository) : AsyncQueryHandler<UserDto, GetUserByIdQuery> {
+class GetUserByIdQueryHandler(private val userRepository: UserRepository) : AsyncQueryHandler<GetUserByIdQuery, UserDto> {
     suspend fun handleAsync(query: GetUserByIdQuery): UserDto { 
         val user = userRepository.findByIdAsync(query.id)
         // do some operation on user
@@ -138,3 +138,15 @@ class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
     }
 }
 ```
+
+## Review Our IntelliJ Plugin
+
+https://plugins.jetbrains.com/plugin/16017-kediatr-helper 
+
+![Screencast 1](https://plugins.jetbrains.com/files/16017/screenshot_cf56bd23-3de8-41fe-814a-64f69ae0a7c4)
+
+![Screencast 2](https://plugins.jetbrains.com/files/16017/screenshot_c3a51b67-807c-46a1-a44c-91b6f0963aea)
+
+Source: https://github.com/bilal-kilic/kediatr-helper 
+
+

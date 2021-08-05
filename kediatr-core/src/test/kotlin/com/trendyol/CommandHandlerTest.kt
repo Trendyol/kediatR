@@ -9,8 +9,9 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-var counter = 0
-var asyncTestCounter = 0
+
+private var counter = 0
+private var asyncTestCounter = 0
 
 class ManuelDependencyProvider(
     private val handlerMap: HashMap<Class<*>, Any>
