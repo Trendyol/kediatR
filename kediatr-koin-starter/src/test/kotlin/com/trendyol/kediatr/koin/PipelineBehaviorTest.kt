@@ -1,15 +1,16 @@
-package com.trendyol
+package com.trendyol.kediatr.koin
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.koin.test.junit5.KoinTestExtension
 import kotlin.test.assertTrue
 
 var asyncPipelinePreProcessCounter = 0
@@ -19,9 +20,28 @@ var pipelinePostProcessCounter = 0
 var pipelineExceptionCounter = 0
 var asyncPipelineExceptionCounter = 0
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyCommandHandler::class, MyPipelineBehavior::class, MyAsyncPipelineBehavior::class])
-class PipelineBehaviorTest {
+class PipelineBehaviorTest: KoinTest {
+
+    @JvmField
+    @RegisterExtension
+    val koinTestExtension = KoinTestExtension.create {
+        modules(
+            module {
+                single { KediatrKoin.getCommandBus() }
+                single { MyPipelineBehavior(get()) } bind PipelineBehavior::class
+                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
+                single { MyCommandHandler(get()) } bind CommandHandler::class
+                single { MyAsyncCommandHandler(get()) } bind AsyncCommandHandler::class
+                single { MyCommandRHandler(get()) } bind CommandWithResultHandler::class
+                single { MyAsyncCommandRHandler(get()) } bind AsyncCommandWithResultHandler::class
+                single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
+                single { MyFirstAsyncNotificationHandler(get()) } bind AsyncNotificationHandler::class
+                single { MySecondNotificationHandler(get()) } bind NotificationHandler::class
+                single { TestQueryHandler(get()) } bind QueryHandler::class
+                single { AsyncTestQueryHandler(get()) } bind AsyncQueryHandler::class
+            },
+        )
+    }
 
     init {
         asyncPipelinePreProcessCounter = 0
@@ -32,9 +52,7 @@ class PipelineBehaviorTest {
         asyncPipelineExceptionCounter = 0
     }
 
-    @Autowired
-    lateinit var commandBus: CommandBus
-
+    private val commandBus by inject<CommandBus>()
 
     @Test
     fun `should process command with pipeline`() {
@@ -74,20 +92,26 @@ class PipelineBehaviorTest {
 
 class MyBrokenCommand : Command
 
-class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
+class MyBrokenHandler(
+    private val commandBus: CommandBus
+) : CommandHandler<MyBrokenCommand> {
     override fun handle(command: MyBrokenCommand) {
         throw Exception()
     }
 }
 
-class MyBrokenAsyncHandler : AsyncCommandHandler<MyBrokenCommand> {
+class MyBrokenAsyncHandler(
+    private val commandBus: CommandBus
+) : AsyncCommandHandler<MyBrokenCommand> {
     override suspend fun handleAsync(command: MyBrokenCommand) {
         delay(500)
         throw Exception()
     }
 }
 
-class MyPipelineBehavior : PipelineBehavior {
+class MyPipelineBehavior(
+    private val commandBus: CommandBus
+) : PipelineBehavior{
     override fun <TRequest> preProcess(request: TRequest) {
         pipelinePreProcessCounter++
     }
@@ -101,7 +125,9 @@ class MyPipelineBehavior : PipelineBehavior {
     }
 }
 
-class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
+class MyAsyncPipelineBehavior(
+    private val commandBus: CommandBus
+) : AsyncPipelineBehavior {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++

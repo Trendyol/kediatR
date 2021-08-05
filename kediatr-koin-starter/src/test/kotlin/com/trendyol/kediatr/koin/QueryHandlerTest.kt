@@ -1,24 +1,35 @@
-package com.trendyol
+package com.trendyol.kediatr.koin
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.koin.test.junit5.KoinTestExtension
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, TestQueryHandler::class, AsyncTestQueryHandler::class])
-class QueryHandlerTest {
+class QueryHandlerTest: KoinTest {
+    private val commandBus by inject<CommandBus>()
 
-    @Autowired
-    lateinit var commandBus: CommandBus
+    @JvmField
+    @RegisterExtension
+    val koinTestExtension = KoinTestExtension.create {
+        modules(
+            module {
+                single { KediatrKoin.getCommandBus() }
+                single { MyPipelineBehavior(get()) } bind PipelineBehavior::class
+                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
+                single { TestQueryHandler(get()) } bind QueryHandler::class
+                single { AsyncTestQueryHandler(get()) } bind AsyncQueryHandler::class
+            },
+        )
+    }
 
     @Test
     fun `queryHandler should retrieve result`() {
@@ -48,7 +59,7 @@ class QueryHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistQuery")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.koin.NonExistQuery")
     }
 
     @Test
@@ -58,20 +69,24 @@ class QueryHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistQuery")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.koin.NonExistQuery")
     }
 }
 
 class NonExistQuery : Query<String>
 class TestQuery(val id: Int) : Query<String>
 
-class TestQueryHandler : QueryHandler<TestQuery, String> {
+class TestQueryHandler(
+    private val commandBus: CommandBus
+) : QueryHandler<TestQuery, String> {
     override fun handle(query: TestQuery): String {
         return "hello " + query.id
     }
 }
 
-class AsyncTestQueryHandler : AsyncQueryHandler<TestQuery, String> {
+class AsyncTestQueryHandler(
+    private val commandBus: CommandBus
+) : AsyncQueryHandler<TestQuery, String> {
     override suspend fun handleAsync(query: TestQuery): String {
         return "hello " + query.id
     }

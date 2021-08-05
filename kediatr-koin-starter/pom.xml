@@ -2,18 +2,223 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>kediatR</artifactId>
-        <groupId>com.trendyol</groupId>
-        <version>1.0.5</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
+
+    <groupId>com.trendyol</groupId>
     <artifactId>kediatr-koin-starter</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.5.20</kotlin.version>
+        <kotlin.code.style>official</kotlin.code.style>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        <junit.version>5.7.0-M1</junit.version>
     </properties>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>https://github.com/Trendyol/kediatR/blob/master/LICENCE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:Trendyol/kediatR.git</connection>
+        <developerConnection>scm:git:git@github.com:Trendyol/kediatR.git</developerConnection>
+        <url>https://github.com/Trendyol/kediatR</url>
+        <tag>kediatr-core-2.0.0</tag>
+    </scm>
+
+    <profiles>
+        <!-- Deployment profile (required so these plugins are only used when deploying) -->
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <!-- Source plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Javadoc plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>empty-javadoc-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>javadoc</classifier>
+                                    <classesDirectory>${basedir}/javadoc</classesDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- GPG plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Prevent `gpg` from using pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <!-- Central Repository -->
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <name>Caner Patır</name>
+            <url>https://github.com/CanerPatir/</url>
+            <organization>Trendyol</organization>
+            <organizationUrl>https://github.com/trendyol</organizationUrl>
+        </developer>
+        <developer>
+            <name>Bilal Kılıç</name>
+            <url>https://github.com/bilal-kilic/</url>
+            <organization>Trendyol</organization>
+            <organizationUrl>https://github.com/trendyol</organizationUrl>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.trendyol</groupId>
+            <artifactId>kediatr-core</artifactId>
+            <version>1.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>io.insert-koin</groupId>
+            <artifactId>koin-core-jvm</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.insert-koin</groupId>
+            <artifactId>koin-test</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.insert-koin</groupId>
+            <artifactId>koin-test-junit5</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.5.20</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+        <plugins>
+            <!-- Nexus Staging Plugin -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

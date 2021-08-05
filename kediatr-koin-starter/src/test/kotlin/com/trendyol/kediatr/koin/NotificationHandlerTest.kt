@@ -1,34 +1,43 @@
-package com.trendyol
+package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.AsyncNotificationHandler
-import com.trendyol.kediatr.CommandBus
-import com.trendyol.kediatr.Notification
-import com.trendyol.kediatr.NotificationHandler
-import com.trendyol.kediatr.spring.KediatrConfiguration
+import com.trendyol.kediatr.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.koin.test.junit5.KoinTestExtension
 import kotlin.test.assertTrue
 
+private var notificationTestCounter = 0
+private var asyncNotificationTestCounter = 0
 
-var notificationTestCounter = 0
-var asyncNotificationTestCounter = 0
+class NotificationHandlerTest : KoinTest {
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, MyFirstNotificationHandler::class, MySecondNotificationHandler::class, MyFirstAsyncNotificationHandler::class])
-class NotificationHandlerTest {
+    @JvmField
+    @RegisterExtension
+    val koinTestExtension = KoinTestExtension.create {
+        modules(
+            module {
+                single { KediatrKoin.getCommandBus() }
+                single { MyPipelineBehavior(get()) } bind PipelineBehavior::class
+                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
+                single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
+                single { MyFirstAsyncNotificationHandler(get()) } bind AsyncNotificationHandler::class
+                single { MySecondNotificationHandler(get()) } bind NotificationHandler::class
+            },
+        )
+    }
 
     init {
         notificationTestCounter = 0
         asyncNotificationTestCounter = 0
     }
 
-    @Autowired
-    lateinit var commandBus: CommandBus
+    private val commandBus by inject<CommandBus>()
 
     @Test
     fun `notificationHandler should be fired`() {
@@ -46,24 +55,29 @@ class NotificationHandlerTest {
             asyncNotificationTestCounter == 1
         }
     }
-
 }
 
 class MyNotification : Notification
 
-class MyFirstNotificationHandler : NotificationHandler<MyNotification> {
+class MyFirstNotificationHandler(
+    private val commandBus: CommandBus
+) : NotificationHandler<MyNotification> {
     override fun handle(notification: MyNotification) {
         notificationTestCounter++
     }
 }
 
-class MySecondNotificationHandler : NotificationHandler<MyNotification> {
+class MySecondNotificationHandler(
+    private val commandBus: CommandBus
+) : NotificationHandler<MyNotification> {
     override fun handle(notification: MyNotification) {
         notificationTestCounter++
     }
 }
 
-class MyFirstAsyncNotificationHandler : AsyncNotificationHandler<MyNotification> {
+class MyFirstAsyncNotificationHandler(
+    private val commandBus: CommandBus
+) : AsyncNotificationHandler<MyNotification> {
     override suspend fun handle(notification: MyNotification) {
         delay(500)
         asyncNotificationTestCounter++
