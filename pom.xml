@@ -10,7 +10,7 @@
     <modules>
         <module>kediatr-core</module>
         <module>kediatr-spring-starter</module>
-        <module>kediatr-common</module>
+        <module>kediatr-koin-starter</module>
     </modules>
     <packaging>pom</packaging>
 

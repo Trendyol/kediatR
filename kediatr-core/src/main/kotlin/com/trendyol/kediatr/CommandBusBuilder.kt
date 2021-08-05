@@ -1,7 +1,5 @@
 package com.trendyol.kediatr
 
-import com.trendyol.kediatr.common.RegistryImpl
-
 class CommandBusBuilder(
     private val dependencyProvider: DependencyProvider
 ) {

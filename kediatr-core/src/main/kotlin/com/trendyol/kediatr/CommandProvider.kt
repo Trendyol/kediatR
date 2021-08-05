@@ -1,10 +1,4 @@
-package com.trendyol.kediatr.common
-
-import com.trendyol.kediatr.AsyncCommandHandler
-import com.trendyol.kediatr.AsyncCommandWithResultHandler
-import com.trendyol.kediatr.CommandHandler
-import com.trendyol.kediatr.DependencyProvider
-import com.trendyol.kediatr.CommandWithResultHandler
+package com.trendyol.kediatr
 
 /**
  * CommandProvider creates a command handler with enabled spring injection.
@@ -14,7 +8,7 @@ import com.trendyol.kediatr.CommandWithResultHandler
 internal class CommandProvider<H : CommandHandler<*>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
-        return applicationContext.getBean(type)
+        return dependencyProvider.getTypeFor(type)
     }
 }
 
@@ -24,7 +18,7 @@ internal class CommandProvider<H : CommandHandler<*>>(private val dependencyProv
  * @since 1.0.16
  * @param <H> type of handler
 </H> */
-internal class CommandWithResultProvider<H : CommandWithResultHandler<*, *>>(private val applicationContext: ApplicationContext, private val type: Class<H>) {
+internal class CommandWithResultProvider<H : CommandWithResultHandler<*, *>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
         return dependencyProvider.getTypeFor(type)
@@ -49,9 +43,9 @@ internal class AsyncCommandProvider<H : AsyncCommandHandler<*>>(private val depe
  * @since 1.0.16
  * @param <H> type of handler
 </H> */
-internal class AsyncCommandWithResultProvider<H : AsyncCommandWithResultHandler<*, *>>(private val applicationContext: ApplicationContext, private val type: Class<H>) {
+internal class AsyncCommandWithResultProvider<H : AsyncCommandWithResultHandler<*, *>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
-        return applicationContext.getBean(type)
+        return dependencyProvider.getTypeFor(type)
     }
 }

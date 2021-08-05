@@ -8,12 +8,15 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-/*
 class QueryHandlerTest {
 
     @Test
     fun `queryHandler should retrieve result`() {
-        val bus: CommandBus = CommandBusBuilder(TestQuery::class.java).build()
+        val handler = TestQueryHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(TestQueryHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
+
         val result = bus.executeQuery(TestQuery(1))
 
         assertTrue {
@@ -23,7 +26,10 @@ class QueryHandlerTest {
 
     @Test
     fun `async queryHandler should retrieve result`() = runBlocking {
-        val bus: CommandBus = CommandBusBuilder(TestQuery::class.java).build()
+        val handler = AsyncTestQueryHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncTestQueryHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         val result = bus.executeQueryAsync(TestQuery(1))
 
         assertTrue {
@@ -33,7 +39,9 @@ class QueryHandlerTest {
 
     @Test
     fun `should throw exception if given async query has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf()
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
@@ -47,7 +55,9 @@ class QueryHandlerTest {
 
     @Test
     fun `should throw exception if given query has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf()
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             bus.executeQuery(NonExistQuery())
@@ -72,4 +82,4 @@ class AsyncTestQueryHandler : AsyncQueryHandler<TestQuery, String> {
     override suspend fun handleAsync(query: TestQuery): String {
         return "hello " + query.id
     }
-}*/
+}

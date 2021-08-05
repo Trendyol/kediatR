@@ -7,7 +7,6 @@ import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertTrue
 
-/*
 var asyncPipelinePreProcessCounter = 0
 var asyncPipelinePostProcessCounter = 0
 var pipelinePreProcessCounter = 0
@@ -28,7 +27,11 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process command with pipeline`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handler = MyCommandHandler()
+        val pipeline = MyPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommand(MyCommand())
 
         assertTrue { pipelinePreProcessCounter == 1 }
@@ -37,7 +40,12 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process command with async pipeline`() {
-        val bus: CommandBus = CommandBusBuilder(MyAsyncCommand::class.java).build()
+        val handler = AsyncMyCommandHandler()
+        val pipeline = MyAsyncPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandHandler::class.java, handler), Pair(MyAsyncPipelineBehavior::class.java, pipeline))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
+
         runBlocking {
             bus.executeCommandAsync(MyAsyncCommand())
 
@@ -49,7 +57,11 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in handler`() {
-        val bus: CommandBus = CommandBusBuilder(MyBrokenCommand::class.java).build()
+        val handler = MyBrokenHandler()
+        val pipeline = MyPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyBrokenHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         val act = { bus.executeCommand(MyBrokenCommand()) }
 
         assertThrows<Exception> { act() }
@@ -58,7 +70,11 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val bus: CommandBus = CommandBusBuilder(MyBrokenCommand::class.java).build()
+        val handler = MyBrokenAsyncHandler()
+        val pipeline = MyAsyncPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyBrokenAsyncHandler::class.java, handler), Pair(MyAsyncPipelineBehavior::class.java, pipeline))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         val act = suspend { bus.executeCommandAsync(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
@@ -110,4 +126,4 @@ class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
         delay(500)
         asyncPipelineExceptionCounter++
     }
-}*/
+}

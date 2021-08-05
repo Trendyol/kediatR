@@ -9,7 +9,6 @@ import kotlin.test.assertTrue
 private val asyncCountDownLatch = CountDownLatch(2)
 private val countDownLatch = CountDownLatch(2)
 
-/*
 open class Ping : Notification
 class ExtendedPing : Ping()
 
@@ -35,7 +34,10 @@ class NotificationHandlerTest {
 
     @Test
     fun `notification handler should be called`() {
-        val bus: CommandBus = CommandBusBuilder(Ping::class.java).build()
+        val pingHandler = PingHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(PingHandler::class.java, pingHandler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotification(Ping())
 
         assertTrue {
@@ -46,11 +48,15 @@ class NotificationHandlerTest {
 
     @Test
     fun `async notification handler should be called`() = runBlocking {
-        val bus: CommandBus = CommandBusBuilder(Ping::class.java).build()
+        val pingHandler = AnAsyncPingHandler()
+        val anotherPingHandler = AnotherAsyncPingHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AnAsyncPingHandler::class.java, pingHandler), Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotificationAsync(ExtendedPing())
 
         assertTrue {
             asyncCountDownLatch.count == 0L
         }
     }
-}*/
+}

@@ -2,7 +2,7 @@ package com.trendyol
 
 import com.trendyol.kediatr.CommandBus
 import com.trendyol.kediatr.CommandBusImpl
-import com.trendyol.kediatr.common.RegistryImpl
+import com.trendyol.kediatr.RegistryImpl
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,14 +18,10 @@ class SpringContextTest {
     @Autowired
     lateinit var commandBus: CommandBus
 
-    @Autowired
-    lateinit var springBeanRegistry: RegistryImpl
-
     @Test
     fun contextLoads() {
         assertNotNull(commandBus)
         assert(commandBus is CommandBusImpl)
-        assertNotNull(springBeanRegistry)
     }
 
 }
