@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext
 class KediatrSpringBeanProvider(
     private val applicationContext: ApplicationContext
 ) : DependencyProvider {
-    override fun <T> getTypeFor(clazz: Class<T>): T {
+    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
         return applicationContext.getBean(clazz)
     }
 

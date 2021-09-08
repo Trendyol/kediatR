@@ -5,7 +5,7 @@ import com.trendyol.kediatr.DependencyProvider
 class ManuelDependencyProvider(
     private val handlerMap: HashMap<Class<*>, Any>
 ) : DependencyProvider {
-    override fun <T> getTypeFor(clazz: Class<T>): T {
+    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
         return handlerMap[clazz] as T
     }
 

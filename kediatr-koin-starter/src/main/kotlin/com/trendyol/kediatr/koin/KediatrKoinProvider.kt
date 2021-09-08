@@ -14,11 +14,12 @@ class KediatrKoinProvider : DependencyProvider {
     private var reflections: Reflections
 
     init {
-        val packageName = koin.instanceRegistry.instances.entries.map { it.value.beanDefinition.definition.getScopeName().type.java.`package`.name }.first()
-        reflections = Reflections(packageName)
+        val aPackage = koin.instanceRegistry.instances.entries.map { it.value.beanDefinition.definition.getScopeName().type.java.`package` }.first().name
+        val mainPackageName = Package.getPackages().filter { aPackage.startsWith(it.name) }.map { it.name }
+        reflections = Reflections(mainPackageName)
     }
 
-    override fun <T> getTypeFor(clazz: Class<T>): T {
+    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
         return koin.get(clazz.kClass())
     }
 
@@ -31,8 +32,8 @@ class KediatrKoinProvider : DependencyProvider {
     }
 }
 
-class KediatrKoin{
+class KediatrKoin {
     companion object {
         fun getCommandBus() = CommandBusBuilder(KediatrKoinProvider()).build()
-     }
+    }
 }

@@ -15,7 +15,7 @@ internal class QueryProvider<H : QueryHandler<*, *>>(
 ) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
 
@@ -30,6 +30,6 @@ internal class AsyncQueryProvider<H : AsyncQueryHandler<*, *>>(
 ) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }

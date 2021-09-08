@@ -8,7 +8,7 @@ package com.trendyol.kediatr
 internal class CommandProvider<H : CommandHandler<*>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
 
@@ -21,7 +21,7 @@ internal class CommandProvider<H : CommandHandler<*>>(private val dependencyProv
 internal class CommandWithResultProvider<H : CommandWithResultHandler<*, *>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
 
@@ -33,7 +33,7 @@ internal class CommandWithResultProvider<H : CommandWithResultHandler<*, *>>(pri
 internal class AsyncCommandProvider<H : AsyncCommandHandler<*>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
 
@@ -46,6 +46,6 @@ internal class AsyncCommandProvider<H : AsyncCommandHandler<*>>(private val depe
 internal class AsyncCommandWithResultProvider<H : AsyncCommandWithResultHandler<*, *>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }

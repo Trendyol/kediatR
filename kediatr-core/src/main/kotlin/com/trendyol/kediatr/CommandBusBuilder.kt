@@ -21,7 +21,7 @@ class CommandBusBuilder(
         return this
     }
 
-    fun build(): CommandBus {
-        return CommandBusImpl(RegistryImpl(dependencyProvider), publishStrategy)
+    fun build(registry: Registry = RegistryImpl(dependencyProvider)): CommandBus {
+        return CommandBusImpl(registry, publishStrategy)
     }
 }

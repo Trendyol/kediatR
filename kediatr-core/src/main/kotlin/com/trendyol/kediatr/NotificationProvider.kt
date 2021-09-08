@@ -10,7 +10,7 @@ internal class NotificationProvider<H : NotificationHandler<*>>(
 ) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
 
@@ -20,6 +20,6 @@ internal class AsyncNotificationProvider<H : AsyncNotificationHandler<*>>(
 ) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }

@@ -15,7 +15,7 @@ internal class PipelineProvider<H : PipelineBehavior>(
 ) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
 
@@ -30,6 +30,6 @@ internal class AsyncPipelineProvider<H : AsyncPipelineBehavior>(
 ) {
 
     fun get(): H {
-        return dependencyProvider.getTypeFor(type)
+        return dependencyProvider.getSingleInstanceOf(type)
     }
 }
