@@ -3,61 +3,97 @@
 Mediator implementation in kotlin with native coroutine support.
 
 Supports synchronous and async (using kotlin [coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
-) command and query handling, native kotlin implementation and spring-boot configuration
+) command and query handling, native kotlin implementation, spring-boot and koin configurations
 
-kediatR has two implementations: kediatR-core and kediatR-spring 
+After kediatr-core version 1.0.17 you can use any dependency injection framework by implementing DependencyProvider interface. 
+
+kediatR has multiple implementations: kediatR-core, kediatR-spring-starter and kediatR-koin-starter 
 
 #### kediatR-core
+
 ```
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-core</artifactId>
-  <version>1.0.16</version>
+  <version>1.0.17</version>
 </dependency>
 ```
 
-#### kediatR-spring-starter 
+#### kediatR-spring-starter
+
 ```
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-spring-starter</artifactId>
-  <version>1.0.16</version>
+  <version>1.0.17</version>
+</dependency>
+```
+
+#### kediatR-koin-starter
+
+```
+<dependency>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-koin-starter</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
 ## Usage
-* add kediatr-core dependency to your POM
-#### Command dispatching
-```kotlin
 
-fun main(){
-    // pass any class in package which contains handlers to CommandBusBuilder. 
-    // So, kediatR may scans your package and registers command and query handlers 
-    val bus: CommandBus = CommandBusBuilder(HelloCommand::class.java).build()
+* add kediatr-core dependency to your POM
+
+#### Command dispatching
+
+```kotlin
+class ManuelDependencyProvider(
+    private val handlerMap: HashMap<Class<*>, Any>
+) : DependencyProvider {
+    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
+        return handlerMap[clazz] as T
+    }
+
+    override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> {
+        return handlerMap
+            .filter { it.key.interfaces.contains(clazz) }
+            .map { it.key as Class<T> }
+    }
+}
+
+fun main() {
+    val handler = MyCommandHandler()
+    val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler))
+    val provider = ManuelDependencyProvider(handlers)
+    val bus: CommandBus = CommandBusBuilder(provider).build()
     bus.executeCommand(HelloCommand("hello"))
 }
 
 class HelloCommand(val message: String) : Command
 
-class HelloCommandHandler: CommandHandler<HelloCommand>{
+class HelloCommandHandler : CommandHandler<HelloCommand> {
     override fun handle(command: MyCommand) {
         println(command.message)
     }
 }
 
 ```
+
 #### Query dispatching
+
 ```kotlin
 
-fun main(){
-    val bus: CommandBus = CommandBusBuilder(GetSomeDataQuery::class.java).build()
+fun main() {
+    val handler = GetSomeDataQueryHandler()
+    val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(GetSomeDataQuery::class.java, handler))
+    val provider = ManuelDependencyProvider(handlers)
+    val bus: CommandBus = CommandBusBuilder(provider).build()
     val result: String = bus.executeQuery(GetSomeDataQuery(1))
     println(result)
 }
 
 class GetSomeDataQuery(val id: Int) : Query<String>
 
-class GetSomeDataQueryHandler: QueryHandler<GetSomeDataQuery, String> {
+class GetSomeDataQueryHandler : QueryHandler<GetSomeDataQuery, String> {
     override fun handle(query: GetSomeDataQuery): String {
         // you can use properties in the query object to retrieve data from somewhere
         // val result = getDataFromSomewhere(query.id)
@@ -67,7 +103,8 @@ class GetSomeDataQueryHandler: QueryHandler<GetSomeDataQuery, String> {
     }
 }
 ```
-#### Pipeline Behavior 
+
+#### Pipeline Behavior
 
 ```kotlin
 class CommandProcessingPipeline : PipelineBehavior {
@@ -84,22 +121,23 @@ class CommandProcessingPipeline : PipelineBehavior {
 ```
 
 ## Usage with SpringBoot
+
 * add kediatr-spring dependency to your POM and enjoy yourself
 
 ```kotlin
 
 @Service
-class UserService(private val commandBus: CommandBus){
-    fun findUser(id: Long){
+class UserService(private val commandBus: CommandBus) {
+    fun findUser(id: Long) {
         return commandBus.executeQuery(GetUserByIdQuery(id))
     }
 }
 
-class GetUserByIdQuery(private val id: Long): Query<UserDto>
+class GetUserByIdQuery(private val id: Long) : Query<UserDto>
 
 @Component
 class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
-    fun handle(query: GetUserByIdQuery): UserDto { 
+    fun handle(query: GetUserByIdQuery): UserDto {
         val user = userRepository.findById(query.id)
         // do some operation on user
         return UserDto(user.id, user.name, user.surname)
@@ -108,18 +146,19 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
 ```
 
 ## Async Usage with Kotlin Coroutine Support
+
 ```kotlin
- 
-class UserService(private val commandBus: CommandBus ){
-    suspend fun findUser(id: Long){
+
+class UserService(private val commandBus: CommandBus) {
+    suspend fun findUser(id: Long) {
         return commandBus.executeQueryAsync(GetUserByIdQuery(id))
     }
 }
 
-class GetUserByIdQuery(private val id: Long): Query<UserDto>
+class GetUserByIdQuery(private val id: Long) : Query<UserDto>
 
 class GetUserByIdQueryHandler(private val userRepository: UserRepository) : AsyncQueryHandler<GetUserByIdQuery, UserDto> {
-    suspend fun handleAsync(query: GetUserByIdQuery): UserDto { 
+    suspend fun handleAsync(query: GetUserByIdQuery): UserDto {
         val user = userRepository.findByIdAsync(query.id)
         // do some operation on user
         return UserDto(user.id, user.name, user.surname)
@@ -139,9 +178,37 @@ class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
 }
 ```
 
+## Usage with Koin
+
+Simply inject kediatr as a singleton dependency with any module and inject handler instances.
+
+```kotlin
+val kediatrModule = module {
+    single { KediatrKoin.getCommandBus() }
+    single { GetUserByIdQueryHandler(get()) }
+}
+
+class UserService(private val commandBus: CommandBus) {
+    fun findUser(id: Long) {
+        return commandBus.executeQuery(GetUserByIdQuery(id))
+    }
+}
+
+class GetUserByIdQuery(private val id: Long) : Query<UserDto>
+
+class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
+    fun handle(query: GetUserByIdQuery): UserDto {
+        val user = userRepository.findById(query.id)
+        // do some operation on user
+        return UserDto(user.id, user.name, user.surname)
+    }
+}
+
+```
+
 ## Review Our IntelliJ Plugin
 
-https://plugins.jetbrains.com/plugin/16017-kediatr-helper 
+https://plugins.jetbrains.com/plugin/16017-kediatr-helper
 
 ![Screencast 1](https://plugins.jetbrains.com/files/16017/screenshot_cf56bd23-3de8-41fe-814a-64f69ae0a7c4)
 
