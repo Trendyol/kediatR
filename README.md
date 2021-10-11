@@ -5,9 +5,9 @@ Mediator implementation in kotlin with native coroutine support.
 Supports synchronous and async (using kotlin [coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
 ) command and query handling, native kotlin implementation, spring-boot and koin configurations
 
-After kediatr-core version 1.0.17 you can use any dependency injection framework by implementing DependencyProvider interface. 
+After kediatr-core version 1.0.17 you can use any dependency injection framework by implementing DependencyProvider interface.
 
-kediatR has multiple implementations: kediatR-core, kediatR-spring-starter and kediatR-koin-starter 
+kediatR has multiple implementations: kediatR-core, kediatR-spring-starter and kediatR-koin-starter
 
 #### kediatR-core
 
@@ -181,6 +181,8 @@ class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
 ## Usage with Koin
 
 Simply inject kediatr as a singleton dependency with any module and inject handler instances.
+KediatrKoin.getCommandBus() must be in  the same module with at least one Handler to get correct package name for reflection.
+Please note that this is an experimental release and reflection strategy with koin is a little wonky. Please open a pull request if you think there is a better implementation.
 
 ```kotlin
 val kediatrModule = module {
