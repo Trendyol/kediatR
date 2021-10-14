@@ -37,6 +37,9 @@
     </scm>
 
     <name>com.trendyol.kediatr-koin-starter</name>
+    <description>Koin starter package for Kediatr</description>
+    <url>https://github.com/Trendyol/kediatR</url>
+
 
     <profiles>
         <!-- Deployment profile (required so these plugins are only used when deploying) -->
