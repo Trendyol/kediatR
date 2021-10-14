@@ -23,7 +23,10 @@ class CommandWithResultHandlerTest {
 
     @Test
     fun `commandHandler should be fired`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
+        val handler = MyCommandRHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandRHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommand(MyCommandR())
 
         assertTrue {
@@ -33,7 +36,10 @@ class CommandWithResultHandlerTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
+        val handler = AsyncMyCommandRHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandRHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommandAsync(MyAsyncCommandR())
 
         assertTrue {
@@ -43,8 +49,8 @@ class CommandWithResultHandlerTest {
 
     @Test
     fun `should throw exception if given async command has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
-
+        val provider = ManuelDependencyProvider(hashMapOf())
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
                 bus.executeCommandAsync(NonExistCommandR())
@@ -57,8 +63,8 @@ class CommandWithResultHandlerTest {
 
     @Test
     fun `should throw exception if given command has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommandR::class.java).build()
-
+        val provider = ManuelDependencyProvider(hashMapOf())
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             bus.executeCommand(NonExistCommandR())
         }

@@ -9,6 +9,17 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
+      - name: Generate coverage report
+        run: |
+          mvn clean verify
+      - uses: codecov/codecov-action@v2
+        with:
+          files: target/site/jacoco/jacoco.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          verbose: true
+
       - name: Install Java and Maven
         uses: actions/setup-java@v1
         with:

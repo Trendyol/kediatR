@@ -1,34 +1,36 @@
-package com.trendyol
+package com.trendyol.kediatr.koin
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.koin.test.junit5.KoinTestExtension
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-
-private var springTestCounter = 0
-private var springAsyncTestCounter = 0
-
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyCommandHandler::class])
-class CommandHandlerTest {
-
-    init {
-        springTestCounter = 0
-        springAsyncTestCounter = 0
+class CommandHandlerTests : KoinTest {
+    @JvmField
+    @RegisterExtension
+    val koinTestExtension = KoinTestExtension.create {
+        modules(
+            module {
+                single { KediatrKoin.getCommandBus() }
+                single { MyPipelineBehavior(get()) } bind PipelineBehavior::class
+                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
+                single { MyCommandHandler(get()) } bind CommandHandler::class
+                single { MyAsyncCommandHandler(get()) } bind AsyncCommandHandler::class
+            },
+        )
     }
 
-    @Autowired
-    lateinit var commandBus: CommandBus
+    private val commandBus by inject<CommandBus>()
 
     @Test
     fun `commandHandler should be fired`() {
@@ -57,7 +59,7 @@ class CommandHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.koin.NonExistCommand")
     }
 
     @Test
@@ -68,26 +70,29 @@ class CommandHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.koin.NonExistCommand")
     }
 }
 
-class NonExistCommand: Command
+private var springTestCounter = 0
+private var springAsyncTestCounter = 0
+
+class NonExistCommand : Command
 class MyCommand : Command
 
 class MyCommandHandler(
-    private val commandBus: CommandBus
+    val commandBus: CommandBus
 ) : CommandHandler<MyCommand> {
     override fun handle(command: MyCommand) {
         springTestCounter++
     }
 }
 
-class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
+class MyAsyncCommandHandler(
+    val commandBus: CommandBus
+) : AsyncCommandHandler<MyCommand> {
     override suspend fun handleAsync(command: MyCommand) {
         delay(500)
         springAsyncTestCounter++
     }
 }
-
-

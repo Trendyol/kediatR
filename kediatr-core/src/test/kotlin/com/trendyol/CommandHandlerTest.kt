@@ -1,7 +1,6 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.PipelineBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -9,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-
 
 private var counter = 0
 private var asyncTestCounter = 0
@@ -23,7 +21,10 @@ class CommandHandlerTest {
 
     @Test
     fun `commandHandler should be fired`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handler = MyCommandHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommand(MyCommand())
 
         assertTrue {
@@ -33,7 +34,10 @@ class CommandHandlerTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handler = AsyncMyCommandHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommandAsync(MyAsyncCommand())
 
         assertTrue {
@@ -43,7 +47,9 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given async command has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf()
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
@@ -57,7 +63,9 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given command has not been registered before`() {
-        val bus: CommandBus = CommandBusBuilder(MyCommand::class.java).build()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf()
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             bus.executeCommand(NonExistCommand())
@@ -69,9 +77,11 @@ class CommandHandlerTest {
 }
 
 class NonExistCommand : Command
+
 class MyCommand : Command
 
-class MyCommandHandler : CommandHandler<MyCommand> {
+class MyCommandHandler(
+) : CommandHandler<MyCommand> {
     override fun handle(command: MyCommand) {
         counter++
     }

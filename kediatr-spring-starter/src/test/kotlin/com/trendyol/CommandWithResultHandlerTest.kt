@@ -1,7 +1,6 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.HandlerBeanNotFoundException
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -51,7 +50,7 @@ class CommandWithResultHandlerTest {
     @Test
     fun `should throw exception if given async command does not have handler bean`() {
 
-        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+        val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
                 commandBus.executeCommandAsync(NonExistCommandR())
             }
@@ -64,7 +63,7 @@ class CommandWithResultHandlerTest {
     @Test
     fun `should throw exception if given command does not have handler bean`() {
 
-        val exception = assertFailsWith(HandlerBeanNotFoundException::class) {
+        val exception = assertFailsWith(HandlerNotFoundException::class) {
             commandBus.executeCommand(NonExistCommandR())
         }
 
@@ -73,12 +72,12 @@ class CommandWithResultHandlerTest {
     }
 }
 
-private class Result
+class Result
 
-private class NonExistCommandR : CommandWithResult<Result>
-private class MyCommandR : CommandWithResult<Result>
+class NonExistCommandR : CommandWithResult<Result>
+class MyCommandR : CommandWithResult<Result>
 
-private class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
+class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
     override fun handle(command: MyCommandR): Result {
         springTestCounter++
 
@@ -86,7 +85,7 @@ private class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
     }
 }
 
-private class MyAsyncCommandRHandler : AsyncCommandWithResultHandler<MyCommandR, Result> {
+class MyAsyncCommandRHandler : AsyncCommandWithResultHandler<MyCommandR, Result> {
     override suspend fun handleAsync(command: MyCommandR): Result {
         delay(500)
         springAsyncTestCounter++
