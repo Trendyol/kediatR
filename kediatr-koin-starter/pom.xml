@@ -36,22 +36,7 @@
         <tag>kediatr-core-2.0.0</tag>
     </scm>
 
-    <developers>
-        <developer>
-            <name>Caner Patır</name>
-            <url>https://github.com/CanerPatir/</url>
-            <organization>Trendyol</organization>
-            <organizationUrl>https://github.com/trendyol</organizationUrl>
-        </developer>
-        <developer>
-            <name>Bilal Kılıç</name>
-            <url>https://github.com/bilal-kilic/</url>
-            <organization>Trendyol</organization>
-            <organizationUrl>https://github.com/trendyol</organizationUrl>
-        </developer>
-    </developers>
-
-    <name>com.trendyol.kediatr-spring-starter</name>
+    <name>com.trendyol.kediatr-koin-starter</name>
 
     <profiles>
         <!-- Deployment profile (required so these plugins are only used when deploying) -->
