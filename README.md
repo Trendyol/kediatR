@@ -1,5 +1,5 @@
 # kediatR ![Release kediatR-core](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-core/badge.svg?branch=master) ![Release kediatR-spring-starter](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-spring-starter/badge.svg?branch=master) [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/master/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
-
+<img align="left" alt="Humus! The kediatr mascot" src="https://i.ibb.co/dGCPcc8/IMG-20210722-023135-removebg-preview-1.png" alt="drawing" width="80"/>
 Mediator implementation in kotlin with native coroutine support.
 
 Supports synchronous and async (using kotlin [coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
