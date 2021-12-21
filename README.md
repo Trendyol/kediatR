@@ -3,11 +3,11 @@
 Mediator implementation in kotlin with native coroutine support.
 
 Supports synchronous and async (using kotlin [coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
-) command and query handling, native kotlin implementation, spring-boot and koin configurations
+) command and query handling, native kotlin implementation, spring-boot, quarkus and koin configurations.
 
 After kediatr-core version 1.0.17 you can use any dependency injection framework by implementing DependencyProvider interface.
 
-kediatR has multiple implementations: kediatR-core, kediatR-spring-starter and kediatR-koin-starter
+kediatR has multiple implementations: kediatR-core, kediatR-spring-starter, kediatR-koin-starter and kediatR-quarkus-starter.
 
 #### kediatR-core
 
@@ -35,6 +35,16 @@ kediatR has multiple implementations: kediatR-core, kediatR-spring-starter and k
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-koin-starter</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+#### kediatR-quarkus-starter
+
+```
+<dependency>
+  <groupId>com.trendyol</groupId>
+  <artifactId>kediatr-quarkus-starter</artifactId>
   <version>1.0.0</version>
 </dependency>
 ```
@@ -198,6 +208,31 @@ class UserService(private val commandBus: CommandBus) {
 
 class GetUserByIdQuery(private val id: Long) : Query<UserDto>
 
+class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
+    fun handle(query: GetUserByIdQuery): UserDto {
+        val user = userRepository.findById(query.id)
+        // do some operation on user
+        return UserDto(user.id, user.name, user.surname)
+    }
+}
+
+```
+
+## Usage with Quarkus
+* add kediatr-quarkus-starter dependency to your POM
+* Add @Startup annotation for every handler so that kediatr can prepare queries and commands on beginning of the application.
+
+```kotlin
+class UserService(private val commandBus: CommandBus) {
+    fun findUser(id: Long) {
+        return commandBus.executeQuery(GetUserByIdQuery(id))
+    }
+}
+
+class GetUserByIdQuery(private val id: Long) : Query<UserDto>
+
+@ApplicationScoped
+@Startup
 class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
     fun handle(query: GetUserByIdQuery): UserDto {
         val user = userRepository.findById(query.id)
