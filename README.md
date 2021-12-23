@@ -219,7 +219,15 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
 ```
 
 ## Usage with Quarkus
-* add kediatr-quarkus-starter dependency to your POM
+* Add kediatr-quarkus-starter dependency to your POM
+* Quarkus does not index 3rd party libraries unless you explicitly indicate. Add this configuration to **application.properties** file.
+```yaml
+  quarkus:
+    index-dependency:
+      kediatr:
+        group-id: com.trendyol
+        artifact-id: kediatr-quarkus-starter
+ ```
 * Add @Startup annotation for every handler so that kediatr can prepare queries and commands on beginning of the application.
 
 ```kotlin
