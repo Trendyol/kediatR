@@ -7,7 +7,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatr-quarkus-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -43,7 +43,7 @@
         <connection>scm:git:git@github.com:Trendyol/kediatR.git</connection>
         <developerConnection>scm:git:git@github.com:Trendyol/kediatR.git</developerConnection>
         <url>https://github.com/Trendyol/kediatR</url>
-        <tag>kediatr-spring-starter-1.0.16</tag>
+        <tag>kediatr-quarkus-starter-1.0.1</tag>
     </scm>
 
     <profiles>
