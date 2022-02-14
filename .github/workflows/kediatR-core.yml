@@ -1,11 +1,16 @@
 name: Release kediatR-core
 
 # Run workflow on manually
-on: [workflow_dispatch]
+on: [ workflow_dispatch ]
 jobs:
   release:
     runs-on: ubuntu-18.04
     steps:
+      - name: Install Java and Maven
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
       - name: Check out Git repository
         uses: actions/checkout@v2
 
@@ -19,11 +24,7 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
           verbose: true
-
-      - name: Install Java and Maven
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
+          java-version: 11
 
       - name: Release Maven package
         uses: samuelmeuli/action-maven-publish@v1
