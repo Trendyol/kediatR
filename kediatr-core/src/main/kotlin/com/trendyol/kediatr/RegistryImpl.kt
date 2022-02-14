@@ -1,11 +1,6 @@
 package com.trendyol.kediatr
 
-import com.trendyol.kediatr.common.AsyncNotificationProvider
-import com.trendyol.kediatr.common.AsyncPipelineProvider
-import com.trendyol.kediatr.common.AsyncQueryProvider
-import com.trendyol.kediatr.common.NotificationProvider
-import com.trendyol.kediatr.common.PipelineProvider
-import com.trendyol.kediatr.common.QueryProvider
+import com.trendyol.kediatr.common.*
 import java.lang.reflect.ParameterizedType
 
 class RegistryImpl(
@@ -27,9 +22,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(QueryHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == QueryHandler::class.java) {
-                    val queryClazz = genericInterface.actualTypeArguments[0]
-
-                    queryMap[queryClazz as Class<out Query<*>>] = QueryProvider(dependencyProvider, it)
+                    val queryClazz = extractCommandClass<Query<*>>(genericInterface)
+                    queryMap[queryClazz] = QueryProvider(dependencyProvider, it)
                 }
             }
         }
@@ -37,9 +31,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(CommandHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == CommandHandler::class.java) {
-                    val commandClazz = genericInterface.actualTypeArguments[0]
-
-                    commandMap[commandClazz as Class<out Command>] = CommandProvider(dependencyProvider, it)
+                    val commandClazz = extractCommandClass<Command>(genericInterface)
+                    commandMap[commandClazz] = CommandProvider(dependencyProvider, it)
                 }
             }
         }
@@ -47,9 +40,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(CommandWithResultHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == CommandWithResultHandler::class.java) {
-                    val commandClazz = genericInterface.actualTypeArguments[0]
-
-                    commandWithResultMap[commandClazz as Class<out CommandWithResult<*>>] = CommandWithResultProvider(dependencyProvider, it)
+                    val commandClazz = extractCommandClass<CommandWithResult<*>>(genericInterface)
+                    commandWithResultMap[commandClazz] = CommandWithResultProvider(dependencyProvider, it)
                 }
             }
         }
@@ -57,10 +49,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(NotificationHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == NotificationHandler::class.java) {
-                    val notificationClazz = genericInterface.actualTypeArguments.first() as Class<out Notification>
-
-                    notificationMap.getOrPut(notificationClazz) { mutableListOf() }
-                        .add(NotificationProvider(dependencyProvider, it))
+                    val notificationClazz = extractCommandClass<Notification>(genericInterface)
+                    notificationMap.getOrPut(notificationClazz) { mutableListOf() }.add(NotificationProvider(dependencyProvider, it))
                 }
             }
         }
@@ -68,9 +58,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(AsyncQueryHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncQueryHandler::class.java) {
-                    val queryClazz = genericInterface.actualTypeArguments[0]
-
-                    asyncQueryMap[queryClazz as Class<out Query<*>>] = AsyncQueryProvider(dependencyProvider, it)
+                    val queryClazz = extractCommandClass<Query<*>>(genericInterface)
+                    asyncQueryMap[queryClazz] = AsyncQueryProvider(dependencyProvider, it)
                 }
             }
         }
@@ -78,9 +67,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(AsyncCommandHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncCommandHandler::class.java) {
-                    val commandClazz = genericInterface.actualTypeArguments[0]
-
-                    asyncCommandMap[commandClazz as Class<out Command>] = AsyncCommandProvider(dependencyProvider, it)
+                    val commandClazz = extractCommandClass<Command>(genericInterface)
+                    asyncCommandMap[commandClazz] = AsyncCommandProvider(dependencyProvider, it)
                 }
             }
         }
@@ -88,9 +76,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(AsyncCommandWithResultHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncCommandWithResultHandler::class.java) {
-                    val commandClazz = genericInterface.actualTypeArguments[0]
-
-                    asyncCommandWithResultMap[commandClazz as Class<out CommandWithResult<*>>] = AsyncCommandWithResultProvider(dependencyProvider, it)
+                    val commandClazz = extractCommandClass<CommandWithResult<*>>(genericInterface)
+                    asyncCommandWithResultMap[commandClazz] = AsyncCommandWithResultProvider(dependencyProvider, it)
                 }
             }
         }
@@ -98,10 +85,8 @@ class RegistryImpl(
         dependencyProvider.getSubTypesOf(AsyncNotificationHandler::class.java).forEach {
             (it.genericInterfaces).forEach { genericInterface ->
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncNotificationHandler::class.java) {
-                    val notificationClazz = genericInterface.actualTypeArguments.first() as Class<out Notification>
-
-                    asyncNotificationMap.getOrPut(notificationClazz) { mutableListOf() }
-                        .add(AsyncNotificationProvider(dependencyProvider, it))
+                    val notificationClass = extractCommandClass<Notification>(genericInterface)
+                    asyncNotificationMap.getOrPut(notificationClass) { mutableListOf() }.add(AsyncNotificationProvider(dependencyProvider, it))
                 }
             }
         }
@@ -120,6 +105,16 @@ class RegistryImpl(
                     asyncPipelineSet.add(AsyncPipelineProvider(dependencyProvider, it))
                 }
             }
+        }
+    }
+
+    private fun <T> extractCommandClass(genericInterface: ParameterizedType): Class<out T> {
+        val typeArgument = genericInterface.actualTypeArguments[0]
+
+        return if (typeArgument is ParameterizedType) {
+            typeArgument.rawType as Class<out T>
+        } else {
+            typeArgument as Class<out T>
         }
     }
 

@@ -1,15 +1,14 @@
 package com.trendyol
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.PipelineBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-
 
 private var counter = 0
 private var asyncTestCounter = 0
@@ -71,6 +70,62 @@ class CommandWithResultHandlerTest {
 
         assertNotNull(exception)
         assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
+    }
+
+    @Nested
+    inner class ParamaterizedTests {
+        init {
+            counter = 0
+            asyncTestCounter = 0
+        }
+
+        inner class ParameterizedCommandWithResult<TParam>(val param: TParam) : CommandWithResult<String>
+
+        inner class ParatemerizedAsyncCommandWithResultHandler<TParam> : AsyncCommandWithResultHandler<ParameterizedCommandWithResult<TParam>, String> {
+            override suspend fun handleAsync(command: ParameterizedCommandWithResult<TParam>): String {
+                counter++
+                return command.param.toString()
+            }
+        }
+
+        inner class ParameterizedCommandWithResultHandler<TParam> : CommandWithResultHandler<ParameterizedCommandWithResult<TParam>, String> {
+            override fun handle(command: ParameterizedCommandWithResult<TParam>): String {
+                counter++
+                return command.param.toString()
+            }
+        }
+
+        @Test
+        fun `async commandWithResult should be fired and return result`() = runBlocking {
+            // given
+            val handler = ParatemerizedAsyncCommandWithResultHandler<ParameterizedCommandWithResult<Long>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParatemerizedAsyncCommandWithResultHandler::class.java, handler))
+            val provider = ManuelDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+
+            // when
+            val result = bus.executeCommandAsync(ParameterizedCommandWithResult(61L))
+
+            // then
+            assertTrue { counter == 1 }
+            assertEquals(result, "61")
+        }
+
+        @Test
+        fun `commandWithResult should be fired and return result`()  {
+            // given
+            val handler = ParameterizedCommandWithResultHandler<ParameterizedCommandWithResult<Long>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedCommandWithResultHandler::class.java, handler))
+            val provider = ManuelDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+
+            // when
+            val result = bus.executeCommand(ParameterizedCommandWithResult(61L))
+
+            // then
+            assertTrue { counter == 1 }
+            assertEquals(result, "61")
+        }
     }
 }
 

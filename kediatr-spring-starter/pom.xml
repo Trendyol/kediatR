@@ -6,7 +6,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatr-spring-starter</artifactId>
-    <version>1.0.17</version>
+    <version>1.0.18</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -280,7 +280,7 @@
         <dependency>
             <groupId>com.trendyol</groupId>
             <artifactId>kediatr-core</artifactId>
-            <version>1.0.17</version>
+            <version>1.0.18</version>
         </dependency>
 
         <dependency>

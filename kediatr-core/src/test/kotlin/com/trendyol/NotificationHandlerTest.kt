@@ -2,12 +2,13 @@ package com.trendyol
 
 import com.trendyol.kediatr.*
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertTrue
 
-private val asyncCountDownLatch = CountDownLatch(2)
-private val countDownLatch = CountDownLatch(2)
+private var asyncCountDownLatch = CountDownLatch(1)
+private var countDownLatch = CountDownLatch(1)
 
 open class Ping : Notification
 class ExtendedPing : Ping()
@@ -31,6 +32,9 @@ class PingHandler : NotificationHandler<Ping> {
 }
 
 class NotificationHandlerTest {
+    init {
+        asyncCountDownLatch = CountDownLatch(1)
+    }
 
     @Test
     fun `notification handler should be called`() {
@@ -41,7 +45,7 @@ class NotificationHandlerTest {
         bus.publishNotification(Ping())
 
         assertTrue {
-            countDownLatch.count == 1L
+            countDownLatch.count == 0L
         }
     }
 
@@ -57,6 +61,57 @@ class NotificationHandlerTest {
 
         assertTrue {
             asyncCountDownLatch.count == 0L
+        }
+    }
+
+    @Nested
+    inner class ParamaterizedTests {
+        inner class ParameterizedNotification<T>(val param: T) : Notification
+
+        inner class ParameterizedAsyncNotificationHandler<A> : AsyncNotificationHandler<ParameterizedNotification<A>> {
+            override suspend fun handle(notification: ParameterizedNotification<A>) {
+                asyncCountDownLatch.countDown()
+            }
+        }
+
+        inner class ParameterizedNotificationHandler<A> : NotificationHandler<ParameterizedNotification<A>> {
+            override fun handle(notification: ParameterizedNotification<A>) {
+                countDownLatch.countDown()
+            }
+        }
+
+        @Test
+        fun `async notification should be fired`() = runBlocking {
+            // given
+            val handler = ParameterizedAsyncNotificationHandler<ParameterizedNotification<String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, handler))
+            val provider = ManuelDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+
+            // when
+            bus.publishNotificationAsync(ParameterizedNotification("MyParam"))
+
+            // then
+            assertTrue {
+                asyncCountDownLatch.count == 0L
+            }
+        }
+
+        @Test
+        fun `notification should be fired`() = runBlocking {
+            // given
+            val handler = ParameterizedNotificationHandler<ParameterizedNotification<String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedNotificationHandler::class.java, handler))
+            val provider = ManuelDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+
+            // when
+            bus.publishNotification(ParameterizedNotification("MyParam"))
+
+            // then
+            assertTrue {
+                countDownLatch.count == 0L
+            }
         }
     }
 }

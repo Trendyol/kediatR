@@ -3,7 +3,8 @@ package com.trendyol
 import com.trendyol.kediatr.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -73,6 +74,62 @@ class CommandHandlerTest {
 
         assertNotNull(exception)
         assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+    }
+
+    @Nested
+    inner class ParameterizedTests {
+        init {
+            counter = 0
+            asyncTestCounter = 0
+        }
+
+        inner class ParameterizedCommand<T>(val param: T) : Command
+
+        inner class ParameterizedAsyncCommandHandler<A> : AsyncCommandHandler<ParameterizedCommand<A>> {
+            override suspend fun handleAsync(command: ParameterizedCommand<A>) {
+                counter++
+            }
+        }
+
+        inner class ParameterizedCommandHandler<A> : CommandHandler<ParameterizedCommand<A>> {
+            override fun handle(command: ParameterizedCommand<A>) {
+                counter++
+            }
+        }
+
+        @Test
+        fun `async command should be fired`() = runBlocking {
+            // given
+            val handler = ParameterizedAsyncCommandHandler<ParameterizedCommand<String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncCommandHandler::class.java, handler))
+            val provider = ManuelDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+
+            // when
+            bus.executeCommandAsync(ParameterizedCommand("MyParam"))
+
+            // then
+            assertTrue {
+                counter == 1
+            }
+        }
+
+        @Test
+        fun `command should be fired`() {
+            // given
+            val handler = ParameterizedCommandHandler<ParameterizedCommand<String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedCommandHandler::class.java, handler))
+            val provider = ManuelDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+
+            // when
+            bus.executeCommand(ParameterizedCommand("MyParam"))
+
+            // then
+            assertTrue {
+                counter == 1
+            }
+        }
     }
 }
 
