@@ -32,6 +32,11 @@ class CommandHandlerTests : KoinTest {
 
     private val commandBus by inject<CommandBus>()
 
+    init {
+        springTestCounter = 0
+        springAsyncTestCounter = 0
+    }
+
     @Test
     fun `commandHandler should be fired`() {
         commandBus.executeCommand(MyCommand())
