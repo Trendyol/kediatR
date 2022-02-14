@@ -17,8 +17,7 @@ jobs:
       - name: Generate coverage report
         run: |
           mvn clean verify
-        with:
-          directory: kediatr-spring-starter
+        working-directory: kediatr-spring-starter
       - uses: codecov/codecov-action@v2
         with:
           files: target/site/jacoco/jacoco.xml
