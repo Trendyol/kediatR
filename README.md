@@ -71,8 +71,8 @@ class ManuelDependencyProvider(
 }
 
 fun main() {
-    val handler = MyCommandHandler()
-    val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler))
+    val handler = HelloCommandHandler()
+    val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(HelloCommandHandler::class.java, handler))
     val provider = ManuelDependencyProvider(handlers)
     val bus: CommandBus = CommandBusBuilder(provider).build()
     bus.executeCommand(HelloCommand("hello"))
@@ -81,7 +81,7 @@ fun main() {
 class HelloCommand(val message: String) : Command
 
 class HelloCommandHandler : CommandHandler<HelloCommand> {
-    override fun handle(command: MyCommand) {
+    override fun handle(command: HelloCommand) {
         println(command.message)
     }
 }
