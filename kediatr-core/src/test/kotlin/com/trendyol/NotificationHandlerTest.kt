@@ -31,6 +31,16 @@ class PingHandler : NotificationHandler<Ping> {
     }
 }
 
+class PingForInherited : Notification
+
+abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
+
+class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>() {
+    override suspend fun handle(notification: PingForInherited) {
+        asyncCountDownLatch.countDown()
+    }
+}
+
 class NotificationHandlerTest {
     init {
         asyncCountDownLatch = CountDownLatch(1)
@@ -49,18 +59,33 @@ class NotificationHandlerTest {
         }
     }
 
-
     @Test
     fun `async notification handler should be called`() = runBlocking {
         val pingHandler = AnAsyncPingHandler()
         val anotherPingHandler = AnotherAsyncPingHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AnAsyncPingHandler::class.java, pingHandler), Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler))
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(
+            Pair(AnAsyncPingHandler::class.java, pingHandler),
+            Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler)
+        )
         val provider = ManuelDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotificationAsync(ExtendedPing())
 
         assertTrue {
             asyncCountDownLatch.count == 0L
+        }
+    }
+
+    @Test
+    fun `inherited notification handler should be called`() = runBlocking {
+        val nHandler = InheritedNotificationHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(InheritedNotificationHandler::class.java, nHandler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
+        bus.publishNotificationAsync(PingForInherited())
+
+        assertTrue {
+            countDownLatch.count == 0L
         }
     }
 
@@ -84,7 +109,8 @@ class NotificationHandlerTest {
         fun `async notification should be fired`() = runBlocking {
             // given
             val handler = ParameterizedAsyncNotificationHandler<ParameterizedNotification<String>>()
-            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, handler))
+            val handlers: HashMap<Class<*>, Any> =
+                hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, handler))
             val provider = ManuelDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
@@ -101,7 +127,8 @@ class NotificationHandlerTest {
         fun `notification should be fired`() = runBlocking {
             // given
             val handler = ParameterizedNotificationHandler<ParameterizedNotification<String>>()
-            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedNotificationHandler::class.java, handler))
+            val handlers: HashMap<Class<*>, Any> =
+                hashMapOf(Pair(ParameterizedNotificationHandler::class.java, handler))
             val provider = ManuelDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 

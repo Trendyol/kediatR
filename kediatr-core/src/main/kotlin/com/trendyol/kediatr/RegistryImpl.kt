@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.trendyol.kediatr
 
 import com.trendyol.kediatr.common.*
@@ -6,121 +8,136 @@ import java.lang.reflect.ParameterizedType
 class RegistryImpl(
     dependencyProvider: DependencyProvider
 ) : Registry {
-    private val queryMap = HashMap<Class<out Query<*>>, QueryProvider<QueryHandler<*, *>>>()
-    private val commandMap = HashMap<Class<out Command>, CommandProvider<CommandHandler<*>>>()
-    private val notificationMap = HashMap<Class<out Notification>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
-    private val pipelineSet = HashSet<PipelineProvider<PipelineBehavior>>()
-    private val commandWithResultMap = HashMap<Class<out CommandWithResult<*>>, CommandWithResultProvider<CommandWithResultHandler<*, *>>>()
+    private val queryMap = HashMap<Class<*>, QueryProvider<QueryHandler<*, *>>>()
+    private val commandMap = HashMap<Class<*>, CommandProvider<CommandHandler<Command>>>()
+    private val notificationMap = HashMap<Class<*>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
+    private val pipelineSet = HashSet<PipelineProvider<*>>()
+    private val commandWithResultMap = HashMap<Class<*>, CommandWithResultProvider<CommandWithResultHandler<*, *>>>()
 
-    private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandProvider<AsyncCommandHandler<*>>>()
-    private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
-    private val asyncNotificationMap = HashMap<Class<out Notification>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
-    private val asyncPipelineSet = HashSet<AsyncPipelineProvider<AsyncPipelineBehavior>>()
-    private val asyncCommandWithResultMap = HashMap<Class<out CommandWithResult<*>>, AsyncCommandWithResultProvider<AsyncCommandWithResultHandler<*, *>>>()
+    private val asyncCommandMap = HashMap<Class<*>, AsyncCommandProvider<AsyncCommandHandler<Command>>>()
+    private val asyncQueryMap = HashMap<Class<*>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
+    private val asyncNotificationMap =
+        HashMap<Class<*>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
+    private val asyncPipelineSet = HashSet<AsyncPipelineProvider<*>>()
+    private val asyncCommandWithResultMap =
+        HashMap<Class<*>, AsyncCommandWithResultProvider<*>>()
 
     init {
-        dependencyProvider.getSubTypesOf(QueryHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == QueryHandler::class.java) {
-                    val queryClazz = extractCommandClass<Query<*>>(genericInterface)
-                    queryMap[queryClazz] = QueryProvider(dependencyProvider, it)
-                }
-            }
+
+        registerFor<QueryHandler<Query<*>, *>, Query<*>>(dependencyProvider) { key, value ->
+            queryMap[key] = QueryProvider(dependencyProvider, value as Class<QueryHandler<*, *>>)
         }
 
-        dependencyProvider.getSubTypesOf(CommandHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == CommandHandler::class.java) {
-                    val commandClazz = extractCommandClass<Command>(genericInterface)
-                    commandMap[commandClazz] = CommandProvider(dependencyProvider, it)
-                }
-            }
+        registerFor<CommandHandler<Command>, Command>(dependencyProvider) { key, value ->
+            commandMap[key] = CommandProvider(dependencyProvider, value)
         }
 
-        dependencyProvider.getSubTypesOf(CommandWithResultHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == CommandWithResultHandler::class.java) {
-                    val commandClazz = extractCommandClass<CommandWithResult<*>>(genericInterface)
-                    commandWithResultMap[commandClazz] = CommandWithResultProvider(dependencyProvider, it)
-                }
-            }
+        registerFor<CommandWithResultHandler<CommandWithResult<*>, *>, CommandWithResult<*>>(dependencyProvider) { key, value ->
+            commandWithResultMap[key] =
+                CommandWithResultProvider(dependencyProvider, value as Class<CommandWithResultHandler<*, *>>)
         }
 
-        dependencyProvider.getSubTypesOf(NotificationHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == NotificationHandler::class.java) {
-                    val notificationClazz = extractCommandClass<Notification>(genericInterface)
-                    notificationMap.getOrPut(notificationClazz) { mutableListOf() }.add(NotificationProvider(dependencyProvider, it))
-                }
-            }
+        registerFor<NotificationHandler<Notification>, Notification>(dependencyProvider) { key, value ->
+            notificationMap.getOrPut(key) { mutableListOf() }
+                .add(NotificationProvider(dependencyProvider, value as Class<NotificationHandler<*>>))
         }
 
-        dependencyProvider.getSubTypesOf(AsyncQueryHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncQueryHandler::class.java) {
-                    val queryClazz = extractCommandClass<Query<*>>(genericInterface)
-                    asyncQueryMap[queryClazz] = AsyncQueryProvider(dependencyProvider, it)
-                }
-            }
+        registerFor<AsyncQueryHandler<Query<*>, *>, Query<*>>(dependencyProvider) { key, value ->
+            asyncQueryMap[key] = AsyncQueryProvider(dependencyProvider, value as Class<AsyncQueryHandler<*, *>>)
         }
 
-        dependencyProvider.getSubTypesOf(AsyncCommandHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncCommandHandler::class.java) {
-                    val commandClazz = extractCommandClass<Command>(genericInterface)
-                    asyncCommandMap[commandClazz] = AsyncCommandProvider(dependencyProvider, it)
-                }
-            }
+        registerFor<AsyncCommandHandler<Command>, Command>(dependencyProvider) { key, value ->
+            asyncCommandMap[key] = AsyncCommandProvider(dependencyProvider, value)
         }
 
-        dependencyProvider.getSubTypesOf(AsyncCommandWithResultHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncCommandWithResultHandler::class.java) {
-                    val commandClazz = extractCommandClass<CommandWithResult<*>>(genericInterface)
-                    asyncCommandWithResultMap[commandClazz] = AsyncCommandWithResultProvider(dependencyProvider, it)
-                }
-            }
+        registerFor<AsyncCommandWithResultHandler<CommandWithResult<*>, *>, CommandWithResult<*>>(dependencyProvider) { key, value ->
+            asyncCommandWithResultMap[key] = AsyncCommandWithResultProvider(
+                dependencyProvider,
+                value as Class<AsyncCommandWithResultHandler<*, *>>
+            )
         }
 
-        dependencyProvider.getSubTypesOf(AsyncNotificationHandler::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncNotificationHandler::class.java) {
-                    val notificationClass = extractCommandClass<Notification>(genericInterface)
-                    asyncNotificationMap.getOrPut(notificationClass) { mutableListOf() }.add(AsyncNotificationProvider(dependencyProvider, it))
-                }
-            }
+        registerFor<AsyncNotificationHandler<Notification>, Notification>(dependencyProvider) { key, value ->
+            asyncNotificationMap.getOrPut(key) { mutableListOf() }
+                .add(AsyncNotificationProvider(dependencyProvider, value as Class<AsyncNotificationHandler<*>>))
         }
 
-        dependencyProvider.getSubTypesOf(PipelineBehavior::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if (genericInterface as Class<*> == PipelineBehavior::class.java) {
-                    pipelineSet.add(PipelineProvider(dependencyProvider, it))
-                }
-            }
+        registerFor<AsyncPipelineBehavior>(dependencyProvider) { handler ->
+            asyncPipelineSet.add(AsyncPipelineProvider(dependencyProvider, handler))
         }
 
-        dependencyProvider.getSubTypesOf(AsyncPipelineBehavior::class.java).forEach {
-            (it.genericInterfaces).forEach { genericInterface ->
-                if (genericInterface as Class<*> == AsyncPipelineBehavior::class.java) {
-                    asyncPipelineSet.add(AsyncPipelineProvider(dependencyProvider, it))
+        registerFor<PipelineBehavior>(dependencyProvider) { handler ->
+            pipelineSet.add(PipelineProvider(dependencyProvider, handler))
+        }
+    }
+
+    private inline fun <reified T> registerFor(
+        dependencyProvider: DependencyProvider,
+        registrar: (value: Class<T>) -> Unit
+    ) = dependencyProvider.getSubTypesOf(T::class.java).forEach { handler ->
+        registerFor<T>(handler) { value -> registrar(value as Class<T>) }
+    }
+
+    private inline fun <reified T> registerFor(
+        handler: Class<*>,
+        registrar: (value: Class<*>) -> Unit
+    ) {
+        val interfaceOrBaseClass = T::class.java
+        if (!interfaceOrBaseClass.isAssignableFrom(handler)) return
+        registrar(handler)
+    }
+
+    private inline fun <reified THandler : Any, TParameter> registerFor(
+        dependencyProvider: DependencyProvider,
+        registrar: (key: Class<TParameter>, value: Class<THandler>) -> Unit
+    ) = dependencyProvider.getSubTypesOf(THandler::class.java).forEach {
+        registerFor<THandler, TParameter>(it) { key, value ->
+            registrar(key as Class<TParameter>, value as Class<THandler>)
+        }
+    }
+
+    private inline fun <reified THandler : Any, TParameter> registerFor(
+        handler: Class<*>,
+        registrar: (key: Class<*>, value: Class<*>) -> Unit
+    ) {
+        val interfaceOrBaseClass = THandler::class.java
+        if (!interfaceOrBaseClass.isAssignableFrom(handler)) return
+
+        handler.genericInterfaces
+            .filterIsInstance<ParameterizedType>()
+            .map { extractParameter<TParameter>(it) }
+            .forEach { registrar(it, handler) }
+
+        when (handler.genericSuperclass) {
+            is ParameterizedType -> {
+                val inheritedHandler = (handler.genericSuperclass as ParameterizedType).rawType as Class<*>
+                inheritedHandler.genericInterfaces
+                    .filterIsInstance<ParameterizedType>()
+                    .map { extractParameter<TParameter>(handler.genericSuperclass as ParameterizedType) }
+                    .forEach { registrar(it, handler) }
+            }
+
+            is Class<*> -> {
+                val inheritedHandler = (handler.genericSuperclass as Class<*>)
+                if (interfaceOrBaseClass.isAssignableFrom(inheritedHandler)) {
+                    inheritedHandler.genericInterfaces
+                        .filterIsInstance<ParameterizedType>()
+                        .map { extractParameter<TParameter>(it) }
+                        .forEach { registrar(it, handler) }
                 }
             }
         }
     }
 
-    private fun <T> extractCommandClass(genericInterface: ParameterizedType): Class<out T> {
-        val typeArgument = genericInterface.actualTypeArguments[0]
-
-        return if (typeArgument is ParameterizedType) {
-            typeArgument.rawType as Class<out T>
-        } else {
-            typeArgument as Class<out T>
+    private fun <T> extractParameter(genericInterface: ParameterizedType): Class<out T> =
+        when (val typeArgument = genericInterface.actualTypeArguments[0]) {
+            is ParameterizedType -> typeArgument.rawType as Class<out T>
+            else -> typeArgument as Class<out T>
         }
-    }
 
-    override fun <TCommand : Command> resolveCommandHandler(commandClass: Class<TCommand>): CommandHandler<TCommand> {
-        val handler = commandMap[commandClass]?.get()
-            ?: throw HandlerNotFoundException("handler could not be found for ${commandClass.name}")
+    override fun <TCommand : Command> resolveCommandHandler(classOfCommand: Class<TCommand>): CommandHandler<TCommand> {
+        val handler = commandMap[classOfCommand]?.get()
+            ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
         return handler as CommandHandler<TCommand>
     }
 
@@ -130,15 +147,9 @@ class RegistryImpl(
         return handler as CommandWithResultHandler<TCommand, TResult>
     }
 
-    override fun <TNotification : Notification> resolveNotificationHandlers(classOfNotification: Class<TNotification>): Collection<NotificationHandler<TNotification>> {
-        val notificationHandlers = mutableListOf<NotificationHandler<TNotification>>()
-        notificationMap.forEach { (k, v) ->
-            if (k.isAssignableFrom(classOfNotification)) {
-                v.forEach { notificationHandlers.add(it.get() as NotificationHandler<TNotification>) }
-            }
-        }
-        return notificationHandlers
-    }
+    override fun <TNotification : Notification> resolveNotificationHandlers(classOfNotification: Class<TNotification>): Collection<NotificationHandler<TNotification>> =
+        notificationMap.filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
+            .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
 
     override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {
         val handler = queryMap[classOfQuery]?.get()
@@ -158,15 +169,9 @@ class RegistryImpl(
         return handler as AsyncCommandWithResultHandler<TCommand, TResult>
     }
 
-    override fun <TNotification : Notification> resolveAsyncNotificationHandlers(classOfNotification: Class<TNotification>): Collection<AsyncNotificationHandler<TNotification>> {
-        val asyncNotificationHandlers = mutableListOf<AsyncNotificationHandler<TNotification>>()
-        asyncNotificationMap.forEach { (k, v) ->
-            if (k.isAssignableFrom(classOfNotification)) {
-                v.forEach { asyncNotificationHandlers.add(it.get() as AsyncNotificationHandler<TNotification>) }
-            }
-        }
-        return asyncNotificationHandlers
-    }
+    override fun <TNotification : Notification> resolveAsyncNotificationHandlers(classOfNotification: Class<TNotification>): Collection<AsyncNotificationHandler<TNotification>> =
+        asyncNotificationMap.filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
+            .flatMap { (_, v) -> v.map { it.get() as AsyncNotificationHandler<TNotification> } }
 
     override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(classOfQuery: Class<TQuery>): AsyncQueryHandler<TQuery, TResult> {
         val handler = asyncQueryMap[classOfQuery]?.get()
@@ -174,11 +179,7 @@ class RegistryImpl(
         return handler as AsyncQueryHandler<TQuery, TResult>
     }
 
-    override fun getPipelineBehaviors(): Collection<PipelineBehavior> {
-        return pipelineSet.map { it.get() }
-    }
+    override fun getPipelineBehaviors(): Collection<PipelineBehavior> = pipelineSet.map { it.get() }
 
-    override fun getAsyncPipelineBehaviors(): Collection<AsyncPipelineBehavior> {
-        return asyncPipelineSet.map { it.get() }
-    }
+    override fun getAsyncPipelineBehaviors(): Collection<AsyncPipelineBehavior> = asyncPipelineSet.map { it.get() }
 }

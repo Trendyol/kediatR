@@ -5,10 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 private var counter = 0
 private var asyncTestCounter = 0
@@ -76,6 +73,32 @@ class CommandHandlerTest {
         assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
     }
 
+    @Test
+    fun `inheritance should work`() = runBlocking {
+        val handler = MyInheritedAsyncCommandHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyInheritedAsyncCommandHandler::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
+        bus.executeCommandAsync(MyCommandForInheritance())
+
+        assertTrue {
+            asyncTestCounter == 1
+        }
+    }
+
+    @Test
+    fun `inheritance but not parameterized should work`() = runBlocking {
+        val handler = MyInheritedAsyncCommandHandlerForSpecificCommand()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyInheritedAsyncCommandHandlerForSpecificCommand::class.java, handler))
+        val provider = ManuelDependencyProvider(handlers)
+        val bus: CommandBus = CommandBusBuilder(provider).build()
+        bus.executeCommandAsync(MyCommandForInheritance())
+
+        assertTrue {
+            asyncTestCounter == 1
+        }
+    }
+
     @Nested
     inner class ParameterizedTests {
         init {
@@ -101,7 +124,8 @@ class CommandHandlerTest {
         fun `async command should be fired`() = runBlocking {
             // given
             val handler = ParameterizedAsyncCommandHandler<ParameterizedCommand<String>>()
-            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncCommandHandler::class.java, handler))
+            val handlers: HashMap<Class<*>, Any> =
+                hashMapOf(Pair(ParameterizedAsyncCommandHandler::class.java, handler))
             val provider = ManuelDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
@@ -137,8 +161,7 @@ class NonExistCommand : Command
 
 class MyCommand : Command
 
-class MyCommandHandler(
-) : CommandHandler<MyCommand> {
+class MyCommandHandler() : CommandHandler<MyCommand> {
     override fun handle(command: MyCommand) {
         counter++
     }
@@ -149,6 +172,22 @@ class MyAsyncCommand : Command
 class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
     override suspend fun handleAsync(command: MyAsyncCommand) {
         delay(500)
+        asyncTestCounter++
+    }
+}
+
+class MyCommandForInheritance : Command
+abstract class MyAsyncCommandHandlerFor<TCommand : Command> : AsyncCommandHandler<TCommand>
+
+class MyInheritedAsyncCommandHandler : MyAsyncCommandHandlerFor<MyCommandForInheritance>() {
+    override suspend fun handleAsync(command: MyCommandForInheritance) {
+        asyncTestCounter++
+    }
+}
+abstract class MyAsyncCommandHandlerBaseForSpecificCommand : AsyncCommandHandler<MyCommandForInheritance>
+
+class MyInheritedAsyncCommandHandlerForSpecificCommand : MyAsyncCommandHandlerBaseForSpecificCommand() {
+    override suspend fun handleAsync(command: MyCommandForInheritance) {
         asyncTestCounter++
     }
 }
