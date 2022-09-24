@@ -165,11 +165,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.5.20</kotlin.version>
+        <kotlin.version>1.7.10</kotlin.version>
         <kotlinx.coroutines.version>1.5.2</kotlinx.coroutines.version>
         <kotlin.code.style>official</kotlin.code.style>
         <junit.version>5.7.0-M1</junit.version>
-
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
@@ -222,11 +221,6 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
