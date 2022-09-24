@@ -5,8 +5,8 @@ package com.trendyol
 import com.trendyol.kediatr.DependencyProvider
 import java.lang.reflect.ParameterizedType
 
-class ManuelDependencyProvider(
-    private val handlerMap: HashMap<Class<*>, Any>
+class ManualDependencyProvider(
+    private val handlerMap: HashMap<Class<*>, Any>,
 ) : DependencyProvider {
     override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
         return handlerMap[clazz] as T
@@ -22,7 +22,7 @@ class ManuelDependencyProvider(
 
     private fun <THandler> filterInternal(
         handler: Class<*>,
-        interfaceOrBaseClass: Class<THandler>
+        interfaceOrBaseClass: Class<THandler>,
     ): Boolean {
         if (interfaceOrBaseClass.isAssignableFrom(handler)) return true
 

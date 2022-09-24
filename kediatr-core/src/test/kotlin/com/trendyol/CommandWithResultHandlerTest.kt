@@ -24,7 +24,7 @@ class CommandWithResultHandlerTest {
     fun `commandHandler should be fired`() {
         val handler = MyCommandRHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandRHandler::class.java, handler))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommand(MyCommandR())
 
@@ -37,7 +37,7 @@ class CommandWithResultHandlerTest {
     fun `async commandHandler should be fired`() = runBlocking {
         val handler = AsyncMyCommandRHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandRHandler::class.java, handler))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommandAsync(MyAsyncCommandR())
 
@@ -48,7 +48,7 @@ class CommandWithResultHandlerTest {
 
     @Test
     fun `should throw exception if given async command has not been registered before`() {
-        val provider = ManuelDependencyProvider(hashMapOf())
+        val provider = ManualDependencyProvider(hashMapOf())
         val bus: CommandBus = CommandBusBuilder(provider).build()
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
@@ -62,7 +62,7 @@ class CommandWithResultHandlerTest {
 
     @Test
     fun `should throw exception if given command has not been registered before`() {
-        val provider = ManuelDependencyProvider(hashMapOf())
+        val provider = ManualDependencyProvider(hashMapOf())
         val bus: CommandBus = CommandBusBuilder(provider).build()
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             bus.executeCommand(NonExistCommandR())
@@ -100,7 +100,7 @@ class CommandWithResultHandlerTest {
             // given
             val handler = ParatemerizedAsyncCommandWithResultHandler<ParameterizedCommandWithResult<Long>>()
             val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParatemerizedAsyncCommandWithResultHandler::class.java, handler))
-            val provider = ManuelDependencyProvider(handlers)
+            val provider = ManualDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
             // when
@@ -116,7 +116,7 @@ class CommandWithResultHandlerTest {
             // given
             val handler = ParameterizedCommandWithResultHandler<ParameterizedCommandWithResult<Long>>()
             val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedCommandWithResultHandler::class.java, handler))
-            val provider = ManuelDependencyProvider(handlers)
+            val provider = ManualDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
             // when
@@ -129,11 +129,11 @@ class CommandWithResultHandlerTest {
     }
 }
 
-class Result
-class NonExistCommandR : Command
-class MyCommandR : CommandWithResult<Result>
+private class Result
+private class NonExistCommandR : Command
+private class MyCommandR : CommandWithResult<Result>
 
-class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
+private class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
     override fun handle(command: MyCommandR): Result {
         counter++
 
@@ -141,9 +141,9 @@ class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
     }
 }
 
-class MyAsyncCommandR : CommandWithResult<Result>
+private class MyAsyncCommandR : CommandWithResult<Result>
 
-class AsyncMyCommandRHandler : AsyncCommandWithResultHandler<MyAsyncCommandR, Result> {
+private class AsyncMyCommandRHandler : AsyncCommandWithResultHandler<MyAsyncCommandR, Result> {
     override suspend fun handleAsync(command: MyAsyncCommandR): Result {
         delay(500)
         asyncTestCounter++

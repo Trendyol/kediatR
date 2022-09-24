@@ -26,13 +26,28 @@ class PipelineBehaviorTest {
         asyncPipelineExceptionCounter = 0
     }
 
+    private class MyCommand : Command
+
+    private class MyCommandHandler() : CommandHandler<MyCommand> {
+        override fun handle(command: MyCommand) {
+        }
+    }
+
+    private class MyAsyncCommand : Command
+
+    private class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
+        override suspend fun handleAsync(command: MyAsyncCommand) {
+            delay(500)
+        }
+    }
+
     @Test
     fun `should process command with pipeline`() {
         val handler = MyCommandHandler()
         val pipeline = MyPipelineBehavior()
         val handlers: HashMap<Class<*>, Any> =
             hashMapOf(Pair(MyCommandHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommand(MyCommand())
 
@@ -48,7 +63,7 @@ class PipelineBehaviorTest {
             Pair(AsyncMyCommandHandler::class.java, handler),
             Pair(MyAsyncPipelineBehavior::class.java, pipeline)
         )
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         runBlocking {
@@ -65,7 +80,7 @@ class PipelineBehaviorTest {
         val pipeline = MyPipelineBehavior()
         val handlers: HashMap<Class<*>, Any> =
             hashMapOf(Pair(MyBrokenHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         val act = { bus.executeCommand(MyBrokenCommand()) }
 
@@ -81,7 +96,7 @@ class PipelineBehaviorTest {
             Pair(MyBrokenAsyncHandler::class.java, handler),
             Pair(MyAsyncPipelineBehavior::class.java, pipeline)
         )
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         val act = suspend { bus.executeCommandAsync(MyBrokenCommand()) }
 
@@ -98,7 +113,7 @@ class PipelineBehaviorTest {
                 Pair(MyAsyncCommandHandler::class.java, handler),
                 Pair(InheritedPipelineBehaviour::class.java, pipeline)
             )
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommandAsync(AsyncCommand())
 
@@ -107,9 +122,9 @@ class PipelineBehaviorTest {
     }
 }
 
-abstract class MyBasePipelineBehaviour : AsyncPipelineBehavior
+private abstract class MyBasePipelineBehaviour : AsyncPipelineBehavior
 
-class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
+private class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++
@@ -126,28 +141,27 @@ class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
     }
 }
 
-
 private class AsyncCommand : Command
 private class MyAsyncCommandHandler : AsyncCommandHandler<AsyncCommand> {
     override suspend fun handleAsync(command: AsyncCommand) {
     }
 }
 
-class MyBrokenCommand : Command
+private class MyBrokenCommand : Command
 
-class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
+private class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
     override fun handle(command: MyBrokenCommand) {
         throw Exception()
     }
 }
 
-class MyBrokenAsyncHandler : AsyncCommandHandler<MyBrokenCommand> {
+private class MyBrokenAsyncHandler : AsyncCommandHandler<MyBrokenCommand> {
     override suspend fun handleAsync(command: MyBrokenCommand) {
         throw Exception()
     }
 }
 
-class MyPipelineBehavior : PipelineBehavior {
+private class MyPipelineBehavior : PipelineBehavior {
     override fun <TRequest> preProcess(request: TRequest) {
         pipelinePreProcessCounter++
     }
@@ -161,7 +175,7 @@ class MyPipelineBehavior : PipelineBehavior {
     }
 }
 
-class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
+private class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++

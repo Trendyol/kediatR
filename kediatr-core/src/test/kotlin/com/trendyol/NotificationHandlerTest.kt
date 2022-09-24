@@ -1,41 +1,45 @@
 package com.trendyol
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.AsyncNotificationHandler
+import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.Notification
+import com.trendyol.kediatr.NotificationHandler
+import java.util.concurrent.CountDownLatch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.concurrent.CountDownLatch
 import kotlin.test.assertTrue
 
 private var asyncCountDownLatch = CountDownLatch(1)
 private var countDownLatch = CountDownLatch(1)
 
-open class Ping : Notification
-class ExtendedPing : Ping()
+private open class Ping : Notification
+private class ExtendedPing : Ping()
 
-class AnAsyncPingHandler : AsyncNotificationHandler<ExtendedPing> {
+private class AnAsyncPingHandler : AsyncNotificationHandler<ExtendedPing> {
     override suspend fun handle(notification: ExtendedPing) {
         asyncCountDownLatch.countDown()
     }
 }
 
-class AnotherAsyncPingHandler : AsyncNotificationHandler<Ping> {
+private class AnotherAsyncPingHandler : AsyncNotificationHandler<Ping> {
     override suspend fun handle(notification: Ping) {
         asyncCountDownLatch.countDown()
     }
 }
 
-class PingHandler : NotificationHandler<Ping> {
+private class PingHandler : NotificationHandler<Ping> {
     override fun handle(notification: Ping) {
         countDownLatch.countDown()
     }
 }
 
-class PingForInherited : Notification
+private class PingForInherited : Notification
 
-abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
+private abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
 
-class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>() {
+private class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>() {
     override suspend fun handle(notification: PingForInherited) {
         asyncCountDownLatch.countDown()
     }
@@ -50,7 +54,7 @@ class NotificationHandlerTest {
     fun `notification handler should be called`() {
         val pingHandler = PingHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(PingHandler::class.java, pingHandler))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotification(Ping())
 
@@ -67,7 +71,7 @@ class NotificationHandlerTest {
             Pair(AnAsyncPingHandler::class.java, pingHandler),
             Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler)
         )
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotificationAsync(ExtendedPing())
 
@@ -80,7 +84,7 @@ class NotificationHandlerTest {
     fun `inherited notification handler should be called`() = runBlocking {
         val nHandler = InheritedNotificationHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(InheritedNotificationHandler::class.java, nHandler))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotificationAsync(PingForInherited())
 
@@ -111,7 +115,7 @@ class NotificationHandlerTest {
             val handler = ParameterizedAsyncNotificationHandler<ParameterizedNotification<String>>()
             val handlers: HashMap<Class<*>, Any> =
                 hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, handler))
-            val provider = ManuelDependencyProvider(handlers)
+            val provider = ManualDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
             // when
@@ -129,7 +133,7 @@ class NotificationHandlerTest {
             val handler = ParameterizedNotificationHandler<ParameterizedNotification<String>>()
             val handlers: HashMap<Class<*>, Any> =
                 hashMapOf(Pair(ParameterizedNotificationHandler::class.java, handler))
-            val provider = ManuelDependencyProvider(handlers)
+            val provider = ManualDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
             // when

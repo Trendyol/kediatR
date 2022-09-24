@@ -15,7 +15,7 @@ class QueryHandlerTest {
     fun `queryHandler should retrieve result`() {
         val handler = TestQueryHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(TestQueryHandler::class.java, handler))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val result = bus.executeQuery(TestQuery(1))
@@ -29,7 +29,7 @@ class QueryHandlerTest {
     fun `async queryHandler should retrieve result`() = runBlocking {
         val handler = AsyncTestQueryHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncTestQueryHandler::class.java, handler))
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         val result = bus.executeQueryAsync(TestQuery(1))
 
@@ -41,7 +41,7 @@ class QueryHandlerTest {
     @Test
     fun `should throw exception if given async query has not been registered before`() {
         val handlers: HashMap<Class<*>, Any> = hashMapOf()
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
@@ -57,7 +57,7 @@ class QueryHandlerTest {
     @Test
     fun `should throw exception if given query has not been registered before`() {
         val handlers: HashMap<Class<*>, Any> = hashMapOf()
-        val provider = ManuelDependencyProvider(handlers)
+        val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
@@ -89,7 +89,7 @@ class QueryHandlerTest {
             // given
             val handler = ParameterizedAsyncQueryHandler<ParameterizedQuery<Long, String>>()
             val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncQueryHandler::class.java, handler))
-            val provider = ManuelDependencyProvider(handlers)
+            val provider = ManualDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
             // when
@@ -104,7 +104,7 @@ class QueryHandlerTest {
             // given
             val handler = ParameterizedQueryHandler<ParameterizedQuery<Long, String>>()
             val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedQueryHandler::class.java, handler))
-            val provider = ManuelDependencyProvider(handlers)
+            val provider = ManualDependencyProvider(handlers)
             val bus: CommandBus = CommandBusBuilder(provider).build()
 
             // when
@@ -116,17 +116,17 @@ class QueryHandlerTest {
     }
 }
 
-class NonExistQuery : Query<String>
+private class NonExistQuery : Query<String>
 
-class TestQuery(val id: Int) : Query<String>
+private class TestQuery(val id: Int) : Query<String>
 
-class TestQueryHandler : QueryHandler<TestQuery, String> {
+private class TestQueryHandler : QueryHandler<TestQuery, String> {
     override fun handle(query: TestQuery): String {
         return "hello " + query.id
     }
 }
 
-class AsyncTestQueryHandler : AsyncQueryHandler<TestQuery, String> {
+private class AsyncTestQueryHandler : AsyncQueryHandler<TestQuery, String> {
     override suspend fun handleAsync(query: TestQuery): String {
         return "hello " + query.id
     }
