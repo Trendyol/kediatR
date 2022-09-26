@@ -1,9 +1,10 @@
 package com.trendyol.kediatr
 
 class CommandBusBuilder(
-    private val dependencyProvider: DependencyProvider
+    private val dependencyProvider: DependencyProvider,
 ) {
-    private var publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
+    internal var publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
+        private set
 
     /**
      * Overrides default notification publishing strategy.

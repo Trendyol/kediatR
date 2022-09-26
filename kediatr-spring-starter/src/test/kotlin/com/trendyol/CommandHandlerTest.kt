@@ -9,11 +9,7 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
-
+import kotlin.test.*
 
 private var springTestCounter = 0
 private var springAsyncTestCounter = 0
@@ -49,7 +45,6 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given async command does not have handler bean`() {
-
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
                 commandBus.executeCommandAsync(NonExistCommand())
@@ -62,7 +57,6 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given command does not have handler bean`() {
-
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             commandBus.executeCommand(NonExistCommand())
         }
@@ -72,7 +66,7 @@ class CommandHandlerTest {
     }
 }
 
-class NonExistCommand: Command
+class NonExistCommand : Command
 class MyCommand : Command
 
 class MyCommandHandler(
@@ -89,5 +83,3 @@ class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
         springAsyncTestCounter++
     }
 }
-
-

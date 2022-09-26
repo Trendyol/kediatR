@@ -7,13 +7,13 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatr-koin-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.5.30</kotlin.version>
-        <kotlinx.coroutines.version>1.5.2</kotlinx.coroutines.version>
+        <kotlin.version>1.7.10</kotlin.version>
+        <kotlinx.coroutines.version>1.6.4</kotlinx.coroutines.version>
         <kotlin.code.style>official</kotlin.code.style>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -264,11 +264,6 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
