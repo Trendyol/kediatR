@@ -7,8 +7,8 @@ import com.trendyol.kediatr.CommandBusBuilder
 import com.trendyol.kediatr.CommandHandler
 import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
