@@ -36,7 +36,7 @@ abstract class Registrar {
             }
 
             is Class<*> -> {
-                val inheritedHandler = (handler.genericSuperclass as Class<*>)
+                val inheritedHandler = handler.genericSuperclass as Class<*>
                 if (interfaceOrBaseClass.isAssignableFrom(inheritedHandler)) {
                     inheritedHandler.genericInterfaces
                         .filterIsInstance<ParameterizedType>()
