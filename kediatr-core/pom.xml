@@ -143,7 +143,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
-        <kotlinx.coroutines.version>1.5.2</kotlinx.coroutines.version>
+        <kotlinx.coroutines.version>1.6.4</kotlinx.coroutines.version>
         <junit.version>5.9.1</junit.version>
     </properties>
 
@@ -244,6 +244,12 @@
                 <version>${junit.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.junit.vintage</groupId>
+                        <artifactId>junit-vintage-engine</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
