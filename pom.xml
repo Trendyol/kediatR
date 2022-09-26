@@ -6,7 +6,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatR</artifactId>
-    <version>1.0.5</version>
+    <version>1.1.2</version>
     <modules>
         <module>kediatr-core</module>
         <module>kediatr-spring-starter</module>
