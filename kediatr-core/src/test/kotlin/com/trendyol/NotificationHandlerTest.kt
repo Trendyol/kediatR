@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 private var asyncCountDownLatch = CountDownLatch(1)
@@ -32,16 +33,6 @@ private class AnotherAsyncPingHandler : AsyncNotificationHandler<Ping> {
 private class PingHandler : NotificationHandler<Ping> {
     override fun handle(notification: Ping) {
         countDownLatch.countDown()
-    }
-}
-
-private class PingForInherited : Notification
-
-private abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
-
-private class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>() {
-    override suspend fun handle(notification: PingForInherited) {
-        asyncCountDownLatch.countDown()
     }
 }
 
@@ -81,16 +72,24 @@ class NotificationHandlerTest {
     }
 
     @Test
-    fun `inherited notification handler should be called`() = runBlocking {
+    fun inherited_notification_handler_should_be_called() = runBlocking {
+        class PingForInherited : Notification
+
+        abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
+
+        class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>() {
+            override suspend fun handle(notification: PingForInherited) {
+                asyncCountDownLatch.countDown()
+            }
+        }
+
         val nHandler = InheritedNotificationHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(InheritedNotificationHandler::class.java, nHandler))
         val provider = ManualDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotificationAsync(PingForInherited())
 
-        assertTrue {
-            countDownLatch.count == 0L
-        }
+        assertEquals(0, asyncCountDownLatch.count)
     }
 
     @Nested
@@ -143,6 +142,32 @@ class NotificationHandlerTest {
             assertTrue {
                 countDownLatch.count == 0L
             }
+        }
+
+        @Test
+        fun inherited_notification_handler_should_be_called() = runBlocking {
+            var invocationCount = 0
+            var parameter = ""
+
+            class ParameterizedNotification<T>(val param: T) : Notification
+
+            abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
+
+            class ParameterizedAsyncNotificationHandler<A> : NotificationHandlerBase<ParameterizedNotification<A>>() {
+                override suspend fun handle(notification: ParameterizedNotification<A>) {
+                    parameter = notification.param.toString()
+                    invocationCount++
+                }
+            }
+
+            val nHandler = ParameterizedAsyncNotificationHandler<ParameterizedNotification<String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, nHandler))
+            val provider = ManualDependencyProvider(handlers)
+            val bus: CommandBus = CommandBusBuilder(provider).build()
+            bus.publishNotificationAsync(ParameterizedNotification("invoked"))
+
+            assertEquals(1, invocationCount)
+            assertEquals("invoked", parameter)
         }
     }
 }

@@ -8,11 +8,9 @@ import com.trendyol.kediatr.common.AsyncQueryProvider
 internal class AsyncRegistry(dependencyProvider: DependencyProvider) : Registrar() {
     val commandMap = HashMap<Class<*>, AsyncCommandProvider<AsyncCommandHandler<Command>>>()
     val queryMap = HashMap<Class<*>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
-    val notificationMap =
-        HashMap<Class<*>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
+    val notificationMap = HashMap<Class<*>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
     val pipelineSet = HashSet<AsyncPipelineProvider<*>>()
-    val commandWithResultMap =
-        HashMap<Class<*>, AsyncCommandWithResultProvider<*>>()
+    val commandWithResultMap = HashMap<Class<*>, AsyncCommandWithResultProvider<*>>()
 
     init {
 
