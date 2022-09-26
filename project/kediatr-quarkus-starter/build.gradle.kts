@@ -6,7 +6,7 @@ dependencies {
     api(project(":project:kediatr-core"))
     implementation(platform("io.quarkus:quarkus-bom:2.13.0.Final"))
     implementation("io.quarkus:quarkus-arc")
-    compileOnly("javax.enterprise:cdi-api:2.0")
+    implementation("javax.enterprise:cdi-api:2.0")
 }
 
 dependencies {
