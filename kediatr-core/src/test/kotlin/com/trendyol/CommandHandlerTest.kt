@@ -1,7 +1,11 @@
 package com.trendyol
 
-import com.trendyol.kediatr.*
-import kotlinx.coroutines.delay
+import com.trendyol.kediatr.AsyncCommandHandler
+import com.trendyol.kediatr.Command
+import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.jupiter.api.Nested
@@ -38,7 +42,6 @@ class CommandHandlerTest {
         class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
             var invocationCount = 0
             override suspend fun handleAsync(command: MyAsyncCommand) {
-                delay(500)
                 invocationCount++
             }
         }
