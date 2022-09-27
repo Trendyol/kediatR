@@ -1,6 +1,7 @@
 package com.trendyol.kediatr
 
 import java.lang.reflect.ParameterizedType
+import java.lang.reflect.TypeVariable
 
 @Suppress("UNCHECKED_CAST")
 abstract class Registrar {
@@ -23,7 +24,7 @@ abstract class Registrar {
 
         handler.genericInterfaces
             .filterIsInstance<ParameterizedType>()
-            .map { extractParameter<TParameter>(it) }
+            .map { extractParameter(it) }
             .forEach { registrar(it, handler) }
 
         when (handler.genericSuperclass) {
@@ -31,7 +32,7 @@ abstract class Registrar {
                 val inheritedHandler = (handler.genericSuperclass as ParameterizedType).rawType as Class<*>
                 inheritedHandler.genericInterfaces
                     .filterIsInstance<ParameterizedType>()
-                    .map { extractParameter<TParameter>(handler.genericSuperclass as ParameterizedType) }
+                    .map { extractParameter(handler.genericSuperclass as ParameterizedType) }
                     .forEach { registrar(it, handler) }
             }
 
@@ -40,7 +41,7 @@ abstract class Registrar {
                 if (interfaceOrBaseClass.isAssignableFrom(inheritedHandler)) {
                     inheritedHandler.genericInterfaces
                         .filterIsInstance<ParameterizedType>()
-                        .map { extractParameter<TParameter>(it) }
+                        .map { extractParameter(it) }
                         .forEach { registrar(it, handler) }
                 }
             }
@@ -63,9 +64,10 @@ abstract class Registrar {
         registrar(handler)
     }
 
-    protected fun <T> extractParameter(genericInterface: ParameterizedType): Class<out T> =
+    protected fun extractParameter(genericInterface: ParameterizedType): Class<*> =
         when (val typeArgument = genericInterface.actualTypeArguments[0]) {
-            is ParameterizedType -> typeArgument.rawType as Class<out T>
-            else -> typeArgument as Class<out T>
+            is ParameterizedType -> typeArgument.rawType as Class<*>
+            is TypeVariable<*> -> extractParameter((genericInterface.rawType as Class<*>).genericInterfaces[0] as ParameterizedType)
+            else -> typeArgument as Class<*>
         }
 }

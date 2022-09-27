@@ -7,7 +7,7 @@
 
     <groupId>com.trendyol</groupId>
     <artifactId>kediatr-quarkus-starter</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -219,7 +219,7 @@
         <dependency>
             <groupId>com.trendyol</groupId>
             <artifactId>kediatr-core</artifactId>
-            <version>1.0.18</version>
+            <version>1.1.2</version>
         </dependency>
     </dependencies>
     <build>
