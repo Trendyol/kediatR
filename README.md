@@ -15,7 +15,7 @@ kediatR has multiple implementations: kediatR-core, kediatR-spring-starter, kedi
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-core</artifactId>
-  <version>1.0.18</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
@@ -25,7 +25,7 @@ kediatR has multiple implementations: kediatR-core, kediatR-spring-starter, kedi
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-spring-starter</artifactId>
-  <version>1.0.18</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
@@ -35,7 +35,7 @@ kediatR has multiple implementations: kediatR-core, kediatR-spring-starter, kedi
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-koin-starter</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
@@ -45,7 +45,7 @@ kediatR has multiple implementations: kediatR-core, kediatR-spring-starter, kedi
 <dependency>
   <groupId>com.trendyol</groupId>
   <artifactId>kediatr-quarkus-starter</artifactId>
-  <version>1.0.2</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
@@ -56,7 +56,7 @@ kediatR has multiple implementations: kediatR-core, kediatR-spring-starter, kedi
 #### Command dispatching
 
 ```kotlin
-class ManuelDependencyProvider(
+class ManualDependencyProvider(
     private val handlerMap: HashMap<Class<*>, Any>
 ) : DependencyProvider {
     override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
