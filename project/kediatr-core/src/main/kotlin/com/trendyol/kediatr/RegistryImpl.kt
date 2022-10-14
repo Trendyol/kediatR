@@ -6,37 +6,37 @@ class RegistryImpl(
     dependencyProvider: DependencyProvider,
 ) : Registry {
 
-    private val asyncRegistry = AsyncRegistry(dependencyProvider)
+    private val registry = Container(dependencyProvider)
 
-    override fun <TCommand : Command> resolveAsyncCommandHandler(
+    override fun <TCommand : Command> resolveCommandHandler(
         classOfCommand: Class<TCommand>,
-    ): AsyncCommandHandler<TCommand> {
-        val handler = asyncRegistry.commandMap[classOfCommand]?.get()
+    ): CommandHandler<TCommand> {
+        val handler = registry.commandMap[classOfCommand]?.get()
             ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
-        return handler as AsyncCommandHandler<TCommand>
+        return handler as CommandHandler<TCommand>
     }
 
-    override fun <TCommand : CommandWithResult<TResult>, TResult> resolveAsyncCommandWithResultHandler(
+    override fun <TCommand : CommandWithResult<TResult>, TResult> resolveCommandWithResultHandler(
         classOfCommand: Class<TCommand>,
-    ): AsyncCommandWithResultHandler<TCommand, TResult> {
-        val handler = asyncRegistry.commandWithResultMap[classOfCommand]?.get()
+    ): CommandWithResultHandler<TCommand, TResult> {
+        val handler = registry.commandWithResultMap[classOfCommand]?.get()
             ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
-        return handler as AsyncCommandWithResultHandler<TCommand, TResult>
+        return handler as CommandWithResultHandler<TCommand, TResult>
     }
 
-    override fun <TNotification : Notification> resolveAsyncNotificationHandlers(
+    override fun <TNotification : Notification> resolveNotificationHandlers(
         classOfNotification: Class<TNotification>,
-    ): Collection<AsyncNotificationHandler<TNotification>> =
-        asyncRegistry.notificationMap.filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
-            .flatMap { (_, v) -> v.map { it.get() as AsyncNotificationHandler<TNotification> } }
+    ): Collection<NotificationHandler<TNotification>> =
+        registry.notificationMap.filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
+            .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
 
-    override fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(
+    override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(
         classOfQuery: Class<TQuery>,
-    ): AsyncQueryHandler<TQuery, TResult> {
-        val handler = asyncRegistry.queryMap[classOfQuery]?.get()
+    ): QueryHandler<TQuery, TResult> {
+        val handler = registry.queryMap[classOfQuery]?.get()
             ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
-        return handler as AsyncQueryHandler<TQuery, TResult>
+        return handler as QueryHandler<TQuery, TResult>
     }
 
-    override fun getAsyncPipelineBehaviors(): Collection<AsyncPipelineBehavior> = asyncRegistry.pipelineSet.map { it.get() }
+    override fun getPipelineBehaviors(): Collection<PipelineBehavior> = registry.pipelineSet.map { it.get() }
 }

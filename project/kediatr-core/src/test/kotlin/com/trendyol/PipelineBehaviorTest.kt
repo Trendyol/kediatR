@@ -1,6 +1,10 @@
 package com.trendyol
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.Command
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.MediatorBuilder
+import com.trendyol.kediatr.PipelineBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -28,27 +32,25 @@ class PipelineBehaviorTest {
 
     private class MyCommand : Command
 
-    private class MyAsyncCommand : Command
-
-    private class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
-        override suspend fun handleAsync(command: MyAsyncCommand) {
+    private class MyCommandHandler : CommandHandler<MyCommand> {
+        override suspend fun handle(command: MyCommand) {
             delay(500)
         }
     }
 
     @Test
     fun `should process command with async pipeline`() {
-        val handler = AsyncMyCommandHandler()
-        val pipeline = MyAsyncPipelineBehavior()
+        val handler = MyCommandHandler()
+        val pipeline = MyPipelineBehavior()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(
-            Pair(AsyncMyCommandHandler::class.java, handler),
-            Pair(MyAsyncPipelineBehavior::class.java, pipeline)
+            Pair(MyCommandHandler::class.java, handler),
+            Pair(MyPipelineBehavior::class.java, pipeline)
         )
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
+        val bus: Mediator = MediatorBuilder(provider).build()
 
         runBlocking {
-            bus.executeCommandAsync(MyAsyncCommand())
+            bus.send(MyCommand())
         }
 
         assertTrue { asyncPipelinePreProcessCounter == 1 }
@@ -57,15 +59,15 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val handler = MyBrokenAsyncHandler()
-        val pipeline = MyAsyncPipelineBehavior()
+        val handler = MyBrokenHandler()
+        val pipeline = MyPipelineBehavior()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(
-            Pair(MyBrokenAsyncHandler::class.java, handler),
-            Pair(MyAsyncPipelineBehavior::class.java, pipeline)
+            Pair(MyBrokenHandler::class.java, handler),
+            Pair(MyPipelineBehavior::class.java, pipeline)
         )
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        val act = suspend { bus.executeCommandAsync(MyBrokenCommand()) }
+        val bus: Mediator = MediatorBuilder(provider).build()
+        val act = suspend { bus.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
         assertTrue { asyncPipelineExceptionCounter == 1 }
@@ -73,23 +75,23 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process command with inherited pipeline`() = runBlocking {
-        val handler = MyAsyncCommandHandler()
+        val handler = MyCommandHandler()
         val pipeline = InheritedPipelineBehaviour()
         val handlers: HashMap<Class<*>, Any> =
             hashMapOf(
-                Pair(MyAsyncCommandHandler::class.java, handler),
+                Pair(MyCommandHandler::class.java, handler),
                 Pair(InheritedPipelineBehaviour::class.java, pipeline)
             )
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommandAsync(AsyncCommand())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyCommand())
 
         assertEquals(1, asyncPipelinePreProcessCounter)
         assertEquals(1, asyncPipelinePostProcessCounter)
     }
 }
 
-private abstract class MyBasePipelineBehaviour : AsyncPipelineBehavior
+private abstract class MyBasePipelineBehaviour : PipelineBehavior
 
 private class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
     override suspend fun <TRequest> preProcess(request: TRequest) {
@@ -111,21 +113,16 @@ private class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
     }
 }
 
-private class AsyncCommand : Command
-private class MyAsyncCommandHandler : AsyncCommandHandler<AsyncCommand> {
-    override suspend fun handleAsync(command: AsyncCommand) {
-    }
-}
-
+private class MyCommand : Command
 private class MyBrokenCommand : Command
 
-private class MyBrokenAsyncHandler : AsyncCommandHandler<MyBrokenCommand> {
-    override suspend fun handleAsync(command: MyBrokenCommand) {
+private class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
+    override suspend fun handle(command: MyBrokenCommand) {
         throw Exception()
     }
 }
 
-private class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
+private class MyPipelineBehavior : PipelineBehavior {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++

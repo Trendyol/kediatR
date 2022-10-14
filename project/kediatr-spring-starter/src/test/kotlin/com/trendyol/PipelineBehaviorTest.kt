@@ -1,9 +1,9 @@
 package com.trendyol
 
-import com.trendyol.kediatr.AsyncCommandHandler
-import com.trendyol.kediatr.AsyncPipelineBehavior
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.PipelineBehavior
 import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -21,7 +21,7 @@ var pipelineExceptionCounter = 0
 var asyncPipelineExceptionCounter = 0
 
 @SpringBootTest(
-    classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyAsyncPipelineBehavior::class]
+    classes = [KediatrConfiguration::class, MyCommandHandler::class, MyPipelineBehavior::class]
 )
 class PipelineBehaviorTest {
 
@@ -35,12 +35,12 @@ class PipelineBehaviorTest {
     }
 
     @Autowired
-    lateinit var commandBus: CommandBus
+    lateinit var commandBus: Mediator
 
     @Test
     fun `should process command with async pipeline`() {
         runBlocking {
-            commandBus.executeCommandAsync(MyCommand())
+            commandBus.send(MyCommand())
         }
 
         assertTrue { asyncPipelinePreProcessCounter == 1 }
@@ -49,7 +49,7 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val act = suspend { commandBus.executeCommandAsync(MyBrokenCommand()) }
+        val act = suspend { commandBus.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
         assertTrue { asyncPipelineExceptionCounter == 1 }
@@ -58,14 +58,14 @@ class PipelineBehaviorTest {
 
 class MyBrokenCommand : Command
 
-class MyBrokenAsyncHandler : AsyncCommandHandler<MyBrokenCommand> {
-    override suspend fun handleAsync(command: MyBrokenCommand) {
+class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
+    override suspend fun handle(command: MyBrokenCommand) {
         delay(500)
         throw Exception()
     }
 }
 
-class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
+class MyPipelineBehavior : PipelineBehavior {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++

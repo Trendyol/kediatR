@@ -5,7 +5,7 @@ package com.trendyol.kediatr
  *
  * @since 1.0.12
  */
-interface AsyncPipelineBehavior {
+interface PipelineBehavior {
     /**
      * Process to invoke before handling any query, command or notification
      *

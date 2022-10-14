@@ -1,8 +1,8 @@
 package com.trendyol
 
-import com.trendyol.kediatr.AsyncQueryHandler
-import com.trendyol.kediatr.CommandBus
-import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.QueryHandler
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.HandlerNotFoundException
 import com.trendyol.kediatr.Query
 import kotlinx.coroutines.runBlocking
@@ -19,17 +19,17 @@ class QueryHandlerTest {
     fun async_queryHandler_should_retrieve_result() = runBlocking {
         class TestQuery(val id: Int) : Query<String>
 
-        class AsyncTestQueryHandler : AsyncQueryHandler<TestQuery, String> {
-            override suspend fun handleAsync(query: TestQuery): String {
+        class TestQueryHandler : QueryHandler<TestQuery, String> {
+            override suspend fun handle(query: TestQuery): String {
                 return "hello " + query.id
             }
         }
 
-        val handler = AsyncTestQueryHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncTestQueryHandler::class.java, handler))
+        val handler = TestQueryHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(TestQueryHandler::class.java, handler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        val result = bus.executeQueryAsync(TestQuery(1))
+        val bus: Mediator = MediatorBuilder(provider).build()
+        val result = bus.send(TestQuery(1))
 
         assertTrue {
             result == "hello 1"
@@ -42,11 +42,11 @@ class QueryHandlerTest {
 
         val handlers: HashMap<Class<*>, Any> = hashMapOf()
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
+        val bus: Mediator = MediatorBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                bus.executeQueryAsync(NonExistQuery())
+                bus.send(NonExistQuery())
             }
         }
 
@@ -58,8 +58,8 @@ class QueryHandlerTest {
     inner class ParamaterizedTests {
         inner class ParameterizedQuery<TParam, TResponse>(val param: TParam) : Query<TResponse>
 
-        inner class ParameterizedAsyncQueryHandler<TParam> : AsyncQueryHandler<ParameterizedQuery<TParam, String>, String> {
-            override suspend fun handleAsync(query: ParameterizedQuery<TParam, String>): String {
+        inner class ParameterizedQueryHandler<TParam> : QueryHandler<ParameterizedQuery<TParam, String>, String> {
+            override suspend fun handle(query: ParameterizedQuery<TParam, String>): String {
                 return query.param.toString()
             }
         }
@@ -67,13 +67,13 @@ class QueryHandlerTest {
         @Test
         fun async_query_should_be_fired_and_return_result() = runBlocking {
             // given
-            val handler = ParameterizedAsyncQueryHandler<ParameterizedQuery<Long, String>>()
-            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncQueryHandler::class.java, handler))
+            val handler = ParameterizedQueryHandler<ParameterizedQuery<Long, String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedQueryHandler::class.java, handler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
+            val bus: Mediator = MediatorBuilder(provider).build()
 
             // when
-            val result = bus.executeQueryAsync(ParameterizedQuery<Long, String>(61L))
+            val result = bus.send(ParameterizedQuery<Long, String>(61L))
 
             // then
             assertEquals("61", result)

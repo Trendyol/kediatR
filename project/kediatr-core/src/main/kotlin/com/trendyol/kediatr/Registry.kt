@@ -2,19 +2,19 @@ package com.trendyol.kediatr
 
 interface Registry {
 
-    fun <TCommand : Command> resolveAsyncCommandHandler(classOfCommand: Class<TCommand>): AsyncCommandHandler<TCommand>
+    fun <TCommand : Command> resolveCommandHandler(classOfCommand: Class<TCommand>): CommandHandler<TCommand>
 
-    fun <TCommand : CommandWithResult<TResult>, TResult> resolveAsyncCommandWithResultHandler(
+    fun <TCommand : CommandWithResult<TResult>, TResult> resolveCommandWithResultHandler(
         classOfCommand: Class<TCommand>,
-    ): AsyncCommandWithResultHandler<TCommand, TResult>
+    ): CommandWithResultHandler<TCommand, TResult>
 
-    fun <TQuery : Query<TResult>, TResult> resolveAsyncQueryHandler(
+    fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(
         classOfQuery: Class<TQuery>,
-    ): AsyncQueryHandler<TQuery, TResult>
+    ): QueryHandler<TQuery, TResult>
 
-    fun <TNotification : Notification> resolveAsyncNotificationHandlers(
+    fun <TNotification : Notification> resolveNotificationHandlers(
         classOfNotification: Class<TNotification>,
-    ): Collection<AsyncNotificationHandler<TNotification>>
+    ): Collection<NotificationHandler<TNotification>>
 
-    fun getAsyncPipelineBehaviors(): Collection<AsyncPipelineBehavior>
+    fun getPipelineBehaviors(): Collection<PipelineBehavior>
 }

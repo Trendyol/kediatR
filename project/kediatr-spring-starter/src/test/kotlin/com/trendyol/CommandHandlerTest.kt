@@ -12,7 +12,7 @@ import kotlin.test.*
 private var springTestCounter = 0
 private var springAsyncTestCounter = 0
 
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class])
+@SpringBootTest(classes = [KediatrConfiguration::class, MyCommandHandler::class])
 class CommandHandlerTest {
 
     init {
@@ -21,11 +21,11 @@ class CommandHandlerTest {
     }
 
     @Autowired
-    lateinit var commandBus: CommandBus
+    lateinit var commandBus: Mediator
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.executeCommandAsync(MyCommand())
+        commandBus.send(MyCommand())
 
         assertTrue {
             springAsyncTestCounter == 1
@@ -36,7 +36,7 @@ class CommandHandlerTest {
     fun `should throw exception if given async command does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.executeCommandAsync(NonExistCommand())
+                commandBus.send(NonExistCommand())
             }
         }
 
@@ -48,8 +48,8 @@ class CommandHandlerTest {
 class NonExistCommand : Command
 class MyCommand : Command
 
-class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
-    override suspend fun handleAsync(command: MyCommand) {
+class MyCommandHandler : CommandHandler<MyCommand> {
+    override suspend fun handle(command: MyCommand) {
         delay(500)
         springAsyncTestCounter++
     }

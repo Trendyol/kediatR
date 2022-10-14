@@ -5,9 +5,9 @@ import kotlinx.coroutines.Dispatchers
 
 interface PublishStrategy {
 
-    suspend fun <T : Notification> publishAsync(
+    suspend fun <T : Notification> publish(
         notification: T,
-        notificationHandlers: Collection<AsyncNotificationHandler<T>>,
+        notificationHandlers: Collection<NotificationHandler<T>>,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
     )
 }

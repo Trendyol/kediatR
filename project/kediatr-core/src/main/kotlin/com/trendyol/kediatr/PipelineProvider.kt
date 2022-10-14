@@ -1,11 +1,11 @@
 package com.trendyol.kediatr
 
 /**
- * AsyncPipelineProvider creates a async pipeline behavior with enabled spring injection.
+ * PipelineProvider creates a pipeline behavior with enabled spring injection.
  *
  * @param <H> type of pipeline behavior
 </H> */
-internal class AsyncPipelineProvider<H : AsyncPipelineBehavior>(
+internal class PipelineProvider<H : PipelineBehavior>(
     private val dependencyProvider: DependencyProvider,
     private val type: Class<H>,
 ) {

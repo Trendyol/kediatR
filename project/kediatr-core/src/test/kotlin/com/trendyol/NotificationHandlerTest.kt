@@ -14,13 +14,13 @@ private var countDownLatch = CountDownLatch(1)
 private open class Ping : Notification
 private class ExtendedPing : Ping()
 
-private class AnAsyncPingHandler : AsyncNotificationHandler<ExtendedPing> {
+private class AnPingHandler : NotificationHandler<ExtendedPing> {
     override suspend fun handle(notification: ExtendedPing) {
         asyncCountDownLatch.countDown()
     }
 }
 
-private class AnotherAsyncPingHandler : AsyncNotificationHandler<Ping> {
+private class AnotherPingHandler : NotificationHandler<Ping> {
     override suspend fun handle(notification: Ping) {
         asyncCountDownLatch.countDown()
     }
@@ -33,15 +33,15 @@ class NotificationHandlerTest {
 
     @Test
     fun `async notification handler should be called`() = runBlocking {
-        val pingHandler = AnAsyncPingHandler()
-        val anotherPingHandler = AnotherAsyncPingHandler()
+        val pingHandler = AnPingHandler()
+        val anotherPingHandler = AnotherPingHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(
-            Pair(AnAsyncPingHandler::class.java, pingHandler),
-            Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler)
+            Pair(AnPingHandler::class.java, pingHandler),
+            Pair(AnotherPingHandler::class.java, anotherPingHandler)
         )
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.publishNotificationAsync(ExtendedPing())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.publish(ExtendedPing())
 
         assertTrue {
             asyncCountDownLatch.count == 0L
@@ -52,7 +52,7 @@ class NotificationHandlerTest {
     fun inherited_notification_handler_should_be_called() = runBlocking {
         class PingForInherited : Notification
 
-        abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
+        abstract class NotificationHandlerBase<TNotification : Notification> : NotificationHandler<TNotification>
 
         class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>() {
             override suspend fun handle(notification: PingForInherited) {
@@ -63,8 +63,8 @@ class NotificationHandlerTest {
         val nHandler = InheritedNotificationHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(InheritedNotificationHandler::class.java, nHandler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.publishNotificationAsync(PingForInherited())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.publish(PingForInherited())
 
         assertEquals(0, asyncCountDownLatch.count)
     }
@@ -73,7 +73,7 @@ class NotificationHandlerTest {
     inner class ParamaterizedTests {
         inner class ParameterizedNotification<T>(val param: T) : Notification
 
-        inner class ParameterizedAsyncNotificationHandler<A> : AsyncNotificationHandler<ParameterizedNotification<A>> {
+        inner class ParameterizedNotificationHandler<A> : NotificationHandler<ParameterizedNotification<A>> {
             override suspend fun handle(notification: ParameterizedNotification<A>) {
                 asyncCountDownLatch.countDown()
             }
@@ -82,14 +82,14 @@ class NotificationHandlerTest {
         @Test
         fun `async notification should be fired`() = runBlocking {
             // given
-            val handler = ParameterizedAsyncNotificationHandler<ParameterizedNotification<String>>()
+            val handler = ParameterizedNotificationHandler<ParameterizedNotification<String>>()
             val handlers: HashMap<Class<*>, Any> =
-                hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, handler))
+                hashMapOf(Pair(ParameterizedNotificationHandler::class.java, handler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
+            val bus: Mediator = MediatorBuilder(provider).build()
 
             // when
-            bus.publishNotificationAsync(ParameterizedNotification("MyParam"))
+            bus.publish(ParameterizedNotification("MyParam"))
 
             // then
             assertTrue {
@@ -104,20 +104,20 @@ class NotificationHandlerTest {
 
             class ParameterizedNotification<T>(val param: T) : Notification
 
-            abstract class NotificationHandlerBase<TNotification : Notification> : AsyncNotificationHandler<TNotification>
+            abstract class NotificationHandlerBase<TNotification : Notification> : NotificationHandler<TNotification>
 
-            class ParameterizedAsyncNotificationHandler<A> : NotificationHandlerBase<ParameterizedNotification<A>>() {
+            class ParameterizedNotificationHandler<A> : NotificationHandlerBase<ParameterizedNotification<A>>() {
                 override suspend fun handle(notification: ParameterizedNotification<A>) {
                     parameter = notification.param.toString()
                     invocationCount++
                 }
             }
 
-            val nHandler = ParameterizedAsyncNotificationHandler<ParameterizedNotification<String>>()
-            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedAsyncNotificationHandler::class.java, nHandler))
+            val nHandler = ParameterizedNotificationHandler<ParameterizedNotification<String>>()
+            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedNotificationHandler::class.java, nHandler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
-            bus.publishNotificationAsync(ParameterizedNotification("invoked"))
+            val bus: Mediator = MediatorBuilder(provider).build()
+            bus.publish(ParameterizedNotification("invoked"))
 
             assertEquals(1, invocationCount)
             assertEquals("invoked", parameter)

@@ -2,8 +2,8 @@
 
 package com.trendyol
 
-import com.trendyol.kediatr.CommandBus
-import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.DependencyProvider
 import io.quarkus.runtime.Startup
 import java.util.concurrent.ConcurrentHashMap
@@ -63,7 +63,7 @@ class QuarkusCommandBusBuilder {
 
     @ApplicationScoped
     @Startup
-    fun commandBus(kediatrBeanProvider: KediatrBeanProvider): CommandBus {
-        return CommandBusBuilder(kediatrBeanProvider).build()
+    fun commandBus(kediatrBeanProvider: KediatrBeanProvider): Mediator {
+        return MediatorBuilder(kediatrBeanProvider).build()
     }
 }

@@ -1,7 +1,7 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.AsyncCommandWithResultHandler
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.CommandWithResultHandler
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.CommandWithResult
 import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.delay
@@ -28,8 +28,8 @@ class CommandWithResultHandlerTest : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { MyAsyncCommandRHandler(get()) } bind AsyncCommandWithResultHandler::class
+                single { MyPipelineBehavior(get()) } bind MyPipelineBehavior::class
+                single { MyAsyncCommandRHandler(get()) } bind CommandWithResultHandler::class
             }
         )
     }
@@ -39,11 +39,11 @@ class CommandWithResultHandlerTest : KoinTest {
         asyncTestCounter = 0
     }
 
-    private val commandBus by inject<CommandBus>()
+    private val commandBus by inject<Mediator>()
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.executeCommandAsync(MyCommandR())
+        commandBus.send(MyCommandR())
 
         assertTrue {
             asyncTestCounter == 1
@@ -54,7 +54,7 @@ class CommandWithResultHandlerTest : KoinTest {
     fun `should throw exception if given async command does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.executeCommandAsync(NonExistCommandR())
+                commandBus.send(NonExistCommandR())
             }
         }
 
@@ -69,9 +69,9 @@ class NonExistCommandR : CommandWithResult<Result>
 class MyCommandR : CommandWithResult<Result>
 
 class MyAsyncCommandRHandler(
-    val commandBus: CommandBus,
-) : AsyncCommandWithResultHandler<MyCommandR, Result> {
-    override suspend fun handleAsync(command: MyCommandR): Result {
+    val commandBus: Mediator,
+) : CommandWithResultHandler<MyCommandR, Result> {
+    override suspend fun handle(command: MyCommandR): Result {
         delay(500)
         asyncTestCounter++
 

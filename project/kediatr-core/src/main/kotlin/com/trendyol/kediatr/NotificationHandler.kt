@@ -7,7 +7,7 @@ package com.trendyol.kediatr
  * @param T any [Notification] subclass to handle
  * @see Notification
  */
-interface AsyncNotificationHandler<in T> where T : Notification {
+interface NotificationHandler<in T> where T : Notification {
 
     /**
      * Handles a notification

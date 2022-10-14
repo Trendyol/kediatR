@@ -1,8 +1,8 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.AsyncCommandHandler
+import com.trendyol.kediatr.CommandHandler
 import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -25,13 +25,13 @@ class CommandHandlerTests : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { MyAsyncCommandHandler(get()) } bind AsyncCommandHandler::class
+                single { MyPipelineBehavior(get()) } bind MyPipelineBehavior::class
+                single { MyCommandHandler(get()) } bind CommandHandler::class
             }
         )
     }
 
-    private val commandBus by inject<CommandBus>()
+    private val commandBus by inject<Mediator>()
 
     init {
         springTestCounter = 0
@@ -40,7 +40,7 @@ class CommandHandlerTests : KoinTest {
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.executeCommandAsync(MyCommand())
+        commandBus.send(MyCommand())
 
         assertTrue {
             springAsyncTestCounter == 1
@@ -51,7 +51,7 @@ class CommandHandlerTests : KoinTest {
     fun `should throw exception if given async command does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.executeCommandAsync(NonExistCommand())
+                commandBus.send(NonExistCommand())
             }
         }
 
@@ -66,10 +66,10 @@ private var springAsyncTestCounter = 0
 class NonExistCommand : Command
 class MyCommand : Command
 
-class MyAsyncCommandHandler(
-    val commandBus: CommandBus,
-) : AsyncCommandHandler<MyCommand> {
-    override suspend fun handleAsync(command: MyCommand) {
+class MyCommandHandler(
+    val commandBus: Mediator,
+) : CommandHandler<MyCommand> {
+    override suspend fun handle(command: MyCommand) {
         delay(500)
         springAsyncTestCounter++
     }

@@ -1,7 +1,7 @@
 package com.trendyol
 
-import com.trendyol.kediatr.CommandBus
-import com.trendyol.kediatr.CommandBusImpl
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.MediatorImpl
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,11 +12,11 @@ import kotlin.test.assertNotNull
 class SpringContextTest {
 
     @Autowired
-    lateinit var commandBus: CommandBus
+    lateinit var commandBus: Mediator
 
     @Test
     fun contextLoads() {
         assertNotNull(commandBus)
-        assert(commandBus is CommandBusImpl)
+        assert(commandBus is MediatorImpl)
     }
 }

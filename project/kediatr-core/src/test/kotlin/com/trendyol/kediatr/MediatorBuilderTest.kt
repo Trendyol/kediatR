@@ -6,13 +6,13 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertEquals
 
-internal class CommandBusBuilderTest {
+internal class MediatorBuilderTest {
 
     @ParameterizedTest
     @MethodSource("strategies")
     fun `When a publish strategy is defined it should be set`(expectedStrategy: PublishStrategy) {
         // Arrange/Act
-        val builder = CommandBusBuilder(ManualDependencyProvider(hashMapOf()))
+        val builder = MediatorBuilder(ManualDependencyProvider(hashMapOf()))
             .withPublishStrategy(expectedStrategy)
 
         // Assert

@@ -35,12 +35,12 @@ class PipelineBehaviorTest {
     }
 
     @Inject
-    lateinit var commandBus: CommandBus
+    lateinit var commandBus: Mediator
 
     @Test
     fun `should process command with async pipeline`() {
         runBlocking {
-            commandBus.executeCommandAsync(MyPipelineCommand())
+            commandBus.send(MyPipelineCommand())
         }
 
         assertTrue { asyncPipelinePreProcessCounter == 1 }
@@ -50,7 +50,7 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val act = suspend { commandBus.executeCommandAsync(MyBrokenCommand()) }
+        val act = suspend { commandBus.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
         assertTrue { asyncPipelineExceptionCounter == 1 }
@@ -63,20 +63,20 @@ class MyPipelineCommand : Command
 
 @ApplicationScoped
 @Startup
-class MyPipelineCommandAsyncHandler(
-    val commandBus: CommandBus,
-) : AsyncCommandHandler<MyPipelineCommand> {
-    override suspend fun handleAsync(command: MyPipelineCommand) {
+class MyPipelineCommandHandler(
+    val commandBus: Mediator,
+) : CommandHandler<MyPipelineCommand> {
+    override suspend fun handle(command: MyPipelineCommand) {
         commandAsyncTestCounter++
     }
 }
 
 @ApplicationScoped
 @Startup
-class MyBrokenAsyncHandler(
-    private val commandBus: CommandBus,
-) : AsyncCommandHandler<MyBrokenCommand> {
-    override suspend fun handleAsync(command: MyBrokenCommand) {
+class MyBrokenHandler(
+    private val commandBus: Mediator,
+) : CommandHandler<MyBrokenCommand> {
+    override suspend fun handle(command: MyBrokenCommand) {
         delay(500)
         throw Exception()
     }
@@ -84,9 +84,9 @@ class MyBrokenAsyncHandler(
 
 @ApplicationScoped
 @Startup
-class MyAsyncPipelineBehavior(
-    private val commandBus: CommandBus,
-) : AsyncPipelineBehavior {
+class MyPipelineBehavior(
+    private val commandBus: Mediator,
+) : PipelineBehavior {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++

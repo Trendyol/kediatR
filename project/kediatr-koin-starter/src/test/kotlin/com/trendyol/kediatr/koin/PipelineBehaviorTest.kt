@@ -1,12 +1,12 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.AsyncCommandHandler
-import com.trendyol.kediatr.AsyncCommandWithResultHandler
-import com.trendyol.kediatr.AsyncNotificationHandler
-import com.trendyol.kediatr.AsyncPipelineBehavior
-import com.trendyol.kediatr.AsyncQueryHandler
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.CommandWithResultHandler
+import com.trendyol.kediatr.NotificationHandler
+import com.trendyol.kediatr.PipelineBehavior
+import com.trendyol.kediatr.QueryHandler
 import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.Mediator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -34,11 +34,11 @@ class PipelineBehaviorTest : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { MyAsyncCommandHandler(get()) } bind AsyncCommandHandler::class
-                single { MyAsyncCommandRHandler(get()) } bind AsyncCommandWithResultHandler::class
-                single { MyFirstAsyncNotificationHandler(get()) } bind AsyncNotificationHandler::class
-                single { AsyncTestQueryHandler(get()) } bind AsyncQueryHandler::class
+                single { MyPipelineBehavior(get()) } bind MyPipelineBehavior::class
+                single { MyCommandHandler(get()) } bind CommandHandler::class
+                single { MyAsyncCommandRHandler(get()) } bind CommandWithResultHandler::class
+                single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
+                single { TestQueryHandler(get()) } bind QueryHandler::class
             }
         )
     }
@@ -52,12 +52,12 @@ class PipelineBehaviorTest : KoinTest {
         asyncPipelineExceptionCounter = 0
     }
 
-    private val commandBus by inject<CommandBus>()
+    private val commandBus by inject<Mediator>()
 
     @Test
     fun `should process command with async pipeline`() {
         runBlocking {
-            commandBus.executeCommandAsync(MyCommand())
+            commandBus.send(MyCommand())
         }
 
         assertTrue { asyncPipelinePreProcessCounter == 1 }
@@ -66,7 +66,7 @@ class PipelineBehaviorTest : KoinTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val act = suspend { commandBus.executeCommandAsync(MyBrokenCommand()) }
+        val act = suspend { commandBus.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
         assertTrue { asyncPipelineExceptionCounter == 1 }
@@ -75,18 +75,18 @@ class PipelineBehaviorTest : KoinTest {
 
 class MyBrokenCommand : Command
 
-class MyBrokenAsyncHandler(
-    private val commandBus: CommandBus,
-) : AsyncCommandHandler<MyBrokenCommand> {
-    override suspend fun handleAsync(command: MyBrokenCommand) {
+class MyBrokenHandler(
+    private val commandBus: Mediator,
+) : CommandHandler<MyBrokenCommand> {
+    override suspend fun handle(command: MyBrokenCommand) {
         delay(500)
         throw Exception()
     }
 }
 
-class MyAsyncPipelineBehavior(
-    private val commandBus: CommandBus,
-) : AsyncPipelineBehavior {
+class MyPipelineBehavior(
+    private val commandBus: Mediator,
+) : PipelineBehavior {
     override suspend fun <TRequest> preProcess(request: TRequest) {
         delay(500)
         asyncPipelinePreProcessCounter++

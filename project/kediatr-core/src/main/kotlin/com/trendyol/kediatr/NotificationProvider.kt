@@ -1,6 +1,6 @@
 package com.trendyol.kediatr
 
-internal class AsyncNotificationProvider<H : AsyncNotificationHandler<*>>(
+internal class NotificationProvider<H : NotificationHandler<*>>(
     private val dependencyProvider: DependencyProvider,
     private val type: Class<H>,
 ) {

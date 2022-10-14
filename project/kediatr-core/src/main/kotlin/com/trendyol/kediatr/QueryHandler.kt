@@ -7,11 +7,11 @@ package com.trendyol.kediatr
  * @param TQuery any [Query] subclass to handle
  * @see Query
  */
-interface AsyncQueryHandler<TQuery : Query<TResponse>, TResponse> {
+interface QueryHandler<TQuery : Query<TResponse>, TResponse> {
     /**
      * Handles a query
      *
      * @param query the query to handle
      */
-    suspend fun handleAsync(query: TQuery): TResponse
+    suspend fun handle(query: TQuery): TResponse
 }

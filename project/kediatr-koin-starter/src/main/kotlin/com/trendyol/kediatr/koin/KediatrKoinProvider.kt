@@ -1,6 +1,6 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.DependencyProvider
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.component.getScopeName
@@ -36,6 +36,6 @@ class KediatrKoinProvider : DependencyProvider {
 
 class KediatrKoin {
     companion object {
-        fun getCommandBus() = CommandBusBuilder(KediatrKoinProvider()).build()
+        fun getCommandBus() = MediatorBuilder(KediatrKoinProvider()).build()
     }
 }

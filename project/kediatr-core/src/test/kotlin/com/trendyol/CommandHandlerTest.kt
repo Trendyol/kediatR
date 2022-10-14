@@ -1,9 +1,9 @@
 package com.trendyol
 
-import com.trendyol.kediatr.AsyncCommandHandler
+import com.trendyol.kediatr.CommandHandler
 import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.CommandBus
-import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -18,18 +18,18 @@ class CommandHandlerTest {
     fun async_commandHandler_should_be_fired() = runBlocking {
         class MyAsyncCommand : Command
 
-        class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
+        class MyCommandHandler : CommandHandler<MyAsyncCommand> {
             var invocationCount = 0
-            override suspend fun handleAsync(command: MyAsyncCommand) {
+            override suspend fun handle(command: MyAsyncCommand) {
                 invocationCount++
             }
         }
 
-        val handler = AsyncMyCommandHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandHandler::class.java, handler))
+        val handler = MyCommandHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommandAsync(MyAsyncCommand())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyAsyncCommand())
 
         assertEquals(1, handler.invocationCount)
     }
@@ -40,11 +40,11 @@ class CommandHandlerTest {
 
         val handlers: HashMap<Class<*>, Any> = hashMapOf()
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
+        val bus: Mediator = MediatorBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                bus.executeCommandAsync(NonExistCommand())
+                bus.send(NonExistCommand())
             }
         }
 
@@ -55,20 +55,20 @@ class CommandHandlerTest {
     @Test
     fun inheritance_should_work() = runBlocking {
         class MyCommandForInheritance : Command
-        abstract class MyAsyncCommandHandlerFor<TCommand : Command> : AsyncCommandHandler<TCommand>
+        abstract class MyCommandHandlerFor<TCommand : Command> : CommandHandler<TCommand>
 
-        class MyInheritedAsyncCommandHandler : MyAsyncCommandHandlerFor<MyCommandForInheritance>() {
+        class MyInheritedCommandHandler : MyCommandHandlerFor<MyCommandForInheritance>() {
             var invocationCount = 0
-            override suspend fun handleAsync(command: MyCommandForInheritance) {
+            override suspend fun handle(command: MyCommandForInheritance) {
                 invocationCount++
             }
         }
 
-        val handler = MyInheritedAsyncCommandHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyInheritedAsyncCommandHandler::class.java, handler))
+        val handler = MyInheritedCommandHandler()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyInheritedCommandHandler::class.java, handler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommandAsync(MyCommandForInheritance())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyCommandForInheritance())
 
         assertEquals(1, handler.invocationCount)
     }
@@ -77,21 +77,21 @@ class CommandHandlerTest {
     fun inheritance_but_not_parameterized_should_work() = runBlocking {
         class MyCommandForInheritance : Command
 
-        abstract class MyAsyncCommandHandlerBaseForSpecificCommand : AsyncCommandHandler<MyCommandForInheritance>
+        abstract class MyCommandHandlerBaseForSpecificCommand : CommandHandler<MyCommandForInheritance>
 
-        class MyInheritedAsyncCommandHandlerForSpecificCommand : MyAsyncCommandHandlerBaseForSpecificCommand() {
+        class MyInheritedCommandHandlerForSpecificCommand : MyCommandHandlerBaseForSpecificCommand() {
             var invocationCount = 0
-            override suspend fun handleAsync(command: MyCommandForInheritance) {
+            override suspend fun handle(command: MyCommandForInheritance) {
                 invocationCount++
             }
         }
 
-        val handler = MyInheritedAsyncCommandHandlerForSpecificCommand()
+        val handler = MyInheritedCommandHandlerForSpecificCommand()
         val handlers: HashMap<Class<*>, Any> =
-            hashMapOf(Pair(MyInheritedAsyncCommandHandlerForSpecificCommand::class.java, handler))
+            hashMapOf(Pair(MyInheritedCommandHandlerForSpecificCommand::class.java, handler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommandAsync(MyCommandForInheritance())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyCommandForInheritance())
 
         assertEquals(1, handler.invocationCount)
     }
@@ -103,22 +103,22 @@ class CommandHandlerTest {
         fun async_command_should_be_fired() = runBlocking {
             class ParameterizedCommand<T>(val param: T) : Command
 
-            class ParameterizedAsyncCommandHandler<A> : AsyncCommandHandler<ParameterizedCommand<A>> {
+            class ParameterizedCommandHandler<A> : CommandHandler<ParameterizedCommand<A>> {
                 var invocationCount = 0
-                override suspend fun handleAsync(command: ParameterizedCommand<A>) {
+                override suspend fun handle(command: ParameterizedCommand<A>) {
                     invocationCount++
                 }
             }
 
             // given
-            val handler = ParameterizedAsyncCommandHandler<ParameterizedCommand<String>>()
+            val handler = ParameterizedCommandHandler<ParameterizedCommand<String>>()
             val handlers: HashMap<Class<*>, Any> =
-                hashMapOf(Pair(ParameterizedAsyncCommandHandler::class.java, handler))
+                hashMapOf(Pair(ParameterizedCommandHandler::class.java, handler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
+            val bus: Mediator = MediatorBuilder(provider).build()
 
             // when
-            bus.executeCommandAsync(ParameterizedCommand("MyParam"))
+            bus.send(ParameterizedCommand("MyParam"))
 
             // then
             assertEquals(1, handler.invocationCount)
@@ -128,24 +128,24 @@ class CommandHandlerTest {
         fun async_commandHandler_with_inheritance_should_be_fired() = runBlocking {
             class ParameterizedCommand<T>(val param: T) : Command
 
-            abstract class ParameterizedCommandHandlerBase<A> : AsyncCommandHandler<ParameterizedCommand<A>>
+            abstract class ParameterizedCommandHandlerBase<A> : CommandHandler<ParameterizedCommand<A>>
 
-            class ParameterizedAsyncCommandHandler<A> : ParameterizedCommandHandlerBase<A>() {
+            class ParameterizedCommandHandler<A> : ParameterizedCommandHandlerBase<A>() {
                 var invocationCount = 0
-                override suspend fun handleAsync(command: ParameterizedCommand<A>) {
+                override suspend fun handle(command: ParameterizedCommand<A>) {
                     invocationCount++
                 }
             }
 
             // given
-            val handler = ParameterizedAsyncCommandHandler<ParameterizedCommand<String>>()
+            val handler = ParameterizedCommandHandler<ParameterizedCommand<String>>()
             val handlers: HashMap<Class<*>, Any> =
-                hashMapOf(Pair(ParameterizedAsyncCommandHandler::class.java, handler))
+                hashMapOf(Pair(ParameterizedCommandHandler::class.java, handler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
+            val bus: Mediator = MediatorBuilder(provider).build()
 
             // when
-            bus.executeCommandAsync(ParameterizedCommand("MyParam"))
+            bus.send(ParameterizedCommand("MyParam"))
 
             // then
             assertEquals(1, handler.invocationCount)

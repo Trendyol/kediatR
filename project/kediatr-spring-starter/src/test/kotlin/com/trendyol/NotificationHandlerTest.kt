@@ -1,7 +1,7 @@
 package com.trendyol
 
-import com.trendyol.kediatr.AsyncNotificationHandler
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.NotificationHandler
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.Notification
 import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
@@ -17,7 +17,7 @@ var asyncNotificationTestCounter = 0
 @SpringBootTest(
     classes = [
         KediatrConfiguration::class,
-        MyFirstAsyncNotificationHandler::class
+        MyFirstNotificationHandler::class
     ]
 )
 class NotificationHandlerTest {
@@ -28,11 +28,11 @@ class NotificationHandlerTest {
     }
 
     @Autowired
-    lateinit var commandBus: CommandBus
+    lateinit var commandBus: Mediator
 
     @Test
     fun `async notificationHandler should be fired`() = runBlocking {
-        commandBus.publishNotificationAsync(MyNotification())
+        commandBus.publish(MyNotification())
 
         assertTrue {
             asyncNotificationTestCounter == 1
@@ -42,7 +42,7 @@ class NotificationHandlerTest {
 
 class MyNotification : Notification
 
-class MyFirstAsyncNotificationHandler : AsyncNotificationHandler<MyNotification> {
+class MyFirstNotificationHandler : NotificationHandler<MyNotification> {
     override suspend fun handle(notification: MyNotification) {
         delay(500)
         asyncNotificationTestCounter++

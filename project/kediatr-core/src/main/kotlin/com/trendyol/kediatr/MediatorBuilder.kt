@@ -1,6 +1,6 @@
 package com.trendyol.kediatr
 
-class CommandBusBuilder(
+class MediatorBuilder(
     private val dependencyProvider: DependencyProvider,
 ) {
     internal var publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
@@ -17,12 +17,12 @@ class CommandBusBuilder(
      * @see [ParallelNoWaitPublishStrategy]
      * @see [ParallelWhenAllPublishStrategy]
      */
-    fun withPublishStrategy(publishStrategy: PublishStrategy): CommandBusBuilder {
+    fun withPublishStrategy(publishStrategy: PublishStrategy): MediatorBuilder {
         this.publishStrategy = publishStrategy
         return this
     }
 
-    fun build(registry: Registry = RegistryImpl(dependencyProvider)): CommandBus {
-        return CommandBusImpl(registry, publishStrategy)
+    fun build(registry: Registry = RegistryImpl(dependencyProvider)): Mediator {
+        return MediatorImpl(registry, publishStrategy)
     }
 }

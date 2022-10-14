@@ -1,7 +1,7 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.AsyncQueryHandler
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.QueryHandler
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.HandlerNotFoundException
 import com.trendyol.kediatr.Query
 import kotlinx.coroutines.runBlocking
@@ -17,7 +17,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 class QueryHandlerTest : KoinTest {
-    private val commandBus by inject<CommandBus>()
+    private val commandBus by inject<Mediator>()
 
     @JvmField
     @RegisterExtension
@@ -25,8 +25,8 @@ class QueryHandlerTest : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { AsyncTestQueryHandler(get()) } bind AsyncQueryHandler::class
+                single { MyPipelineBehavior(get()) } bind MyPipelineBehavior::class
+                single { TestQueryHandler(get()) } bind QueryHandler::class
             }
         )
     }
@@ -35,7 +35,7 @@ class QueryHandlerTest : KoinTest {
     fun `should throw exception if given async query does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.executeQueryAsync(NonExistQuery())
+                commandBus.send(NonExistQuery())
             }
         }
 
@@ -47,10 +47,10 @@ class QueryHandlerTest : KoinTest {
 class NonExistQuery : Query<String>
 class TestQuery(val id: Int) : Query<String>
 
-class AsyncTestQueryHandler(
-    private val commandBus: CommandBus,
-) : AsyncQueryHandler<TestQuery, String> {
-    override suspend fun handleAsync(query: TestQuery): String {
+class TestQueryHandler(
+    private val commandBus: Mediator,
+) : QueryHandler<TestQuery, String> {
+    override suspend fun handle(query: TestQuery): String {
         return "hello " + query.id
     }
 }

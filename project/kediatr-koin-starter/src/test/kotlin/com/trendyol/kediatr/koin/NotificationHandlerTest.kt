@@ -1,7 +1,7 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.AsyncNotificationHandler
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.NotificationHandler
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.Notification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -25,8 +25,8 @@ class NotificationHandlerTest : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { MyFirstAsyncNotificationHandler(get()) } bind AsyncNotificationHandler::class
+                single { MyPipelineBehavior(get()) } bind MyPipelineBehavior::class
+                single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
             }
         )
     }
@@ -36,11 +36,11 @@ class NotificationHandlerTest : KoinTest {
         asyncNotificationTestCounter = 0
     }
 
-    private val commandBus by inject<CommandBus>()
+    private val commandBus by inject<Mediator>()
 
     @Test
     fun `async notificationHandler should be fired`() = runBlocking {
-        commandBus.publishNotificationAsync(MyNotification())
+        commandBus.publish(MyNotification())
 
         assertTrue {
             asyncNotificationTestCounter == 1
@@ -50,9 +50,9 @@ class NotificationHandlerTest : KoinTest {
 
 class MyNotification : Notification
 
-class MyFirstAsyncNotificationHandler(
-    private val commandBus: CommandBus,
-) : AsyncNotificationHandler<MyNotification> {
+class MyFirstNotificationHandler(
+    private val commandBus: Mediator,
+) : NotificationHandler<MyNotification> {
     override suspend fun handle(notification: MyNotification) {
         delay(500)
         asyncNotificationTestCounter++

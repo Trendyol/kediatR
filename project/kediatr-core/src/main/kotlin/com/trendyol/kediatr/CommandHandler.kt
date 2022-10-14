@@ -7,11 +7,11 @@ package com.trendyol.kediatr
  * @param TCommand any [Command] subclass to handle
  * @see Command
  */
-interface AsyncCommandHandler<TCommand : Command> {
+interface CommandHandler<TCommand : Command> {
     /**
      * Handles a command
      *
      * @param command the command to handle
      */
-    suspend fun handleAsync(command: TCommand)
+    suspend fun handle(command: TCommand)
 }

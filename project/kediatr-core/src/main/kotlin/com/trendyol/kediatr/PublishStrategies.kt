@@ -4,9 +4,9 @@ import kotlinx.coroutines.*
 
 class ContinueOnExceptionPublishStrategy : PublishStrategy {
 
-    override suspend fun <T : Notification> publishAsync(
+    override suspend fun <T : Notification> publish(
         notification: T,
-        notificationHandlers: Collection<AsyncNotificationHandler<T>>,
+        notificationHandlers: Collection<NotificationHandler<T>>,
         dispatcher: CoroutineDispatcher,
     ) {
         coroutineScope {
@@ -29,9 +29,9 @@ class ContinueOnExceptionPublishStrategy : PublishStrategy {
 
 class StopOnExceptionPublishStrategy : PublishStrategy {
 
-    override suspend fun <T : Notification> publishAsync(
+    override suspend fun <T : Notification> publish(
         notification: T,
-        notificationHandlers: Collection<AsyncNotificationHandler<T>>,
+        notificationHandlers: Collection<NotificationHandler<T>>,
         dispatcher: CoroutineDispatcher,
     ) {
         coroutineScope {
@@ -44,14 +44,14 @@ class StopOnExceptionPublishStrategy : PublishStrategy {
 
 class ParallelNoWaitPublishStrategy : PublishStrategy {
 
-    override suspend fun <T : Notification> publishAsync(
+    override suspend fun <T : Notification> publish(
         notification: T,
-        notificationHandlers: Collection<AsyncNotificationHandler<T>>,
+        notificationHandlers: Collection<NotificationHandler<T>>,
         dispatcher: CoroutineDispatcher,
     ) {
         coroutineScope {
             withContext(dispatcher) {
-                notificationHandlers.forEach { async { it.handle(notification) } }
+                notificationHandlers.forEach { launch { it.handle(notification) } }
             }
         }
     }
@@ -59,9 +59,9 @@ class ParallelNoWaitPublishStrategy : PublishStrategy {
 
 class ParallelWhenAllPublishStrategy : PublishStrategy {
 
-    override suspend fun <T : Notification> publishAsync(
+    override suspend fun <T : Notification> publish(
         notification: T,
-        notificationHandlers: Collection<AsyncNotificationHandler<T>>,
+        notificationHandlers: Collection<NotificationHandler<T>>,
         dispatcher: CoroutineDispatcher,
     ) {
         coroutineScope {

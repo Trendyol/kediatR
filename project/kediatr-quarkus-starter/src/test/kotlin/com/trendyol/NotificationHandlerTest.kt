@@ -1,7 +1,7 @@
 package com.trendyol
 
-import com.trendyol.kediatr.AsyncNotificationHandler
-import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.NotificationHandler
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.Notification
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
@@ -24,11 +24,11 @@ class NotificationHandlerTest {
     }
 
     @Inject
-    lateinit var commandBus: CommandBus
+    lateinit var commandBus: Mediator
 
     @Test
     fun `async notificationHandler should be fired`() = runBlocking {
-        commandBus.publishNotificationAsync(MyNotification())
+        commandBus.publish(MyNotification())
 
         assertTrue {
             asyncNotificationTestCounter == 1
@@ -40,9 +40,9 @@ class MyNotification : Notification
 
 @ApplicationScoped
 @Startup
-class MyFirstAsyncNotificationHandler(
-    private val commandBus: CommandBus,
-) : AsyncNotificationHandler<MyNotification> {
+class MyFirstNotificationHandler(
+    private val commandBus: Mediator,
+) : NotificationHandler<MyNotification> {
     override suspend fun handle(notification: MyNotification) {
         delay(500)
         asyncNotificationTestCounter++

@@ -1,9 +1,9 @@
 package com.trendyol
 
-import com.trendyol.kediatr.AsyncCommandWithResultHandler
+import com.trendyol.kediatr.CommandWithResultHandler
 import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.CommandBus
-import com.trendyol.kediatr.CommandBusBuilder
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.CommandWithResult
 import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.delay
@@ -30,8 +30,8 @@ class CommandWithResultHandlerTest {
         val handler = AsyncMyCommandRHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandRHandler::class.java, handler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommandAsync(MyAsyncCommandR())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyAsyncCommandR())
 
         assertTrue {
             asyncTestCounter == 1
@@ -41,10 +41,10 @@ class CommandWithResultHandlerTest {
     @Test
     fun `should throw exception if given async command has not been registered before`() {
         val provider = ManualDependencyProvider(hashMapOf())
-        val bus: CommandBus = CommandBusBuilder(provider).build()
+        val bus: Mediator = MediatorBuilder(provider).build()
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                bus.executeCommandAsync(NonExistCommandR())
+                bus.send(NonExistCommandR())
             }
         }
 
@@ -58,8 +58,8 @@ class CommandWithResultHandlerTest {
 
         class MyAsyncCommand : CommandWithResult<Result>
 
-        class AsyncMyCommandHandler : AsyncCommandWithResultHandler<MyAsyncCommand, Result> {
-            override suspend fun handleAsync(command: MyAsyncCommand): Result {
+        class AsyncMyCommandHandler : CommandWithResultHandler<MyAsyncCommand, Result> {
+            override suspend fun handle(command: MyAsyncCommand): Result {
                 invocationCount++
                 return Result()
             }
@@ -68,8 +68,8 @@ class CommandWithResultHandlerTest {
         val handler = AsyncMyCommandHandler()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandHandler::class.java, handler))
         val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommandAsync(MyAsyncCommand())
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyAsyncCommand())
 
         assertEquals(1, invocationCount)
     }
@@ -84,8 +84,8 @@ class CommandWithResultHandlerTest {
         inner class ParameterizedCommandWithResult<TParam>(val param: TParam) : CommandWithResult<String>
 
         inner class ParatemerizedAsyncCommandWithResultHandler<TParam> :
-          AsyncCommandWithResultHandler<ParameterizedCommandWithResult<TParam>, String> {
-            override suspend fun handleAsync(command: ParameterizedCommandWithResult<TParam>): String {
+          CommandWithResultHandler<ParameterizedCommandWithResult<TParam>, String> {
+            override suspend fun handle(command: ParameterizedCommandWithResult<TParam>): String {
                 counter++
                 return command.param.toString()
             }
@@ -97,10 +97,10 @@ class CommandWithResultHandlerTest {
             val handler = ParatemerizedAsyncCommandWithResultHandler<ParameterizedCommandWithResult<Long>>()
             val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParatemerizedAsyncCommandWithResultHandler::class.java, handler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
+            val bus: Mediator = MediatorBuilder(provider).build()
 
             // when
-            val result = bus.executeCommandAsync(ParameterizedCommandWithResult(61L))
+            val result = bus.send(ParameterizedCommandWithResult(61L))
 
             // then
             assertTrue { counter == 1 }
@@ -114,10 +114,10 @@ class CommandWithResultHandlerTest {
             class ParameterizedCommandWithResult<TParam>(val param: TParam) : CommandWithResult<String>
 
             abstract class ParameterizedCommandWithResultHandlerBase<TParam : CommandWithResult<String>> :
-              AsyncCommandWithResultHandler<TParam, String>
+              CommandWithResultHandler<TParam, String>
 
             class Handler<TParam> : ParameterizedCommandWithResultHandlerBase<ParameterizedCommandWithResult<TParam>>() {
-                override suspend fun handleAsync(command: ParameterizedCommandWithResult<TParam>): String {
+                override suspend fun handle(command: ParameterizedCommandWithResult<TParam>): String {
                     invocationCount++
                     return command.param.toString()
                 }
@@ -126,10 +126,10 @@ class CommandWithResultHandlerTest {
             val handler = Handler<ParameterizedCommandWithResult<Long>>()
             val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(Handler::class.java, handler))
             val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
+            val bus: Mediator = MediatorBuilder(provider).build()
 
             // when
-            val result = bus.executeCommandAsync(ParameterizedCommandWithResult("invoked"))
+            val result = bus.send(ParameterizedCommandWithResult("invoked"))
 
             // then
             assertEquals(1, invocationCount)
@@ -144,8 +144,8 @@ private class MyCommandR : CommandWithResult<Result>
 
 private class MyAsyncCommandR : CommandWithResult<Result>
 
-private class AsyncMyCommandRHandler : AsyncCommandWithResultHandler<MyAsyncCommandR, Result> {
-    override suspend fun handleAsync(command: MyAsyncCommandR): Result {
+private class AsyncMyCommandRHandler : CommandWithResultHandler<MyAsyncCommandR, Result> {
+    override suspend fun handle(command: MyAsyncCommandR): Result {
         delay(500)
         asyncTestCounter++
 
