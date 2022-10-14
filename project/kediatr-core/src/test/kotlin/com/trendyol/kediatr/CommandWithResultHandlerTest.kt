@@ -1,11 +1,5 @@
-package com.trendyol
+package com.trendyol.kediatr
 
-import com.trendyol.kediatr.CommandWithResultHandler
-import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.Mediator
-import com.trendyol.kediatr.MediatorBuilder
-import com.trendyol.kediatr.CommandWithResult
-import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
@@ -49,7 +43,7 @@ class CommandWithResultHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
+        assertEquals("handler could not be found for com.trendyol.kediatr.NonExistCommandR", exception.message)
     }
 
     @Test
@@ -84,7 +78,7 @@ class CommandWithResultHandlerTest {
         inner class ParameterizedCommandWithResult<TParam>(val param: TParam) : CommandWithResult<String>
 
         inner class ParatemerizedAsyncCommandWithResultHandler<TParam> :
-          CommandWithResultHandler<ParameterizedCommandWithResult<TParam>, String> {
+            CommandWithResultHandler<ParameterizedCommandWithResult<TParam>, String> {
             override suspend fun handle(command: ParameterizedCommandWithResult<TParam>): String {
                 counter++
                 return command.param.toString()
@@ -114,7 +108,7 @@ class CommandWithResultHandlerTest {
             class ParameterizedCommandWithResult<TParam>(val param: TParam) : CommandWithResult<String>
 
             abstract class ParameterizedCommandWithResultHandlerBase<TParam : CommandWithResult<String>> :
-              CommandWithResultHandler<TParam, String>
+                CommandWithResultHandler<TParam, String>
 
             class Handler<TParam> : ParameterizedCommandWithResultHandlerBase<ParameterizedCommandWithResult<TParam>>() {
                 override suspend fun handle(command: ParameterizedCommandWithResult<TParam>): String {

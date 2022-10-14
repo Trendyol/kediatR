@@ -1,12 +1,17 @@
-package com.trendyol
+package com.trendyol.kediatr.spring
 
-import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
+import com.trendyol.kediatr.HandlerNotFoundException
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.Query
+import com.trendyol.kediatr.QueryHandler
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @SpringBootTest(classes = [KediatrConfiguration::class, TestQueryHandler::class])
 class QueryHandlerTest {
@@ -32,7 +37,7 @@ class QueryHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistQuery")
+        assertEquals("handler could not be found for com.trendyol.kediatr.spring.NonExistQuery", exception.message)
     }
 }
 

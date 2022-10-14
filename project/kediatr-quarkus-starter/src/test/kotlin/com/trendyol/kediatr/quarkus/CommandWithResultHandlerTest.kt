@@ -1,4 +1,4 @@
-package com.trendyol
+package com.trendyol.kediatr.quarkus
 
 import com.trendyol.kediatr.*
 import io.quarkus.runtime.Startup
@@ -42,7 +42,7 @@ class CommandWithResultHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
+        assertEquals( "handler could not be found for com.trendyol.kediatr.quarkus.NonExistCommandR",exception.message)
     }
 }
 

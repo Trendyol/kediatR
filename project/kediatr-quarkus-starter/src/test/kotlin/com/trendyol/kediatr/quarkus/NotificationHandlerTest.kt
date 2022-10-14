@@ -1,4 +1,4 @@
-package com.trendyol
+package com.trendyol.kediatr.quarkus
 
 import com.trendyol.kediatr.NotificationHandler
 import com.trendyol.kediatr.Mediator

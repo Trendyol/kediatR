@@ -1,7 +1,6 @@
-package com.trendyol
+package com.trendyol.kediatr.spring
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -41,7 +40,7 @@ class CommandWithResultHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommandR")
+        assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.spring.NonExistCommandR")
     }
 }
 

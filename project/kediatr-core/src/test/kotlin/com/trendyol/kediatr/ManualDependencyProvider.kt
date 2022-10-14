@@ -1,8 +1,7 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package com.trendyol
+package com.trendyol.kediatr
 
-import com.trendyol.kediatr.DependencyProvider
 import java.lang.reflect.ParameterizedType
 
 class ManualDependencyProvider(

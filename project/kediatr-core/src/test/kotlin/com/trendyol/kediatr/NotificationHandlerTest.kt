@@ -1,6 +1,5 @@
-package com.trendyol
+package com.trendyol.kediatr
 
-import com.trendyol.kediatr.*
 import java.util.concurrent.CountDownLatch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested

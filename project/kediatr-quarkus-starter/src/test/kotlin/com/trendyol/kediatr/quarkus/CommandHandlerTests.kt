@@ -1,6 +1,9 @@
-package com.trendyol
+package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.Command
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.HandlerNotFoundException
+import com.trendyol.kediatr.Mediator
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
 import javax.enterprise.context.ApplicationScoped
@@ -8,7 +11,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @QuarkusTest
 class CommandHandlerTests {
@@ -32,7 +38,7 @@ class CommandHandlerTests {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals("handler could not be found for com.trendyol.kediatr.quarkus.NonExistCommand", exception.message)
     }
 }
 

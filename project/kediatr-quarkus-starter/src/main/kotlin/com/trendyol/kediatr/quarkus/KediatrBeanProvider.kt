@@ -1,10 +1,10 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package com.trendyol
+package com.trendyol.kediatr.quarkus
 
+import com.trendyol.kediatr.DependencyProvider
 import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.MediatorBuilder
-import com.trendyol.kediatr.DependencyProvider
 import io.quarkus.runtime.Startup
 import java.util.concurrent.ConcurrentHashMap
 import javax.enterprise.context.ApplicationScoped

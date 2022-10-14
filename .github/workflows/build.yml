@@ -1,4 +1,4 @@
-name: Release kediatR-quarkus-starter
+name: Release kediatR-core
 
 # Run workflow on manually
 on: [ workflow_dispatch ]
@@ -16,11 +16,11 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          mvn clean verify
-        working-directory: kediatr-quarkus-starter
+          ./gradlew build
+        working-directory: kediatr-core
       - uses: codecov/codecov-action@v2
         with:
-          files: target/site/jacoco/jacoco.xml
+          files: build/site/jacoco/jacoco.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
@@ -34,4 +34,4 @@ jobs:
           gpg_passphrase: ${{ secrets.gpg_passphrase }}
           nexus_username: ${{ secrets.nexus_username }}
           nexus_password: ${{ secrets.nexus_password }}
-          directory: kediatr-quarkus-starter
+          directory: kediatr-core

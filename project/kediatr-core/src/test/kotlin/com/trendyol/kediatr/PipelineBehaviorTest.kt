@@ -1,10 +1,5 @@
-package com.trendyol
+package com.trendyol.kediatr
 
-import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.CommandHandler
-import com.trendyol.kediatr.Mediator
-import com.trendyol.kediatr.MediatorBuilder
-import com.trendyol.kediatr.PipelineBehavior
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test

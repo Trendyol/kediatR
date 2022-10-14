@@ -1,6 +1,9 @@
-package com.trendyol
+package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.HandlerNotFoundException
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.Query
+import com.trendyol.kediatr.QueryHandler
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
 import javax.enterprise.context.ApplicationScoped
@@ -25,7 +28,7 @@ class QueryHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistQuery")
+        assertEquals("handler could not be found for com.trendyol.kediatr.quarkus.NonExistQuery", exception.message)
     }
 }
 
