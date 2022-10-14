@@ -1,4 +1,4 @@
-package com.trendyol
+package com.trendyol.kediatr.spring
 
 import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.MediatorImpl

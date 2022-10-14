@@ -1,13 +1,18 @@
-package com.trendyol
+package com.trendyol.kediatr.spring
 
-import com.trendyol.kediatr.*
-import com.trendyol.kediatr.spring.KediatrConfiguration
+import com.trendyol.kediatr.Command
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.HandlerNotFoundException
+import com.trendyol.kediatr.Mediator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 private var springTestCounter = 0
 private var springAsyncTestCounter = 0
@@ -41,7 +46,7 @@ class CommandHandlerTest {
         }
 
         assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
+        assertEquals("handler could not be found for com.trendyol.kediatr.spring.NonExistCommand", exception.message)
     }
 }
 

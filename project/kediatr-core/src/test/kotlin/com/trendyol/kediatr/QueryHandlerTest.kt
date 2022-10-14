@@ -1,10 +1,5 @@
-package com.trendyol
+package com.trendyol.kediatr
 
-import com.trendyol.kediatr.QueryHandler
-import com.trendyol.kediatr.Mediator
-import com.trendyol.kediatr.MediatorBuilder
-import com.trendyol.kediatr.HandlerNotFoundException
-import com.trendyol.kediatr.Query
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
