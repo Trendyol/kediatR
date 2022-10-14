@@ -1,5 +1,6 @@
 package com.trendyol.kediatr
 
+import com.trendyol.kediatr.MyResult.MyResultClass
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
