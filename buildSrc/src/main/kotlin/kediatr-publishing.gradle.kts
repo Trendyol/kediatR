@@ -1,5 +1,6 @@
 plugins {
-    id("maven-publish")
+    `maven-publish`
+    signing
 }
 
 afterEvaluate {
@@ -47,9 +48,30 @@ afterEvaluate {
                 // change to point to your repo, e.g. http://my.org/repo
                 val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                // url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-                url = uri(layout.buildDirectory.dir("mavenlocalpublish"))
+                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                // url = uri(layout.buildDirectory.dir("mavenlocalpublish"))
             }
         }
+    }
+
+    fun getProperty(
+        projectKey: String,
+        environmentKey: String,
+    ): String? {
+        return if (project.hasProperty(projectKey)) {
+            project.property(projectKey) as? String?
+        } else {
+            System.getenv(environmentKey)
+        }
+    }
+
+    val signingKey = getProperty(projectKey = "gpg.key", environmentKey = "gpg_private_key")
+    val passPhrase = getProperty(projectKey = "gpg.passphrase", environmentKey = "gpg_passphrase")
+    signing {
+        if (passPhrase == null) logger.warn(
+            "The passphrase for the signing key was not found. Either provide it as env variable 'gpg_passphrase' or as project property 'gpg_passphrase'. Otherwise the signing might fail!"
+        )
+        useInMemoryPgpKeys(signingKey, passPhrase)
+        sign(publishing.publications)
     }
 }

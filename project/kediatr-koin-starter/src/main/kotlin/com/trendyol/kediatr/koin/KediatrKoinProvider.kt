@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.trendyol.kediatr.koin
 
 import com.trendyol.kediatr.MediatorBuilder
