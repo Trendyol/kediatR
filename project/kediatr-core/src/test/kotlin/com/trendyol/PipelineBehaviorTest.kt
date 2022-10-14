@@ -1,7 +1,10 @@
 package com.trendyol
 
+import com.trendyol.MyResult.MyResultClass
 import com.trendyol.kediatr.Command
 import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.CommandWithResult
+import com.trendyol.kediatr.CommandWithResultHandler
 import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.PipelineBehavior
@@ -18,6 +21,7 @@ var pipelinePreProcessCounter = 0
 var pipelinePostProcessCounter = 0
 var pipelineExceptionCounter = 0
 var asyncPipelineExceptionCounter = 0
+var postProcessWithResult = false
 
 class PipelineBehaviorTest {
 
@@ -28,6 +32,7 @@ class PipelineBehaviorTest {
         pipelinePostProcessCounter = 0
         pipelineExceptionCounter = 0
         asyncPipelineExceptionCounter = 0
+        postProcessWithResult = false
     }
 
     private class MyCommand : Command
@@ -89,6 +94,19 @@ class PipelineBehaviorTest {
         assertEquals(1, asyncPipelinePreProcessCounter)
         assertEquals(1, asyncPipelinePostProcessCounter)
     }
+
+    @Test
+    fun `should process result in post process pipeline behavior`() = runBlocking {
+        val handler = MyCommandWithResultHandler()
+        val pipeline = MyResponsePipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> =
+            hashMapOf(Pair(MyCommandWithResultHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
+        val provider = ManualDependencyProvider(handlers)
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.send(MyCommandWithResult())
+
+        assertTrue { postProcessWithResult }
+    }
 }
 
 private abstract class MyBasePipelineBehaviour : PipelineBehavior
@@ -99,7 +117,7 @@ private class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
         asyncPipelinePreProcessCounter++
     }
 
-    override suspend fun <TRequest> postProcess(request: TRequest) {
+    override suspend fun <TRequest, TResponse> postProcess(request: TRequest, response: TResponse) {
         delay(500)
         asyncPipelinePostProcessCounter++
     }
@@ -128,7 +146,7 @@ private class MyPipelineBehavior : PipelineBehavior {
         asyncPipelinePreProcessCounter++
     }
 
-    override suspend fun <TRequest> postProcess(request: TRequest) {
+    override suspend fun <TRequest, TResponse> postProcess(request: TRequest, response: TResponse) {
         delay(500)
         asyncPipelinePostProcessCounter++
     }
@@ -139,5 +157,33 @@ private class MyPipelineBehavior : PipelineBehavior {
     ) {
         delay(500)
         asyncPipelineExceptionCounter++
+    }
+}
+
+sealed class MyResult {
+    object MyResultClass : MyResult()
+}
+private class MyCommandWithResult : CommandWithResult<MyResultClass>
+
+private class MyCommandWithResultHandler() : CommandWithResultHandler<MyCommandWithResult, MyResultClass> {
+    override suspend fun handle(command: MyCommandWithResult): MyResultClass {
+        return MyResultClass
+    }
+}
+
+private class MyResponsePipelineBehavior : PipelineBehavior {
+    override suspend fun <TRequest> preProcess(request: TRequest) {
+    }
+
+    override suspend fun <TRequest, TResponse> postProcess(request: TRequest, response: TResponse) {
+        if (response is MyResultClass) {
+            postProcessWithResult = true
+        }
+    }
+
+    override suspend fun <TRequest, TException : Exception> handleException(
+        request: TRequest,
+        exception: TException,
+    ) {
     }
 }

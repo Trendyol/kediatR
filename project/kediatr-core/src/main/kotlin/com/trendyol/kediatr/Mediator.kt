@@ -24,7 +24,7 @@ interface Mediator {
         try {
             pipelineBehaviors.forEach { it.preProcess(request) }
             val result = act()
-            pipelineBehaviors.forEach { it.postProcess(request) }
+            pipelineBehaviors.forEach { it.postProcess(request, result) }
             return result
         } catch (ex: Exception) {
             pipelineBehaviors.forEach { it.handleException(request, ex) }
