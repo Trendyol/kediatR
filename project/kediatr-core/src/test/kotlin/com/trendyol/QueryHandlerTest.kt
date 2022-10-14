@@ -5,7 +5,6 @@ import com.trendyol.kediatr.CommandBus
 import com.trendyol.kediatr.CommandBusBuilder
 import com.trendyol.kediatr.HandlerNotFoundException
 import com.trendyol.kediatr.Query
-import com.trendyol.kediatr.QueryHandler
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -15,28 +14,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class QueryHandlerTest {
-
-    @Test
-    fun queryHandler_should_retrieve_result() {
-        class TestQuery(val id: Int) : Query<String>
-
-        class TestQueryHandler : QueryHandler<TestQuery, String> {
-            override fun handle(query: TestQuery): String {
-                return "hello " + query.id
-            }
-        }
-
-        val handler = TestQueryHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(TestQueryHandler::class.java, handler))
-        val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-
-        val result = bus.executeQuery(TestQuery(1))
-
-        assertTrue {
-            result == "hello 1"
-        }
-    }
 
     @Test
     fun async_queryHandler_should_retrieve_result() = runBlocking {
@@ -77,34 +54,12 @@ class QueryHandlerTest {
         assertEquals("handler could not be found for ${NonExistQuery::class.java.typeName}", exception.message)
     }
 
-    @Test
-    fun should_throw_exception_if_given_query_has_not_been_registered_before() {
-        class NonExistQuery : Query<String>
-
-        val handlers: HashMap<Class<*>, Any> = hashMapOf()
-        val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-
-        val exception = assertFailsWith(HandlerNotFoundException::class) {
-            bus.executeQuery(NonExistQuery())
-        }
-
-        assertNotNull(exception)
-        assertEquals("handler could not be found for ${NonExistQuery::class.java.typeName}", exception.message)
-    }
-
     @Nested
     inner class ParamaterizedTests {
         inner class ParameterizedQuery<TParam, TResponse>(val param: TParam) : Query<TResponse>
 
         inner class ParameterizedAsyncQueryHandler<TParam> : AsyncQueryHandler<ParameterizedQuery<TParam, String>, String> {
             override suspend fun handleAsync(query: ParameterizedQuery<TParam, String>): String {
-                return query.param.toString()
-            }
-        }
-
-        inner class ParameterizedQueryHandler<TParam> : QueryHandler<ParameterizedQuery<TParam, String>, String> {
-            override fun handle(query: ParameterizedQuery<TParam, String>): String {
                 return query.param.toString()
             }
         }
@@ -119,21 +74,6 @@ class QueryHandlerTest {
 
             // when
             val result = bus.executeQueryAsync(ParameterizedQuery<Long, String>(61L))
-
-            // then
-            assertEquals("61", result)
-        }
-
-        @Test
-        fun query_should_be_fired_and_return_result() {
-            // given
-            val handler = ParameterizedQueryHandler<ParameterizedQuery<Long, String>>()
-            val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(ParameterizedQueryHandler::class.java, handler))
-            val provider = ManualDependencyProvider(handlers)
-            val bus: CommandBus = CommandBusBuilder(provider).build()
-
-            // when
-            val result = bus.executeQuery(ParameterizedQuery<Long, String>(61L))
 
             // then
             assertEquals("61", result)

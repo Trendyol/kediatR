@@ -1,6 +1,8 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.AsyncNotificationHandler
+import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.Notification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -23,11 +25,8 @@ class NotificationHandlerTest : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyPipelineBehavior(get()) } bind PipelineBehavior::class
                 single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
                 single { MyFirstAsyncNotificationHandler(get()) } bind AsyncNotificationHandler::class
-                single { MySecondNotificationHandler(get()) } bind NotificationHandler::class
             }
         )
     }
@@ -40,14 +39,6 @@ class NotificationHandlerTest : KoinTest {
     private val commandBus by inject<CommandBus>()
 
     @Test
-    fun `notificationHandler should be fired`() {
-        commandBus.publishNotification(MyNotification())
-        assertTrue {
-            notificationTestCounter == 2
-        }
-    }
-
-    @Test
     fun `async notificationHandler should be fired`() = runBlocking {
         commandBus.publishNotificationAsync(MyNotification())
 
@@ -58,22 +49,6 @@ class NotificationHandlerTest : KoinTest {
 }
 
 class MyNotification : Notification
-
-class MyFirstNotificationHandler(
-    private val commandBus: CommandBus,
-) : NotificationHandler<MyNotification> {
-    override fun handle(notification: MyNotification) {
-        notificationTestCounter++
-    }
-}
-
-class MySecondNotificationHandler(
-    private val commandBus: CommandBus,
-) : NotificationHandler<MyNotification> {
-    override fun handle(notification: MyNotification) {
-        notificationTestCounter++
-    }
-}
 
 class MyFirstAsyncNotificationHandler(
     private val commandBus: CommandBus,

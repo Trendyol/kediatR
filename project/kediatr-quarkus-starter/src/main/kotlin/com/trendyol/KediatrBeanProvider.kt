@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.trendyol
 
 import com.trendyol.kediatr.CommandBus

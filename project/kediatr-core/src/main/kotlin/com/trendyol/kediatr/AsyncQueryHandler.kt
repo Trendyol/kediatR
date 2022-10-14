@@ -6,7 +6,6 @@ package com.trendyol.kediatr
  * @since 1.0.0
  * @param TQuery any [Query] subclass to handle
  * @see Query
- * @see QueryHandler
  */
 interface AsyncQueryHandler<TQuery : Query<TResponse>, TResponse> {
     /**

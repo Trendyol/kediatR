@@ -1,6 +1,9 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.AsyncCommandHandler
+import com.trendyol.kediatr.Command
+import com.trendyol.kediatr.CommandBus
+import com.trendyol.kediatr.HandlerNotFoundException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -22,9 +25,7 @@ class CommandHandlerTests : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyPipelineBehavior(get()) } bind PipelineBehavior::class
                 single { MyAsyncPipelineBehavior(get()) } bind MyAsyncPipelineBehavior::class
-                single { MyCommandHandler(get()) } bind CommandHandler::class
                 single { MyAsyncCommandHandler(get()) } bind AsyncCommandHandler::class
             }
         )
@@ -35,14 +36,6 @@ class CommandHandlerTests : KoinTest {
     init {
         springTestCounter = 0
         springAsyncTestCounter = 0
-    }
-
-    @Test
-    fun `commandHandler should be fired`() {
-        commandBus.executeCommand(MyCommand())
-        assertTrue {
-            springTestCounter == 1
-        }
     }
 
     @Test
@@ -65,16 +58,6 @@ class CommandHandlerTests : KoinTest {
         assertNotNull(exception)
         assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.koin.NonExistCommand")
     }
-
-    @Test
-    fun `should throw exception if given command does not have handler bean`() {
-        val exception = assertFailsWith(HandlerNotFoundException::class) {
-            commandBus.executeCommand(NonExistCommand())
-        }
-
-        assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.kediatr.koin.NonExistCommand")
-    }
 }
 
 private var springTestCounter = 0
@@ -82,14 +65,6 @@ private var springAsyncTestCounter = 0
 
 class NonExistCommand : Command
 class MyCommand : Command
-
-class MyCommandHandler(
-    val commandBus: CommandBus,
-) : CommandHandler<MyCommand> {
-    override fun handle(command: MyCommand) {
-        springTestCounter++
-    }
-}
 
 class MyAsyncCommandHandler(
     val commandBus: CommandBus,

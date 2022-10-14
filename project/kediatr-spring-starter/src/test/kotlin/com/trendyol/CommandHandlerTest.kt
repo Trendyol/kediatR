@@ -12,7 +12,7 @@ import kotlin.test.*
 private var springTestCounter = 0
 private var springAsyncTestCounter = 0
 
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class, MyCommandHandler::class])
+@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandHandler::class])
 class CommandHandlerTest {
 
     init {
@@ -22,14 +22,6 @@ class CommandHandlerTest {
 
     @Autowired
     lateinit var commandBus: CommandBus
-
-    @Test
-    fun `commandHandler should be fired`() {
-        commandBus.executeCommand(MyCommand())
-        assertTrue {
-            springTestCounter == 1
-        }
-    }
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
@@ -51,28 +43,10 @@ class CommandHandlerTest {
         assertNotNull(exception)
         assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
     }
-
-    @Test
-    fun `should throw exception if given command does not have handler bean`() {
-        val exception = assertFailsWith(HandlerNotFoundException::class) {
-            commandBus.executeCommand(NonExistCommand())
-        }
-
-        assertNotNull(exception)
-        assertEquals(exception.message, "handler could not be found for com.trendyol.NonExistCommand")
-    }
 }
 
 class NonExistCommand : Command
 class MyCommand : Command
-
-class MyCommandHandler(
-    private val commandBus: CommandBus,
-) : CommandHandler<MyCommand> {
-    override fun handle(command: MyCommand) {
-        springTestCounter++
-    }
-}
 
 class MyAsyncCommandHandler : AsyncCommandHandler<MyCommand> {
     override suspend fun handleAsync(command: MyCommand) {

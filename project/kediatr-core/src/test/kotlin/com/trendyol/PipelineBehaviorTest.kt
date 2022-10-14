@@ -28,31 +28,12 @@ class PipelineBehaviorTest {
 
     private class MyCommand : Command
 
-    private class MyCommandHandler() : CommandHandler<MyCommand> {
-        override fun handle(command: MyCommand) {
-        }
-    }
-
     private class MyAsyncCommand : Command
 
     private class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
         override suspend fun handleAsync(command: MyAsyncCommand) {
             delay(500)
         }
-    }
-
-    @Test
-    fun `should process command with pipeline`() {
-        val handler = MyCommandHandler()
-        val pipeline = MyPipelineBehavior()
-        val handlers: HashMap<Class<*>, Any> =
-            hashMapOf(Pair(MyCommandHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
-        val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        bus.executeCommand(MyCommand())
-
-        assertTrue { pipelinePreProcessCounter == 1 }
-        assertTrue { pipelinePostProcessCounter == 1 }
     }
 
     @Test
@@ -72,20 +53,6 @@ class PipelineBehaviorTest {
 
         assertTrue { asyncPipelinePreProcessCounter == 1 }
         assertTrue { asyncPipelinePostProcessCounter == 1 }
-    }
-
-    @Test
-    fun `should process exception in handler`() {
-        val handler = MyBrokenHandler()
-        val pipeline = MyPipelineBehavior()
-        val handlers: HashMap<Class<*>, Any> =
-            hashMapOf(Pair(MyBrokenHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
-        val provider = ManualDependencyProvider(handlers)
-        val bus: CommandBus = CommandBusBuilder(provider).build()
-        val act = { bus.executeCommand(MyBrokenCommand()) }
-
-        assertThrows<Exception> { act() }
-        assertTrue { pipelineExceptionCounter == 1 }
     }
 
     @Test
@@ -135,7 +102,10 @@ private class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
         asyncPipelinePostProcessCounter++
     }
 
-    override suspend fun <TRequest, TException : Exception> handleException(request: TRequest, exception: TException) {
+    override suspend fun <TRequest, TException : Exception> handleException(
+        request: TRequest,
+        exception: TException,
+    ) {
         delay(500)
         asyncPipelineExceptionCounter++
     }
@@ -149,29 +119,9 @@ private class MyAsyncCommandHandler : AsyncCommandHandler<AsyncCommand> {
 
 private class MyBrokenCommand : Command
 
-private class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
-    override fun handle(command: MyBrokenCommand) {
-        throw Exception()
-    }
-}
-
 private class MyBrokenAsyncHandler : AsyncCommandHandler<MyBrokenCommand> {
     override suspend fun handleAsync(command: MyBrokenCommand) {
         throw Exception()
-    }
-}
-
-private class MyPipelineBehavior : PipelineBehavior {
-    override fun <TRequest> preProcess(request: TRequest) {
-        pipelinePreProcessCounter++
-    }
-
-    override fun <TRequest> postProcess(request: TRequest) {
-        pipelinePostProcessCounter++
-    }
-
-    override fun <TRequest, TException : Exception> handleExceptionProcess(request: TRequest, exception: TException) {
-        pipelineExceptionCounter++
     }
 }
 
@@ -186,7 +136,10 @@ private class MyAsyncPipelineBehavior : AsyncPipelineBehavior {
         asyncPipelinePostProcessCounter++
     }
 
-    override suspend fun <TRequest, TException : Exception> handleException(request: TRequest, exception: TException) {
+    override suspend fun <TRequest, TException : Exception> handleException(
+        request: TRequest,
+        exception: TException,
+    ) {
         delay(500)
         asyncPipelineExceptionCounter++
     }

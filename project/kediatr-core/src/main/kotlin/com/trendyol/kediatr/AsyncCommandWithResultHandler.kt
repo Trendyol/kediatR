@@ -6,7 +6,6 @@ package com.trendyol.kediatr
  * @since 1.0.16
  * @param TCommand any [Command] subclass to handle
  * @see Command
- * @see CommandHandler
  */
 interface AsyncCommandWithResultHandler<TCommand : CommandWithResult<TResult>, TResult> {
     /**
