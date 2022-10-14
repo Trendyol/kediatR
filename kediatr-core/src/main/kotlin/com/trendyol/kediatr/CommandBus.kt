@@ -5,7 +5,7 @@ interface CommandBus {
 
     fun <TCommand : Command> executeCommand(command: TCommand)
 
-    fun <TCommand : CommandWithResult<TResult>, TResult> executeCommand(command: TCommand) : TResult
+    fun <TCommand : CommandWithResult<TResult>, TResult> executeCommand(command: TCommand): TResult
 
     /**
      * Publishes the given notification to appropriate notification handlers
@@ -19,7 +19,7 @@ interface CommandBus {
 
     suspend fun <TCommand : Command> executeCommandAsync(command: TCommand)
 
-    suspend fun <TCommand : CommandWithResult<TResult>, TResult> executeCommandAsync(command: TCommand) : TResult
+    suspend fun <TCommand : CommandWithResult<TResult>, TResult> executeCommandAsync(command: TCommand): TResult
 
     /**
      * Publishes the given notification to appropriate notification handlers
@@ -29,11 +29,15 @@ interface CommandBus {
      */
     suspend fun <T : Notification> publishNotificationAsync(notification: T)
 
-    fun <TRequest, TResponse> processPipeline(pipelineBehaviors: Collection<PipelineBehavior>, request: TRequest, act: () -> TResponse): TResponse {
+    fun <TRequest, TResponse> processPipeline(
+        pipelineBehaviors: Collection<PipelineBehavior>,
+        request: TRequest,
+        act: () -> TResponse
+    ): TResponse {
         try {
             pipelineBehaviors.forEach { it.preProcess(request) }
             val result = act()
-            pipelineBehaviors.forEach { it.postProcess(request) }
+            pipelineBehaviors.forEach { it.postProcess(request, result) }
             return result
         } catch (ex: Exception) {
             pipelineBehaviors.forEach { it.handleExceptionProcess(request, ex) }
@@ -41,16 +45,19 @@ interface CommandBus {
         }
     }
 
-    suspend fun <TRequest, TResponse> processAsyncPipeline(asyncPipelineBehaviors: Collection<AsyncPipelineBehavior>, request: TRequest, act: suspend () -> TResponse): TResponse {
+    suspend fun <TRequest, TResponse> processAsyncPipeline(
+        asyncPipelineBehaviors: Collection<AsyncPipelineBehavior>,
+        request: TRequest,
+        act: suspend () -> TResponse
+    ): TResponse {
         try {
             asyncPipelineBehaviors.forEach { it.preProcess(request) }
             val result = act()
-            asyncPipelineBehaviors.forEach { it.postProcess(request) }
+            asyncPipelineBehaviors.forEach { it.postProcess(request, result) }
             return result
-        }catch (ex: Exception) {
+        } catch (ex: Exception) {
             asyncPipelineBehaviors.forEach { it.handleException(request, ex) }
             throw ex
         }
     }
 }
-

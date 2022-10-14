@@ -18,8 +18,9 @@ interface PipelineBehavior {
      * Process to invoke after handling any query, command or notification
      *
      * @param request the request to handle
+     * @param response the response to handle
      */
-    fun <TRequest> postProcess(request: TRequest)
+    fun <TRequest, TResponse> postProcess(request: TRequest, response: TResponse)
 
     /**
      * Process to invoke after any handler encounters an exception
