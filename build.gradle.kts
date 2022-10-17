@@ -5,9 +5,12 @@ plugins {
     kotlin("jvm") version "1.7.20"
     id("kediatr-publishing") apply false
     id("kediatr-signing")
+    id("kediatr-coverage")
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-    jacoco
-    id("jacoco-report-aggregation") apply true
+}
+
+jacoco {
+    reportsDirectory.set(rootProject.buildDir.resolve("jacoco"))
 }
 
 subprojectsOf("project") {
@@ -15,16 +18,11 @@ subprojectsOf("project") {
         plugin("kotlin")
         plugin("maven-publish")
         plugin("kediatr-publishing")
-        plugin("jacoco")
-        plugin("jacoco-report-aggregation")
-    }
-
-    jacoco {
-        reportsDirectory.set(rootProject.buildDir.resolve("jacoco"))
+        plugin("kediatr-coverage")
     }
 
     dependencies {
-        jacocoAggregation(project)
+        jacocoAggregation(project(project.path))
         implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     }
@@ -62,9 +60,14 @@ subprojectsOf("project") {
         dependsOn(tasks.test)
     }
 
-    // tasks.check {
-    //     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
-    // }
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+        reports {
+            xml.required.set(true)
+            csv.required.set(false)
+            html.required.set(false)
+        }
+    }
 }
 
 allprojects {

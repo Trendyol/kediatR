@@ -13,6 +13,3 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.quarkus:quarkus-junit5")
 }
-tasks.check {
-    dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
-}
