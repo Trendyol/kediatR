@@ -1,4 +1,4 @@
-name: Gradle Package
+name: v2.0 Gradle Package
 
 on:
   release:
