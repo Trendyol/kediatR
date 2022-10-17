@@ -14,13 +14,14 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
-      - name: Generate coverage report
+      - name: Gradle Build
         run: |
-          ./gradlew build
-        working-directory: .
-      - uses: codecov/codecov-action@v2
+          - ./gradlew build
+          - ls -al
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
         with:
-          files: build/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          files: ./build/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
