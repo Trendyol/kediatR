@@ -28,7 +28,6 @@ jobs:
           java-version: 11
 
       - name: Release Maven packages
-        uses: samuelmeuli/action-maven-publish@v1
         run: |
           ./gradlew publish
         with:
