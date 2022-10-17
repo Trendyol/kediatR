@@ -83,6 +83,10 @@ allprojects {
     }
 }
 
+tasks.check {
+    dependsOn(tasks.named("testCodeCoverageReport"))
+}
+
 fun subprojectsOf(
     vararg parentProjects: String,
     action: Action<Project>,
