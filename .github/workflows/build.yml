@@ -1,4 +1,4 @@
-name: Release kediatR-core
+name: v2.0 Build
 
 # Run workflow on manually
 on: push
