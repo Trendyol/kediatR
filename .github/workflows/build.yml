@@ -20,7 +20,7 @@ jobs:
         working-directory: .
       - uses: codecov/codecov-action@v2
         with:
-          files: build/jacoco/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          files: build/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
