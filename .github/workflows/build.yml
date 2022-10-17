@@ -3,7 +3,7 @@ name: Release kediatR-core
 # Run workflow on manually
 on: push
 jobs:
-  release:
+  build-and-test:
     runs-on: ubuntu-18.04
     steps:
       - name: Install Java and Maven
@@ -26,13 +26,3 @@ jobs:
           fail_ci_if_error: true
           verbose: true
           java-version: 11
-
-      - name: Release Maven packages
-        env:
-          gpg_private_key: ${{ secrets.gpg_private_key }}
-          gpg_passphrase: ${{ secrets.gpg_passphrase }}
-          nexus_username: ${{ secrets.nexus_username }}
-          nexus_password: ${{ secrets.nexus_password }}
-          directory: .
-        run: |
-          ./gradlew publish
