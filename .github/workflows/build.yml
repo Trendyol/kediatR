@@ -1,7 +1,7 @@
 name: Release kediatR-core
 
 # Run workflow on manually
-on: [ workflow_dispatch ]
+on: push
 jobs:
   release:
     runs-on: ubuntu-18.04
