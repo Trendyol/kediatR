@@ -1,11 +1,6 @@
 package com.trendyol.kediatr
 
 /**
- * RequestHandlerDelegate<TRequest, TResponse> represents to Command, Query or Notification handler
- */
-typealias RequestHandlerDelegate<TRequest, TResponse> = suspend (TRequest) -> TResponse
-
-/**
  * Interface to be implemented for a non-blocking pipeline behavior
  *
  * @since 1.0.12
