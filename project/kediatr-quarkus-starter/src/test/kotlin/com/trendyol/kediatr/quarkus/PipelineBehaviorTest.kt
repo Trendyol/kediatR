@@ -11,21 +11,21 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertTrue
 
-var asyncExceptionPipelineBehaviorHandleCounter = 0
-var asyncExceptionPipelineBehaviorHandleCatchCounter = 0
-var asyncLoggingPipelineBehaviorHandleBeforeNextCounter = 0
-var asyncLoggingPipelineBehaviorHandleAfterNextCounter = 0
-var commandAsyncTestCounter = 0
+var exceptionPipelineBehaviorHandleCounter = 0
+var exceptionPipelineBehaviorHandleCatchCounter = 0
+var loggingPipelineBehaviorHandleBeforeNextCounter = 0
+var loggingPipelineBehaviorHandleAfterNextCounter = 0
+var commandTestCounter = 0
 
 @QuarkusTest
 class PipelineBehaviorTest {
 
     init {
-        asyncExceptionPipelineBehaviorHandleCounter = 0
-        asyncExceptionPipelineBehaviorHandleCatchCounter = 0
-        asyncLoggingPipelineBehaviorHandleBeforeNextCounter = 0
-        asyncLoggingPipelineBehaviorHandleAfterNextCounter = 0
-        commandAsyncTestCounter = 0
+        exceptionPipelineBehaviorHandleCounter = 0
+        exceptionPipelineBehaviorHandleCatchCounter = 0
+        loggingPipelineBehaviorHandleBeforeNextCounter = 0
+        loggingPipelineBehaviorHandleAfterNextCounter = 0
+        commandTestCounter = 0
     }
 
     @Inject
@@ -37,11 +37,11 @@ class PipelineBehaviorTest {
             commandBus.send(MyPipelineCommand())
         }
 
-        assertTrue { commandAsyncTestCounter == 1 }
-        assertTrue { asyncExceptionPipelineBehaviorHandleCatchCounter == 0 }
-        assertTrue { asyncExceptionPipelineBehaviorHandleCounter == 1 }
-        assertTrue { asyncLoggingPipelineBehaviorHandleBeforeNextCounter == 1 }
-        assertTrue { asyncLoggingPipelineBehaviorHandleAfterNextCounter == 1 }
+        assertTrue { commandTestCounter == 1 }
+        assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 0 }
+        assertTrue { exceptionPipelineBehaviorHandleCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleBeforeNextCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleAfterNextCounter == 1 }
     }
 
     @Test
@@ -50,11 +50,11 @@ class PipelineBehaviorTest {
 
         assertThrows<Exception> { runBlocking { act() } }
 
-        assertTrue { commandAsyncTestCounter == 0 }
-        assertTrue { asyncExceptionPipelineBehaviorHandleCatchCounter == 1 }
-        assertTrue { asyncExceptionPipelineBehaviorHandleCounter == 1 }
-        assertTrue { asyncLoggingPipelineBehaviorHandleBeforeNextCounter == 1 }
-        assertTrue { asyncLoggingPipelineBehaviorHandleAfterNextCounter == 0 }
+        assertTrue { commandTestCounter == 0 }
+        assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 1 }
+        assertTrue { exceptionPipelineBehaviorHandleCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleBeforeNextCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleAfterNextCounter == 0 }
     }
 }
 
@@ -68,7 +68,7 @@ class MyPipelineCommandHandler(
     val commandBus: Mediator,
 ) : CommandHandler<MyPipelineCommand> {
     override suspend fun handle(command: MyPipelineCommand) {
-        commandAsyncTestCounter++
+        commandTestCounter++
     }
 }
 
@@ -88,13 +88,13 @@ class MyBrokenHandler(
 private class ExceptionPipelineBehavior : PipelineBehavior {
     override suspend fun <TRequest, TResponse> handle(
         request: TRequest,
-        next: suspend (TRequest) -> TResponse,
+        next: RequestHandlerDelegate<TRequest, TResponse>,
     ): TResponse {
         try {
-            asyncExceptionPipelineBehaviorHandleCounter++
+            exceptionPipelineBehaviorHandleCounter++
             return next(request)
         } catch (ex: Exception) {
-            asyncExceptionPipelineBehaviorHandleCatchCounter++
+            exceptionPipelineBehaviorHandleCatchCounter++
             throw ex
         }
     }
@@ -105,11 +105,11 @@ private class ExceptionPipelineBehavior : PipelineBehavior {
 private class LoggingPipelineBehavior : PipelineBehavior {
     override suspend fun <TRequest, TResponse> handle(
         request: TRequest,
-        next: suspend (TRequest) -> TResponse,
+        next: RequestHandlerDelegate<TRequest, TResponse>,
     ): TResponse {
-        asyncLoggingPipelineBehaviorHandleBeforeNextCounter++
+        loggingPipelineBehaviorHandleBeforeNextCounter++
         val result = next(request)
-        asyncLoggingPipelineBehaviorHandleAfterNextCounter++
+        loggingPipelineBehaviorHandleAfterNextCounter++
         return result
     }
 }

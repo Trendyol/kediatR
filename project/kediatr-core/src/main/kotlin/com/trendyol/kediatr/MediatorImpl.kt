@@ -32,4 +32,14 @@ class MediatorImpl(
     ) {
         publishStrategy.publish(notification, registry.resolveNotificationHandlers(notification.javaClass))
     }
+
+    private suspend fun <TRequest, TResponse> processPipeline(
+        pipelineBehaviors: Collection<PipelineBehavior>,
+        request: TRequest,
+        handler: RequestHandlerDelegate<TRequest, TResponse>,
+    ): TResponse = pipelineBehaviors
+      .reversed()
+      .fold(handler) { next, pipeline ->
+          { pipeline.handle(request) { next(it) } }
+      }(request)
 }

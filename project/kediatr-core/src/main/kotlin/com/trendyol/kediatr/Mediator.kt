@@ -15,18 +15,4 @@ interface Mediator {
      * @param T  any [Notification] subclass to publish
      */
     suspend fun <T : Notification> publish(notification: T)
-
-    suspend fun <TRequest, TResponse> processPipeline(
-        pipelineBehaviors: Collection<PipelineBehavior>,
-        request: TRequest,
-        handler: suspend (TRequest) -> TResponse,
-    ): TResponse = pipelineBehaviors.firstOrNull()?.let { pipeline ->
-
-        val next: suspend (TRequest) -> TResponse = { request ->
-            processPipeline(pipelineBehaviors.drop(1), request, handler)
-        }
-
-        return pipeline.handle(request, next)
-
-    } ?: handler(request)
 }
