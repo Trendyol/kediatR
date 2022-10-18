@@ -19,13 +19,12 @@ class MediatorImpl(
         registry.resolveCommandHandler(command.javaClass).handle(command)
     }
 
-    override suspend fun <TCommand : CommandWithResult<TResult>, TResult> send(command: TCommand): TResult =
-        processPipeline(
-            registry.getPipelineBehaviors(),
-            command
-        ) {
-            registry.resolveCommandWithResultHandler(command.javaClass).handle(command)
-        }
+    override suspend fun <TCommand : CommandWithResult<TResult>, TResult> send(command: TCommand): TResult = processPipeline(
+        registry.getPipelineBehaviors(),
+        command
+    ) {
+        registry.resolveCommandWithResultHandler(command.javaClass).handle(command)
+    }
 
     override suspend fun <T : Notification> publish(notification: T) = processPipeline(
         registry.getPipelineBehaviors(),

@@ -19,16 +19,14 @@ interface Mediator {
     suspend fun <TRequest, TResponse> processPipeline(
         pipelineBehaviors: Collection<PipelineBehavior>,
         request: TRequest,
-        act: suspend () -> TResponse,
-    ): TResponse {
-        try {
-            pipelineBehaviors.forEach { it.preProcess(request) }
-            val result = act()
-            pipelineBehaviors.forEach { it.postProcess(request) }
-            return result
-        } catch (ex: Exception) {
-            pipelineBehaviors.forEach { it.handleException(request, ex) }
-            throw ex
+        handler: suspend (TRequest) -> TResponse,
+    ): TResponse = pipelineBehaviors.firstOrNull()?.let { pipeline ->
+
+        val next: suspend (TRequest) -> TResponse = { request ->
+            processPipeline(pipelineBehaviors.drop(1), request, handler)
         }
-    }
+
+        return pipeline.handle(request, next)
+
+    } ?: handler(request)
 }
