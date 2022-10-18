@@ -172,7 +172,7 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Asyn
     }
 }
 
-class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
+class AsyncCommandProcessingPipeline : PipelineBehavior {
     override suspend fun <TRequest, TResponse> handle(request: TRequest, next: suspend (TRequest) -> TResponse): TResponse {
         println("Starting process.")
         val result = next(request)
