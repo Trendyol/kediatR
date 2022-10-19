@@ -1,9 +1,11 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.trendyol.kediatr.spring
 
 import com.trendyol.kediatr.DependencyProvider
 import org.springframework.context.ApplicationContext
 
-class KediatrSpringBeanProvider(
+class KediatRSpringBeanProvider(
     private val applicationContext: ApplicationContext,
 ) : DependencyProvider {
     override fun <T> getSingleInstanceOf(clazz: Class<T>): T {

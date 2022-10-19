@@ -11,7 +11,7 @@ import kotlin.test.*
 private var springTestCounter = 0
 private var springAsyncTestCounter = 0
 
-@SpringBootTest(classes = [KediatrConfiguration::class, MyAsyncCommandRHandler::class])
+@SpringBootTest(classes = [KediatRConfiguration::class, MyAsyncCommandRHandler::class])
 class CommandWithResultHandlerTest {
 
     init {

@@ -1,6 +1,5 @@
 name: v2.0 Build
 
-# Run workflow on manually
 on: [push, pull_request]
 jobs:
   build-and-test:
@@ -17,7 +16,6 @@ jobs:
       - name: Gradle Build
         run: |
            ./gradlew build
-           ls -al
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:

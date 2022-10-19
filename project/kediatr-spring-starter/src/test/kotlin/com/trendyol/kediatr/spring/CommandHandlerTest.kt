@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 private var springTestCounter = 0
 private var springAsyncTestCounter = 0
 
-@SpringBootTest(classes = [KediatrConfiguration::class, MyCommandHandler::class])
+@SpringBootTest(classes = [KediatRConfiguration::class, MyCommandHandler::class])
 class CommandHandlerTest {
 
     init {

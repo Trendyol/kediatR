@@ -15,7 +15,7 @@ var asyncNotificationTestCounter = 0
 
 @SpringBootTest(
     classes = [
-        KediatrConfiguration::class,
+        KediatRConfiguration::class,
         MyFirstNotificationHandler::class
     ]
 )
