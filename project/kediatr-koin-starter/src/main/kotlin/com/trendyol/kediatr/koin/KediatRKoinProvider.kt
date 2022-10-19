@@ -11,7 +11,7 @@ import org.reflections.Reflections
 import kotlin.reflect.KClass
 
 @OptIn(KoinInternalApi::class)
-class KediatrKoinProvider : DependencyProvider {
+class KediatRKoinProvider : DependencyProvider {
     private val koin = getKoin()
     private var reflections: Reflections
 
@@ -36,8 +36,8 @@ class KediatrKoinProvider : DependencyProvider {
     }
 }
 
-class KediatrKoin {
+class KediatRKoin {
     companion object {
-        fun getCommandBus() = MediatorBuilder(KediatrKoinProvider()).build()
+        fun getMediator() = MediatorBuilder(KediatRKoinProvider()).build()
     }
 }

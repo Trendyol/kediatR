@@ -24,7 +24,7 @@ class NotificationHandlerTest : KoinTest {
     val koinTestExtension = KoinTestExtension.create {
         modules(
             module {
-                single { KediatrKoin.getCommandBus() }
+                single { KediatRKoin.getMediator() }
                 single { ExceptionPipelineBehavior() } bind ExceptionPipelineBehavior::class
                 single { LoggingPipelineBehavior() } bind LoggingPipelineBehavior::class
                 single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
@@ -37,11 +37,11 @@ class NotificationHandlerTest : KoinTest {
         asyncNotificationTestCounter = 0
     }
 
-    private val commandBus by inject<Mediator>()
+    private val mediator by inject<Mediator>()
 
     @Test
     fun `async notificationHandler should be fired`() = runBlocking {
-        commandBus.publish(MyNotification())
+        mediator.publish(MyNotification())
 
         assertTrue {
             asyncNotificationTestCounter == 1
@@ -52,7 +52,7 @@ class NotificationHandlerTest : KoinTest {
 class MyNotification : Notification
 
 class MyFirstNotificationHandler(
-    private val commandBus: Mediator,
+    private val mediator: Mediator,
 ) : NotificationHandler<MyNotification> {
     override suspend fun handle(notification: MyNotification) {
         delay(500)

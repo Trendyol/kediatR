@@ -1,6 +1,10 @@
 package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.Command
+import com.trendyol.kediatr.CommandHandler
+import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.PipelineBehavior
+import com.trendyol.kediatr.RequestHandlerDelegate
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
 import javax.enterprise.context.ApplicationScoped
@@ -29,12 +33,12 @@ class PipelineBehaviorTest {
     }
 
     @Inject
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `should process command with async pipeline`() {
         runBlocking {
-            commandBus.send(MyPipelineCommand())
+            mediator.send(MyPipelineCommand())
         }
 
         assertTrue { commandTestCounter == 1 }
@@ -46,7 +50,7 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val act = suspend { commandBus.send(MyBrokenCommand()) }
+        val act = suspend { mediator.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
 
@@ -65,7 +69,7 @@ class MyPipelineCommand : Command
 @ApplicationScoped
 @Startup
 class MyPipelineCommandHandler(
-    val commandBus: Mediator,
+    val mediator: Mediator,
 ) : CommandHandler<MyPipelineCommand> {
     override suspend fun handle(command: MyPipelineCommand) {
         commandTestCounter++
@@ -75,7 +79,7 @@ class MyPipelineCommandHandler(
 @ApplicationScoped
 @Startup
 class MyBrokenHandler(
-    private val commandBus: Mediator,
+    private val mediator: Mediator,
 ) : CommandHandler<MyBrokenCommand> {
     override suspend fun handle(command: MyBrokenCommand) {
         delay(500)

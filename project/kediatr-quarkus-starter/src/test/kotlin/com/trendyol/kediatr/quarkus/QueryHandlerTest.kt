@@ -17,13 +17,13 @@ import kotlin.test.assertNotNull
 @QuarkusTest
 class QueryHandlerTest {
     @Inject
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `should throw exception if given async query does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.send(NonExistQuery())
+                mediator.send(NonExistQuery())
             }
         }
 
@@ -38,7 +38,7 @@ class TestQuery(val id: Int) : Query<String>
 @ApplicationScoped
 @Startup
 class TestQueryHandler(
-    private val commandBus: Mediator,
+    private val mediator: Mediator,
 ) : QueryHandler<TestQuery, String> {
     override suspend fun handle(query: TestQuery): String {
         return "hello " + query.id

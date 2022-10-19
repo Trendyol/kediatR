@@ -27,7 +27,7 @@ class CommandWithResultHandlerTest : KoinTest {
     val koinTestExtension = KoinTestExtension.create {
         modules(
             module {
-                single { KediatrKoin.getCommandBus() }
+                single { KediatRKoin.getMediator() }
                 single { ExceptionPipelineBehavior() } bind ExceptionPipelineBehavior::class
                 single { LoggingPipelineBehavior() } bind LoggingPipelineBehavior::class
                 single { MyAsyncCommandRHandler(get()) } bind CommandWithResultHandler::class
@@ -40,11 +40,11 @@ class CommandWithResultHandlerTest : KoinTest {
         asyncTestCounter = 0
     }
 
-    private val commandBus by inject<Mediator>()
+    private val mediator by inject<Mediator>()
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.send(MyCommandR())
+        mediator.send(MyCommandR())
 
         assertTrue {
             asyncTestCounter == 1
@@ -55,7 +55,7 @@ class CommandWithResultHandlerTest : KoinTest {
     fun `should throw exception if given async command does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.send(NonExistCommandR())
+                mediator.send(NonExistCommandR())
             }
         }
 
@@ -70,7 +70,7 @@ class NonExistCommandR : CommandWithResult<Result>
 class MyCommandR : CommandWithResult<Result>
 
 class MyAsyncCommandRHandler(
-    val commandBus: Mediator,
+    val mediator: Mediator,
 ) : CommandWithResultHandler<MyCommandR, Result> {
     override suspend fun handle(command: MyCommandR): Result {
         delay(500)

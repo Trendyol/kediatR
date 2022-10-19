@@ -27,11 +27,11 @@ class NotificationHandlerTest {
     }
 
     @Autowired
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `async notificationHandler should be fired`() = runBlocking {
-        commandBus.publish(MyNotification())
+        mediator.publish(MyNotification())
 
         assertTrue {
             asyncNotificationTestCounter == 1

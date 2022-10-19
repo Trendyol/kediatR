@@ -17,11 +17,11 @@ import kotlin.test.assertTrue
 class QueryHandlerTest {
 
     @Autowired
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `async queryHandler should retrieve result`() = runBlocking {
-        val result = commandBus.send(TestQuery(1))
+        val result = mediator.send(TestQuery(1))
 
         assertTrue {
             result == "hello 1"
@@ -32,7 +32,7 @@ class QueryHandlerTest {
     fun `should throw exception if given async query does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.send(NonExistQuery())
+                mediator.send(NonExistQuery())
             }
         }
 

@@ -26,11 +26,11 @@ class CommandHandlerTest {
     }
 
     @Autowired
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.send(MyCommand())
+        mediator.send(MyCommand())
 
         assertTrue {
             springAsyncTestCounter == 1
@@ -41,7 +41,7 @@ class CommandHandlerTest {
     fun `should throw exception if given async command does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.send(NonExistCommand())
+                mediator.send(NonExistCommand())
             }
         }
 

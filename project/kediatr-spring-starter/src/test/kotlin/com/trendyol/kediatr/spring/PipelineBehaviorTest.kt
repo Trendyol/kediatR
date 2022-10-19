@@ -31,12 +31,12 @@ class PipelineBehaviorTest {
     }
 
     @Autowired
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `should process command with async pipeline`() {
         runBlocking {
-            commandBus.send(MyCommand())
+            mediator.send(MyCommand())
         }
 
         assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 0 }
@@ -47,7 +47,7 @@ class PipelineBehaviorTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val act = suspend { commandBus.send(MyBrokenCommand()) }
+        val act = suspend { mediator.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
 

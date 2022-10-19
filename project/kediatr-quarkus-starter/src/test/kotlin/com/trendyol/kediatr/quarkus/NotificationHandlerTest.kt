@@ -24,11 +24,11 @@ class NotificationHandlerTest {
     }
 
     @Inject
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `async notificationHandler should be fired`() = runBlocking {
-        commandBus.publish(MyNotification())
+        mediator.publish(MyNotification())
 
         assertTrue {
             asyncNotificationTestCounter == 1
@@ -41,7 +41,7 @@ class MyNotification : Notification
 @ApplicationScoped
 @Startup
 class MyFirstNotificationHandler(
-    private val commandBus: Mediator,
+    private val mediator: Mediator,
 ) : NotificationHandler<MyNotification> {
     override suspend fun handle(notification: MyNotification) {
         delay(500)

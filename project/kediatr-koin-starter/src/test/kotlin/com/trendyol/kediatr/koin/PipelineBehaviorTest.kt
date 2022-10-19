@@ -32,7 +32,7 @@ class PipelineBehaviorTest : KoinTest {
     val koinTestExtension = KoinTestExtension.create {
         modules(
             module {
-                single { KediatrKoin.getCommandBus() }
+                single { KediatRKoin.getMediator() }
                 single { ExceptionPipelineBehavior() } bind ExceptionPipelineBehavior::class
                 single { LoggingPipelineBehavior() } bind LoggingPipelineBehavior::class
                 single { MyCommandHandler(get()) } bind CommandHandler::class
@@ -50,12 +50,12 @@ class PipelineBehaviorTest : KoinTest {
         loggingPipelineBehaviorHandleAfterNextCounter = 0
     }
 
-    private val commandBus by inject<Mediator>()
+    private val mediator by inject<Mediator>()
 
     @Test
     fun `should process command with async pipeline`() {
         runBlocking {
-            commandBus.send(MyCommand())
+            mediator.send(MyCommand())
         }
 
         assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 0 }
@@ -66,7 +66,7 @@ class PipelineBehaviorTest : KoinTest {
 
     @Test
     fun `should process exception in async handler`() {
-        val act = suspend { commandBus.send(MyBrokenCommand()) }
+        val act = suspend { mediator.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
 
@@ -80,7 +80,7 @@ class PipelineBehaviorTest : KoinTest {
 class MyBrokenCommand : Command
 
 class MyBrokenHandler(
-    private val commandBus: Mediator,
+    private val mediator: Mediator,
 ) : CommandHandler<MyBrokenCommand> {
     override suspend fun handle(command: MyBrokenCommand) {
         delay(500)

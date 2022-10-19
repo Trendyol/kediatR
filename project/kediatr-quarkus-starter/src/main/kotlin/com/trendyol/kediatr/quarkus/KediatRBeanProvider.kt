@@ -11,7 +11,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.inject.spi.Bean
 import javax.enterprise.inject.spi.BeanManager
 
-class KediatrBeanProvider(
+class KediatRBeanProvider(
     private val beanManager: BeanManager,
 ) : DependencyProvider {
 
@@ -55,15 +55,15 @@ class KediatrBeanProvider(
 }
 
 @ApplicationScoped
-class QuarkusCommandBusBuilder {
+class QuarkusMediatorBuilder {
     @ApplicationScoped
-    fun kediatrBeanProvider(beanManager: BeanManager): KediatrBeanProvider {
-        return KediatrBeanProvider(beanManager)
+    fun kediatRBeanProvider(beanManager: BeanManager): KediatRBeanProvider {
+        return KediatRBeanProvider(beanManager)
     }
 
     @ApplicationScoped
     @Startup
-    fun commandBus(kediatrBeanProvider: KediatrBeanProvider): Mediator {
-        return MediatorBuilder(kediatrBeanProvider).build()
+    fun mediator(kediatRBeanProvider: KediatRBeanProvider): Mediator {
+        return MediatorBuilder(kediatRBeanProvider).build()
     }
 }

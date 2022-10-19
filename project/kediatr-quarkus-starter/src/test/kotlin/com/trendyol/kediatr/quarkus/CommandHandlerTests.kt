@@ -19,11 +19,11 @@ import kotlin.test.assertTrue
 @QuarkusTest
 class CommandHandlerTests {
     @Inject
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
-        commandBus.send(MyCommand())
+        mediator.send(MyCommand())
         assertTrue {
             springAsyncTestCounter == 1
         }
@@ -33,7 +33,7 @@ class CommandHandlerTests {
     fun `should throw exception if given async command does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.send(NonExistCommand())
+                mediator.send(NonExistCommand())
             }
         }
 
@@ -51,7 +51,7 @@ class MyCommand : Command
 @ApplicationScoped
 @Startup
 class MyCommandHandler(
-    val commandBus: Mediator,
+    val mediator: Mediator,
 ) : CommandHandler<MyCommand> {
     override suspend fun handle(command: MyCommand) {
         delay(500)

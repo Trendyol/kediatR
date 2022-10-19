@@ -17,14 +17,14 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 class QueryHandlerTest : KoinTest {
-    private val commandBus by inject<Mediator>()
+    private val mediator by inject<Mediator>()
 
     @JvmField
     @RegisterExtension
     val koinTestExtension = KoinTestExtension.create {
         modules(
             module {
-                single { KediatrKoin.getCommandBus() }
+                single { KediatRKoin.getMediator() }
                 single { ExceptionPipelineBehavior() } bind ExceptionPipelineBehavior::class
                 single { LoggingPipelineBehavior() } bind LoggingPipelineBehavior::class
                 single { TestQueryHandler(get()) } bind QueryHandler::class
@@ -36,7 +36,7 @@ class QueryHandlerTest : KoinTest {
     fun `should throw exception if given async query does not have handler bean`() {
         val exception = assertFailsWith(HandlerNotFoundException::class) {
             runBlocking {
-                commandBus.send(NonExistQuery())
+                mediator.send(NonExistQuery())
             }
         }
 
@@ -49,7 +49,7 @@ class NonExistQuery : Query<String>
 class TestQuery(val id: Int) : Query<String>
 
 class TestQueryHandler(
-    private val commandBus: Mediator,
+    private val mediator: Mediator,
 ) : QueryHandler<TestQuery, String> {
     override suspend fun handle(query: TestQuery): String {
         return "hello " + query.id

@@ -11,11 +11,11 @@ import kotlin.test.assertNotNull
 class SpringContextTest {
 
     @Autowired
-    lateinit var commandBus: Mediator
+    lateinit var mediator: Mediator
 
     @Test
     fun contextLoads() {
-        assertNotNull(commandBus)
-        assert(commandBus is MediatorImpl)
+        assertNotNull(mediator)
+        assert(mediator is MediatorImpl)
     }
 }
