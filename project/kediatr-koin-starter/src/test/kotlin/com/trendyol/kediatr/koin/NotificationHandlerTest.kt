@@ -25,7 +25,8 @@ class NotificationHandlerTest : KoinTest {
         modules(
             module {
                 single { KediatrKoin.getCommandBus() }
-                single { MyPipelineBehavior(get()) } bind MyPipelineBehavior::class
+                single { ExceptionPipelineBehavior() } bind ExceptionPipelineBehavior::class
+                single { LoggingPipelineBehavior() } bind LoggingPipelineBehavior::class
                 single { MyFirstNotificationHandler(get()) } bind NotificationHandler::class
             }
         )

@@ -118,14 +118,11 @@ class GetSomeDataQueryHandler : QueryHandler<GetSomeDataQuery, String> {
 
 ```kotlin
 class CommandProcessingPipeline : PipelineBehavior {
-    override fun <TRequest> preProcess(request: TRequest) {
+    override suspend fun <TRequest, TResponse> handle(request: TRequest, next: suspend (TRequest) -> TResponse): TResponse {
         println("Starting process.")
-    }
-    override fun <TRequest> postProcess(request: TRequest) {
+        val result = next(request)
         println("Ending process.")
-    }
-    override fun <TRequest, TException : Exception> handleExceptionProcess(request: TRequest, exception: TException) {
-        println("Some exception occurred during process. Error: $exception")
+        return result
     }
 }
 ```
@@ -175,15 +172,12 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Asyn
     }
 }
 
-class AsyncCommandProcessingPipeline : AsyncPipelineBehavior {
-    override suspend fun <TRequest> preProcess(request: TRequest) {
+class AsyncCommandProcessingPipeline : PipelineBehavior {
+    override suspend fun <TRequest, TResponse> handle(request: TRequest, next: suspend (TRequest) -> TResponse): TResponse {
         println("Starting process.")
-    }
-    override suspend fun <TRequest> postProcess(request: TRequest) {
+        val result = next(request)
         println("Ending process.")
-    }
-    override suspend fun <TRequest, TException : Exception> handleException(request: TRequest, exception: TException) {
-        println("Some exception occurred during process. Error: $exception")
+        return result
     }
 }
 ```

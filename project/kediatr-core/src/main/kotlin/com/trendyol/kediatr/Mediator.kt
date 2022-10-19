@@ -15,20 +15,4 @@ interface Mediator {
      * @param T  any [Notification] subclass to publish
      */
     suspend fun <T : Notification> publish(notification: T)
-
-    suspend fun <TRequest, TResponse> processPipeline(
-        pipelineBehaviors: Collection<PipelineBehavior>,
-        request: TRequest,
-        act: suspend () -> TResponse,
-    ): TResponse {
-        try {
-            pipelineBehaviors.forEach { it.preProcess(request) }
-            val result = act()
-            pipelineBehaviors.forEach { it.postProcess(request) }
-            return result
-        } catch (ex: Exception) {
-            pipelineBehaviors.forEach { it.handleException(request, ex) }
-            throw ex
-        }
-    }
 }

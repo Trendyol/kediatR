@@ -7,40 +7,40 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-var asyncPipelinePreProcessCounter = 0
-var asyncPipelinePostProcessCounter = 0
-var pipelinePreProcessCounter = 0
-var pipelinePostProcessCounter = 0
-var pipelineExceptionCounter = 0
-var asyncPipelineExceptionCounter = 0
+var exceptionPipelineBehaviorHandleCounter = 0
+var exceptionPipelineBehaviorHandleCatchCounter = 0
+var loggingPipelineBehaviorHandleBeforeNextCounter = 0
+var loggingPipelineBehaviorHandleAfterNextCounter = 0
+var inheritedPipelineBehaviourHandleCounter = 0
+var commandTestCounter = 0
 
 class PipelineBehaviorTest {
 
     init {
-        asyncPipelinePreProcessCounter = 0
-        asyncPipelinePostProcessCounter = 0
-        pipelinePreProcessCounter = 0
-        pipelinePostProcessCounter = 0
-        pipelineExceptionCounter = 0
-        asyncPipelineExceptionCounter = 0
+        exceptionPipelineBehaviorHandleCounter = 0
+        exceptionPipelineBehaviorHandleCatchCounter = 0
+        loggingPipelineBehaviorHandleBeforeNextCounter = 0
+        loggingPipelineBehaviorHandleAfterNextCounter = 0
+        inheritedPipelineBehaviourHandleCounter = 0
+        commandTestCounter = 0
     }
 
     private class MyCommand : Command
 
     private class MyCommandHandler : CommandHandler<MyCommand> {
         override suspend fun handle(command: MyCommand) {
+            commandTestCounter++
             delay(500)
         }
     }
 
     @Test
-    fun `should process command with async pipeline`() {
+    fun `should process command without async pipeline`() {
         val handler = MyCommandHandler()
-        val pipeline = MyPipelineBehavior()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(
-            Pair(MyCommandHandler::class.java, handler),
-            Pair(MyPipelineBehavior::class.java, pipeline)
+            Pair(MyCommandHandler::class.java, handler)
         )
+
         val provider = ManualDependencyProvider(handlers)
         val bus: Mediator = MediatorBuilder(provider).build()
 
@@ -48,24 +48,58 @@ class PipelineBehaviorTest {
             bus.send(MyCommand())
         }
 
-        assertTrue { asyncPipelinePreProcessCounter == 1 }
-        assertTrue { asyncPipelinePostProcessCounter == 1 }
+        assertTrue { commandTestCounter == 1 }
+        assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 0 }
+        assertTrue { exceptionPipelineBehaviorHandleCounter == 0 }
+        assertTrue { loggingPipelineBehaviorHandleBeforeNextCounter == 0 }
+        assertTrue { loggingPipelineBehaviorHandleAfterNextCounter == 0 }
+    }
+
+    @Test
+    fun `should process command with async pipeline`() {
+        val handler = MyCommandHandler()
+        val exceptionPipeline = ExceptionPipelineBehavior()
+        val loggingPipeline = LoggingPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(
+            Pair(MyCommandHandler::class.java, handler),
+            Pair(ExceptionPipelineBehavior::class.java, exceptionPipeline),
+            Pair(LoggingPipelineBehavior::class.java, loggingPipeline)
+        )
+
+        val provider = ManualDependencyProvider(handlers)
+        val bus: Mediator = MediatorBuilder(provider).build()
+
+        runBlocking {
+            bus.send(MyCommand())
+        }
+
+        assertTrue { commandTestCounter == 1 }
+        assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 0 }
+        assertTrue { exceptionPipelineBehaviorHandleCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleBeforeNextCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleAfterNextCounter == 1 }
     }
 
     @Test
     fun `should process exception in async handler`() {
         val handler = MyBrokenHandler()
-        val pipeline = MyPipelineBehavior()
+        val exceptionPipeline = ExceptionPipelineBehavior()
+        val loggingPipeline = LoggingPipelineBehavior()
         val handlers: HashMap<Class<*>, Any> = hashMapOf(
             Pair(MyBrokenHandler::class.java, handler),
-            Pair(MyPipelineBehavior::class.java, pipeline)
+            Pair(ExceptionPipelineBehavior::class.java, exceptionPipeline),
+            Pair(LoggingPipelineBehavior::class.java, loggingPipeline)
         )
         val provider = ManualDependencyProvider(handlers)
         val bus: Mediator = MediatorBuilder(provider).build()
         val act = suspend { bus.send(MyBrokenCommand()) }
 
         assertThrows<Exception> { runBlocking { act() } }
-        assertTrue { asyncPipelineExceptionCounter == 1 }
+        assertTrue { commandTestCounter == 0 }
+        assertTrue { exceptionPipelineBehaviorHandleCatchCounter == 1 }
+        assertTrue { exceptionPipelineBehaviorHandleCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleBeforeNextCounter == 1 }
+        assertTrue { loggingPipelineBehaviorHandleAfterNextCounter == 0 }
     }
 
     @Test
@@ -81,30 +115,19 @@ class PipelineBehaviorTest {
         val bus: Mediator = MediatorBuilder(provider).build()
         bus.send(MyCommand())
 
-        assertEquals(1, asyncPipelinePreProcessCounter)
-        assertEquals(1, asyncPipelinePostProcessCounter)
+        assertEquals(1, inheritedPipelineBehaviourHandleCounter)
     }
 }
 
 private abstract class MyBasePipelineBehaviour : PipelineBehavior
 
 private class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
-    override suspend fun <TRequest> preProcess(request: TRequest) {
-        delay(500)
-        asyncPipelinePreProcessCounter++
-    }
-
-    override suspend fun <TRequest> postProcess(request: TRequest) {
-        delay(500)
-        asyncPipelinePostProcessCounter++
-    }
-
-    override suspend fun <TRequest, TException : Exception> handleException(
+    override suspend fun <TRequest, TResponse> handle(
         request: TRequest,
-        exception: TException,
-    ) {
-        delay(500)
-        asyncPipelineExceptionCounter++
+        next: RequestHandlerDelegate<TRequest, TResponse>,
+    ): TResponse {
+        inheritedPipelineBehaviourHandleCounter++
+        return next(request)
     }
 }
 
@@ -117,22 +140,29 @@ private class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
     }
 }
 
-private class MyPipelineBehavior : PipelineBehavior {
-    override suspend fun <TRequest> preProcess(request: TRequest) {
-        delay(500)
-        asyncPipelinePreProcessCounter++
-    }
-
-    override suspend fun <TRequest> postProcess(request: TRequest) {
-        delay(500)
-        asyncPipelinePostProcessCounter++
-    }
-
-    override suspend fun <TRequest, TException : Exception> handleException(
+private class ExceptionPipelineBehavior : PipelineBehavior {
+    override suspend fun <TRequest, TResponse> handle(
         request: TRequest,
-        exception: TException,
-    ) {
-        delay(500)
-        asyncPipelineExceptionCounter++
+        next: RequestHandlerDelegate<TRequest, TResponse>,
+    ): TResponse {
+        try {
+            exceptionPipelineBehaviorHandleCounter++
+            return next(request)
+        } catch (ex: Exception) {
+            exceptionPipelineBehaviorHandleCatchCounter++
+            throw ex
+        }
+    }
+}
+
+private class LoggingPipelineBehavior : PipelineBehavior {
+    override suspend fun <TRequest, TResponse> handle(
+        request: TRequest,
+        next: RequestHandlerDelegate<TRequest, TResponse>,
+    ): TResponse {
+        loggingPipelineBehaviorHandleBeforeNextCounter++
+        val result = next(request)
+        loggingPipelineBehaviorHandleAfterNextCounter++
+        return result
     }
 }
