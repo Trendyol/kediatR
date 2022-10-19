@@ -9,6 +9,8 @@ name: v2.0 Publish
 on:
   workflow_run:
     workflows: ["v2.0 Build"]
+    branches:
+      - v2.0
     types:
       - completed
 
