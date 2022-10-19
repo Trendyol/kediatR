@@ -1,15 +1,19 @@
 name: v2.0 Publish
 
+#on:
+#  release:
+#    types: [created]
+#  push:
+#    branches:
+#      - v2.0
 on:
-  release:
-    types: [created]
-  push:
-    branches:
-      - v2.0
+  workflow_run:
+    workflows: ["v2.0 Build"]
+    types:
+      - completed
 
 jobs:
   publish:
-    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
