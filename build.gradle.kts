@@ -6,6 +6,7 @@ plugins {
     id("kediatr-publishing") apply false
     id("kediatr-coverage")
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    java
 }
 
 jacoco {
@@ -18,6 +19,12 @@ subprojectsOf("project") {
         plugin("maven-publish")
         plugin("kediatr-publishing")
         plugin("kediatr-coverage")
+        plugin("java")
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
     dependencies {

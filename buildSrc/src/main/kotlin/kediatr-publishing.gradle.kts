@@ -1,7 +1,6 @@
 plugins {
     `maven-publish`
     signing
-    java
 }
 fun getProperty(
     projectKey: String,
@@ -15,16 +14,13 @@ fun getProperty(
 }
 
 afterEvaluate {
-    java {
-        withSourcesJar()
-    }
     publishing {
         publications {
             create<MavenPublication>("publish-${project.name}") {
                 groupId = rootProject.group.toString()
                 artifactId = project.name
                 version = rootProject.version.toString()
-                from(components["kotlin"])
+                from(components["java"])
                 pom {
                     name.set(rootProject.name)
                     description.set(project.properties["projectDescription"].toString())
