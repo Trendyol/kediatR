@@ -1,6 +1,7 @@
 plugins {
     `maven-publish`
     signing
+    java
 }
 fun getProperty(
     projectKey: String,
@@ -12,14 +13,18 @@ fun getProperty(
         System.getenv(environmentKey)
     }
 }
+
 afterEvaluate {
+    java {
+        withSourcesJar()
+    }
     publishing {
         publications {
             create<MavenPublication>("publish-${project.name}") {
                 groupId = rootProject.group.toString()
                 artifactId = project.name
                 version = rootProject.version.toString()
-                from(components["java"])
+                from(components["kotlin"])
                 pom {
                     name.set(rootProject.name)
                     description.set(project.properties["projectDescription"].toString())
@@ -63,6 +68,7 @@ afterEvaluate {
                     username = getProperty("nexus_username", "nexus_username")
                     password = getProperty("nexus_password", "nexus_password")
                 }
+                // url = uri(layout.buildDirectory.dir("mavenlocalpublish"))
             }
         }
     }
