@@ -7,8 +7,7 @@ on:
     branches: [v2.0]
 
 jobs:
-  build:
-
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
