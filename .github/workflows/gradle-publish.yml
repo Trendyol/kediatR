@@ -3,6 +3,8 @@ name: v2.0 Gradle Package
 on:
   release:
     types: [created]
+  push:
+    branches: [v2.0]
 
 jobs:
   build:
