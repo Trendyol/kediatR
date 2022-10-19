@@ -4,7 +4,8 @@ on:
   release:
     types: [created]
   push:
-    branches: [v2.0]
+    branches:
+      - v2.0
 
 jobs:
   publish:
