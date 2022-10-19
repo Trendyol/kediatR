@@ -1,7 +1,7 @@
 name: v2.0 Build
 
 # Run workflow on manually
-on: push
+on: [push, pull_request]
 jobs:
   build-and-test:
     runs-on: ubuntu-18.04
