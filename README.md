@@ -131,7 +131,7 @@ class ManualDependencyProvider(
 fun main() {
     val handler = HelloCommandHandler()
     val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(HelloCommandHandler::class.java, handler))
-    val provider = ManuelDependencyProvider(handlers)
+    val provider = ManualDependencyProvider(handlers)
     val mediator: Mediator = MediatorBuilder(provider).build()
     mediator.send(HelloCommand("hello"))
 }
