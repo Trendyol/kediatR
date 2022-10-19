@@ -54,9 +54,10 @@ afterEvaluate {
 
         repositories {
             maven {
-                // change to point to your repo, e.g. http://my.org/repo
-                val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                // https://oss.sonatype.org
+                // https://central.sonatype.org/publish/publish-guide/#releasing-to-central
+                val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
                 url = if (rootProject.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
                 credentials {
                     username = getProperty("nexus_username", "nexus_username")
