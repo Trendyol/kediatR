@@ -2,7 +2,16 @@ plugins {
     `maven-publish`
     signing
 }
-
+fun getProperty(
+    projectKey: String,
+    environmentKey: String,
+): String? {
+    return if (project.hasProperty(projectKey)) {
+        project.property(projectKey) as? String?
+    } else {
+        System.getenv(environmentKey)
+    }
+}
 afterEvaluate {
     publishing {
         publications {
@@ -50,18 +59,11 @@ afterEvaluate {
                 val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
                 url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
                 // url = uri(layout.buildDirectory.dir("mavenlocalpublish"))
+                credentials {
+                    username = getProperty("nexus_username", "nexus_username")
+                    password = getProperty("nexus_password", "nexus_password")
+                }
             }
-        }
-    }
-
-    fun getProperty(
-        projectKey: String,
-        environmentKey: String,
-    ): String? {
-        return if (project.hasProperty(projectKey)) {
-            project.property(projectKey) as? String?
-        } else {
-            System.getenv(environmentKey)
         }
     }
 
