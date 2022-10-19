@@ -1,18 +1,8 @@
 # kediatR ![Release kediatR-core](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-core/badge.svg?branch=master) ![Release kediatR-spring-starter](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-spring-starter/badge.svg?branch=master) [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/v2.0/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
 
 <img align="left" alt="Humus! The kediatr mascot" src="/humus.png" alt="drawing" width="80"/>
-Mediator implementation in kotlin with native coroutine support.
 
-Supports Spring-Boot, Quarkus and Koin configurations.
-
-After kediatr-core version 1.0.17 you can use any dependency injection framework by implementing DependencyProvider
-interface.
-
-kediatR has multiple implementations: 
- - kediatR-core
- - kediatR-spring-starter 
- - kediatR-koin-starter
- - kediatR-quarkus-starter
+Mediator implementation in kotlin with native coroutine support. Supports Spring-Boot, Quarkus and Koin dependency proviers.
 
 ## Usage
 
@@ -22,6 +12,14 @@ kediatR has multiple implementations:
 
 <details open>
 <summary>Gradle</summary>
+
+To use the SNAPSHOT version you need to add repository to your dependency management:
+
+```kotlin
+ maven {
+     url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+ }
+```
 
 #### kediatR-core
 
@@ -51,6 +49,25 @@ kediatR has multiple implementations:
 
 <details>
 <summary>Maven</summary>
+
+To use the SNAPSHOT version you need to add repository to your dependency management:
+
+```xml
+<profiles>
+  <profile>
+     <id>allow-snapshots</id>
+        <activation><activeByDefault>true</activeByDefault></activation>
+     <repositories>
+       <repository>
+         <id>snapshots-repo</id>
+         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+         <releases><enabled>false</enabled></releases>
+         <snapshots><enabled>true</enabled></snapshots>
+       </repository>
+     </repositories>
+   </profile>
+</profiles>
+```
 
 **kediatR-core**
 
@@ -155,7 +172,7 @@ class GetSomeDataQueryHandler : QueryHandler<GetSomeDataQuery, String> {
 }
 ```
 
-#### Pipeline Behavior
+### Pipeline Behavior
 
 ```kotlin
 class CommandProcessingPipeline : PipelineBehavior {
