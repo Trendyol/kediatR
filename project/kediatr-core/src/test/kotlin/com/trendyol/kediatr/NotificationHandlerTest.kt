@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 private var asyncCountDownLatch = CountDownLatch(1)
-private var countDownLatch = CountDownLatch(1)
 
 private open class Ping : Notification
 private class ExtendedPing : Ping()
@@ -45,6 +44,34 @@ class NotificationHandlerTest {
         assertTrue {
             asyncCountDownLatch.count == 0L
         }
+    }
+
+    @Test
+    fun multiple_handlers_for_a_notification_should_be_dispatched() = runBlocking {
+        var invocationCount = 0
+
+        class MyNotification : Notification
+
+        class Handler1 : NotificationHandler<MyNotification> {
+            override suspend fun handle(notification: MyNotification) {
+                invocationCount++
+            }
+        }
+
+        class Handler2 : NotificationHandler<MyNotification> {
+            override suspend fun handle(notification: MyNotification) {
+                invocationCount++
+            }
+        }
+
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(
+            Pair(Handler1::class.java, Handler1()),
+            Pair(Handler2::class.java, Handler2())
+        )
+        val provider = ManualDependencyProvider(handlers)
+        val bus: Mediator = MediatorBuilder(provider).build()
+        bus.publish(MyNotification())
+        assertEquals(2, invocationCount)
     }
 
     @Test
