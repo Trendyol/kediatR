@@ -15,17 +15,13 @@ fun getProperty(
 }
 
 afterEvaluate {
-    java {
-        withSourcesJar()
-        withJavadocJar()
-    }
     publishing {
         publications {
             create<MavenPublication>("publish-${project.name}") {
                 groupId = rootProject.group.toString()
                 version = rootProject.version.toString()
                 artifactId = project.name
-                from(components["kotlin"])
+                from(components["java"])
                 pom {
                     name.set(project.name)
                     description.set(project.properties["projectDescription"].toString())

@@ -18,6 +18,12 @@ subprojectsOf("project") {
         plugin("kotlin")
         plugin("kediatr-publishing")
         plugin("kediatr-coverage")
+        plugin("java")
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
     dependencies {
