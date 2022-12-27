@@ -1,8 +1,7 @@
-import gradle.kotlin.dsl.accessors._b1c49aa8f7beb14ec3224fa8349d7c02.sourceSets
-
 plugins {
     `maven-publish`
     signing
+    java
 }
 fun getProperty(
     projectKey: String,
@@ -16,13 +15,17 @@ fun getProperty(
 }
 
 afterEvaluate {
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
     publishing {
         publications {
             create<MavenPublication>("publish-${project.name}") {
                 groupId = rootProject.group.toString()
                 version = rootProject.version.toString()
                 artifactId = project.name
-                from(components["java"])
+                from(components["kotlin"])
                 pom {
                     name.set(project.name)
                     description.set(project.properties["projectDescription"].toString())
@@ -60,6 +63,7 @@ afterEvaluate {
                 val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
                 val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
                 url = if (rootProject.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                // url = rootProject.buildDir.resolve("publications").toURI()
                 credentials {
                     username = getProperty("nexus_username", "nexus_username")
                     password = getProperty("nexus_password", "nexus_password")

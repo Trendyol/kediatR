@@ -16,15 +16,8 @@ jacoco {
 subprojectsOf("project") {
     apply {
         plugin("kotlin")
-        plugin("maven-publish")
         plugin("kediatr-publishing")
         plugin("kediatr-coverage")
-        plugin("java")
-    }
-
-    java {
-        withSourcesJar()
-        withJavadocJar()
     }
 
     dependencies {
@@ -42,13 +35,6 @@ subprojectsOf("project") {
     tasks.test {
         useJUnitPlatform()
         maxParallelForks = Runtime.getRuntime().availableProcessors()
-        testLogging {
-            showStandardStreams = true
-            showCauses = true
-            showStackTraces = true
-            events("PASSED", "FAILED", "SKIPPED", "STANDARD_OUT")
-            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-        }
         finalizedBy(tasks.named<Copy>("testAggregateResults"))
     }
 
