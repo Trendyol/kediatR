@@ -1,16 +1,16 @@
 name: Publish to Maven
 
-on:
- release:
-   types: [created]
-   
 # on:
-#   workflow_run:
-#     workflows: ["Build"]
-#     branches:
-#       - master
-#     types:
-#       - completed
+#  release:
+#    types: [created]
+   
+on:
+  workflow_run:
+    workflows: ["Build"]
+    branches:
+      - master
+    types:
+      - completed
 
 jobs:
   publish:
