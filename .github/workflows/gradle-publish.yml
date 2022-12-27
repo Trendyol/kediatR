@@ -1,4 +1,4 @@
-name: v2.0 Publish
+name: Publish to Maven
 
 #on:
 #  release:
@@ -8,9 +8,9 @@ name: v2.0 Publish
 #      - v2.0
 on:
   workflow_run:
-    workflows: ["v2.0 Build"]
+    workflows: ["Build"]
     branches:
-      - v2.0
+      - master
     types:
       - completed
 
