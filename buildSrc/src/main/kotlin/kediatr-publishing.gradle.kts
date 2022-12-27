@@ -22,9 +22,6 @@ afterEvaluate {
                 groupId = rootProject.group.toString()
                 artifactId = project.name
                 version = rootProject.version.toString()
-                artifact(tasks["sourcesJar"])
-                artifact(tasks["javadocJar"])
-
                 from(components["java"])
                 pom {
                     name.set(rootProject.name)
