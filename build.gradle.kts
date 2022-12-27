@@ -2,7 +2,7 @@ group = "com.trendyol"
 version = "2.0.0"
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.7.22"
     id("kediatr-publishing") apply false
     id("kediatr-coverage")
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
