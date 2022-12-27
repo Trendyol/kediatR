@@ -20,11 +20,11 @@ afterEvaluate {
         publications {
             create<MavenPublication>("publish-${project.name}") {
                 groupId = rootProject.group.toString()
-                artifactId = project.name
                 version = rootProject.version.toString()
+                artifactId = project.name
                 from(components["java"])
                 pom {
-                    name.set(rootProject.name)
+                    name.set(project.name)
                     description.set(project.properties["projectDescription"].toString())
                     url.set(project.properties["projectUrl"].toString())
                     packaging = "jar"
