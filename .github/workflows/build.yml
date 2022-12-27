@@ -1,4 +1,4 @@
-name: v2.0 Build
+name: Build
 
 on: [push, pull_request]
 jobs:
