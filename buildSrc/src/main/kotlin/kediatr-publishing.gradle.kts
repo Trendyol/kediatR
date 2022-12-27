@@ -1,3 +1,5 @@
+import gradle.kotlin.dsl.accessors._b1c49aa8f7beb14ec3224fa8349d7c02.sourceSets
+
 plugins {
     `maven-publish`
     signing
@@ -20,6 +22,9 @@ afterEvaluate {
                 groupId = rootProject.group.toString()
                 artifactId = project.name
                 version = rootProject.version.toString()
+                artifact(tasks["sourcesJar"])
+                artifact(tasks["javadocJar"])
+
                 from(components["java"])
                 pom {
                     name.set(rootProject.name)
