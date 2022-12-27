@@ -55,8 +55,6 @@ afterEvaluate {
 
         repositories {
             maven {
-                // https://oss.sonatype.org
-                // https://central.sonatype.org/publish/publish-guide/#releasing-to-central
                 val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
                 val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
                 url = if (rootProject.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
@@ -64,7 +62,6 @@ afterEvaluate {
                     username = getProperty("nexus_username", "nexus_username")
                     password = getProperty("nexus_password", "nexus_password")
                 }
-                // url = uri(layout.buildDirectory.dir("mavenlocalpublish"))
             }
         }
     }
