@@ -285,6 +285,8 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
 
 ## Review Our IntelliJ Plugin
 
+### Warning: This plugin does not support v2.0+ yet.
+
 <https://plugins.jetbrains.com/plugin/16017-kediatr-helper>
 
 ![Screencast 1](https://plugins.jetbrains.com/files/16017/screenshot_cf56bd23-3de8-41fe-814a-64f69ae0a7c4)
