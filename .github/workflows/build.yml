@@ -16,7 +16,7 @@ jobs:
           java-version: 11
 
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Gradle Build
         run: |
