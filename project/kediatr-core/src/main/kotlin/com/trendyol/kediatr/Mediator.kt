@@ -15,4 +15,6 @@ interface Mediator {
      * @param T  any [Notification] subclass to publish
      */
     suspend fun <T : Notification> publish(notification: T)
+
+    suspend fun <T : Notification> publish(notification: T, publishStrategy: PublishStrategy)
 }

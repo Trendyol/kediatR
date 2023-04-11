@@ -3,7 +3,7 @@ package com.trendyol.kediatr
 class MediatorBuilder(
     private val dependencyProvider: DependencyProvider,
 ) {
-    internal var publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
+    internal var defaultPublishStrategy: PublishStrategy = StopOnExceptionPublishStrategy()
         private set
 
     /**
@@ -18,11 +18,11 @@ class MediatorBuilder(
      * @see [ParallelWhenAllPublishStrategy]
      */
     fun withPublishStrategy(publishStrategy: PublishStrategy): MediatorBuilder {
-        this.publishStrategy = publishStrategy
+        this.defaultPublishStrategy = publishStrategy
         return this
     }
 
     fun build(registry: Registry = RegistryImpl(dependencyProvider)): Mediator {
-        return MediatorImpl(registry, publishStrategy)
+        return MediatorImpl(registry, defaultPublishStrategy)
     }
 }
