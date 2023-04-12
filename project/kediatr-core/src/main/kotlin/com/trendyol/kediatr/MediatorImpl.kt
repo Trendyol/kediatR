@@ -2,7 +2,7 @@ package com.trendyol.kediatr
 
 class MediatorImpl(
     private val registry: Registry,
-    private val publishStrategy: PublishStrategy = StopOnExceptionPublishStrategy(),
+    private val defaultPublishStrategy: PublishStrategy = StopOnExceptionPublishStrategy(),
 ) : Mediator {
 
     override suspend fun <TQuery : Query<TResponse>, TResponse> send(query: TQuery): TResponse = processPipeline(
@@ -26,7 +26,12 @@ class MediatorImpl(
         registry.resolveCommandWithResultHandler(command.javaClass).handle(command)
     }
 
-    override suspend fun <T : Notification> publish(notification: T) = processPipeline(
+    override suspend fun <T : Notification> publish(notification: T) = publish(notification, defaultPublishStrategy)
+
+    override suspend fun <T : Notification> publish(
+        notification: T,
+        publishStrategy: PublishStrategy,
+    ) = processPipeline(
         registry.getPipelineBehaviors(),
         notification
     ) {
@@ -38,8 +43,8 @@ class MediatorImpl(
         request: TRequest,
         handler: RequestHandlerDelegate<TRequest, TResponse>,
     ): TResponse = pipelineBehaviors
-      .reversed()
-      .fold(handler) { next, pipeline ->
-          { pipeline.handle(request) { next(it) } }
-      }(request)
+        .reversed()
+        .fold(handler) { next, pipeline ->
+            { pipeline.handle(request) { next(it) } }
+        }(request)
 }

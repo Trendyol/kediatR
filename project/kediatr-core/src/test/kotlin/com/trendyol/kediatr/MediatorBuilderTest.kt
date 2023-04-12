@@ -16,7 +16,7 @@ internal class MediatorBuilderTest {
             .withPublishStrategy(expectedStrategy)
 
         // Assert
-        assertEquals(expectedStrategy, builder.publishStrategy)
+        assertEquals(expectedStrategy, builder.defaultPublishStrategy)
     }
 
     companion object {
