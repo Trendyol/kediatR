@@ -6,8 +6,8 @@ import com.trendyol.kediatr.Query
 import com.trendyol.kediatr.QueryHandler
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

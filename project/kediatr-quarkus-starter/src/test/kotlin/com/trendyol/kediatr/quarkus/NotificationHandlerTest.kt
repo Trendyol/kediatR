@@ -1,15 +1,15 @@
 package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.NotificationHandler
 import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.Notification
+import com.trendyol.kediatr.NotificationHandler
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import kotlin.test.assertTrue
 
 private var notificationTestCounter = 0

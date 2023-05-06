@@ -6,8 +6,8 @@ import com.trendyol.kediatr.HandlerNotFoundException
 import com.trendyol.kediatr.Mediator
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
