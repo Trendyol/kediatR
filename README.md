@@ -7,7 +7,7 @@ Mediator implementation in kotlin with native coroutine support. Supports Spring
 ## Usage
 
 ```diff
-+ $version = 2.0.0
++ $version = 2.1.0
 ```
 
 <details open>
