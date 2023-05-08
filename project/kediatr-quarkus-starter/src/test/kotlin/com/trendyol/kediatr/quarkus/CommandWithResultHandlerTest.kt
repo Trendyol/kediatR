@@ -1,14 +1,20 @@
 package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.CommandWithResult
+import com.trendyol.kediatr.CommandWithResultHandler
+import com.trendyol.kediatr.HandlerNotFoundException
+import com.trendyol.kediatr.Mediator
 import io.quarkus.runtime.Startup
 import io.quarkus.test.junit.QuarkusTest
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 private var testCounter = 0
 private var asyncTestCounter = 0

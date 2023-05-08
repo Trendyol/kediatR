@@ -6,10 +6,11 @@ import com.trendyol.kediatr.DependencyProvider
 import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.MediatorBuilder
 import io.quarkus.runtime.Startup
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.spi.Bean
+import jakarta.enterprise.inject.spi.BeanManager
 import java.util.concurrent.ConcurrentHashMap
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.spi.Bean
-import javax.enterprise.inject.spi.BeanManager
+
 
 class KediatRBeanProvider(
     private val beanManager: BeanManager,
