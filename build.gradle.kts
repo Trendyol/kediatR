@@ -28,7 +28,7 @@ subprojectsOf("project") {
 
     dependencies {
         jacocoAggregation(project(project.path))
-        implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.0"))
+        implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     }
 
