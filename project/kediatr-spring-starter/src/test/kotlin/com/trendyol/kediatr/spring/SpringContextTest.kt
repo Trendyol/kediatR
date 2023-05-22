@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import kotlin.test.assertNotNull
 
-@SpringBootTest(classes = [KediatRConfiguration::class])
+@SpringBootTest(classes = [KediatRAutoConfiguration::class])
 class SpringContextTest {
 
     @Autowired

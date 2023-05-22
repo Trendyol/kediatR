@@ -19,7 +19,7 @@ var loggingPipelineBehaviorHandleBeforeNextCounter = 0
 var loggingPipelineBehaviorHandleAfterNextCounter = 0
 
 @SpringBootTest(
-    classes = [KediatRConfiguration::class, MyCommandHandler::class, ExceptionPipelineBehavior::class, LoggingPipelineBehavior::class]
+    classes = [KediatRAutoConfiguration::class, MyCommandHandler::class, ExceptionPipelineBehavior::class, LoggingPipelineBehavior::class]
 )
 class PipelineBehaviorTest {
 

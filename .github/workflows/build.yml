@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [master]
+    branches: [main, 2.x]
   pull_request:
-    branches: [master]
+    branches: [main, 2.x]
 
 jobs:
   build-and-test:
@@ -13,7 +13,7 @@ jobs:
       - name: Install Java and Maven
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: 17
           distribution: 'temurin'
 
       - name: Check out Git repository
@@ -30,4 +30,4 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
           verbose: true
-          java-version: 11
+          java-version: 17
