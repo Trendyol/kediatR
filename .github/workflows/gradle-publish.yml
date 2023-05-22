@@ -3,6 +3,7 @@ name: Publish to Maven
 on:
  release:
    types: [created]
+   branches: [2.x]
    
 jobs:
   publish:
@@ -23,6 +24,7 @@ jobs:
 
     - name: Publish to Maven Repository
       uses: gradle/gradle-build-action@v2.4.2
+      if: startsWith(github.ref, 'refs/heads/2.x')
       with:
         arguments: publish
       env:
