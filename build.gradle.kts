@@ -1,13 +1,18 @@
 group = "com.trendyol"
-version = "2.1.0"
 
 plugins {
     kotlin("jvm") version "1.8.21"
     id("kediatr-publishing") apply false
     id("kediatr-coverage")
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
+    id("com.palantir.git-version") version "3.0.0"
     java
 }
+
+val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
+val details = versionDetails()
+version = details.lastTag
+// version = "3.0.0-SNAPSHOT"
 
 jacoco {
     reportsDirectory.set(rootProject.buildDir.resolve("jacoco"))
@@ -47,7 +52,7 @@ subprojectsOf("project") {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "11"
+            jvmTarget = "17"
         }
     }
 
@@ -64,19 +69,6 @@ subprojectsOf("project") {
             xml.required.set(true)
             csv.required.set(false)
             html.required.set(false)
-        }
-    }
-}
-
-allprojects {
-    repositories {
-        mavenCentral()
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-        }
-
-        maven {
-            url = uri("https://repo.maven.apache.org/maven2/")
         }
     }
 }

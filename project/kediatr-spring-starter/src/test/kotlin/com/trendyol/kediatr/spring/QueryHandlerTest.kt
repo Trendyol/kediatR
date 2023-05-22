@@ -13,7 +13,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(classes = [KediatRConfiguration::class, TestQueryHandler::class])
+@SpringBootTest(classes = [KediatRAutoConfiguration::class, TestQueryHandler::class])
 class QueryHandlerTest {
 
     @Autowired
