@@ -2,38 +2,33 @@
 
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.MediatorBuilder
 import com.trendyol.kediatr.DependencyProvider
+import com.trendyol.kediatr.MediatorBuilder
+import org.koin.core.Koin
 import org.koin.core.annotation.KoinInternalApi
-import org.koin.core.component.getScopeName
 import org.koin.java.KoinJavaComponent.getKoin
-import org.reflections.Reflections
 import kotlin.reflect.KClass
 
 @OptIn(KoinInternalApi::class)
 class KediatRKoinProvider : DependencyProvider {
-    private val koin = getKoin()
-    private var reflections: Reflections
+    private val koin: Koin = getKoin()
+    private val subTypes: List<KClass<*>>
+        get() = koin
+            .instanceRegistry.instances
+            .map { it.value.beanDefinition }
+            .fold(mutableListOf<KClass<*>>()) { acc, beanDefinition ->
+                acc.add(beanDefinition.primaryType)
+                acc.addAll(beanDefinition.secondaryTypes)
+                acc
+            }.distinct()
 
-    init {
-        val aPackage = koin.instanceRegistry.instances.entries.map {
-            it.value.beanDefinition.definition.getScopeName().type.java.`package`
-        }.first().name
-        val mainPackageName = Package.getPackages().filter { aPackage.startsWith(it.name) }.map { it.name }
-        reflections = Reflections(mainPackageName)
-    }
+    override fun <T> getSingleInstanceOf(clazz: Class<T>): T = koin.get(clazz.kClass())
 
-    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
-        return koin.get(clazz.kClass())
-    }
+    override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> = subTypes
+        .filter { clazz.isAssignableFrom(it.java) }
+        .map { it.java as Class<T> }
 
-    override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> {
-        return reflections.getSubTypesOf(clazz).map { it as Class<T> }
-    }
-
-    private fun <T> Class<T>.kClass(): KClass<out Any> {
-        return (this as Class<*>).kotlin
-    }
+    private fun <T> Class<T>.kClass(): KClass<out Any> = (this as Class<*>).kotlin
 }
 
 class KediatRKoin {
