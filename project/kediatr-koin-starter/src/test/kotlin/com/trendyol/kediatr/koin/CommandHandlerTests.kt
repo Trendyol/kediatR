@@ -1,14 +1,13 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.CommandHandler
 import com.trendyol.kediatr.Command
-import com.trendyol.kediatr.Mediator
+import com.trendyol.kediatr.CommandHandler
 import com.trendyol.kediatr.HandlerNotFoundException
+import com.trendyol.kediatr.Mediator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
-import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -25,14 +24,14 @@ class CommandHandlerTests : KoinTest {
         modules(
             module {
                 single { KediatRKoin.getMediator() }
-                single { ExceptionPipelineBehavior() } bind ExceptionPipelineBehavior::class
-                single { LoggingPipelineBehavior() } bind LoggingPipelineBehavior::class
-                single { MyCommandHandler(get()) } bind CommandHandler::class
+                single { ExceptionPipelineBehavior() }
+                single { LoggingPipelineBehavior() }
+                single { MyCommandHandler(get()) }
             }
         )
     }
 
-    private val mediator by inject<Mediator>()
+    private val mediator: Mediator by inject()
 
     init {
         springTestCounter = 0
