@@ -1,4 +1,4 @@
-val koinVersion = "3.4.0"
+val koinVersion = "3.4.1"
 
 dependencies {
     api(project(":project:kediatr-core"))
