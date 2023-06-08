@@ -1,12 +1,10 @@
-val koinVersion = "3.4.1"
-
 dependencies {
     api(project(":project:kediatr-core"))
     implementation("org.reflections:reflections:0.10.2")
-    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-core:3.4.1")
 }
 
 dependencies {
-    testImplementation("io.insert-koin:koin-test:$koinVersion")
-    testImplementation("io.insert-koin:koin-test-junit5:$koinVersion")
+    testImplementation("io.insert-koin:koin-test:3.4.1")
+    testImplementation("io.insert-koin:koin-test-junit5:3.4.1")
 }
