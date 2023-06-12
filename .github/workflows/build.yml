@@ -25,7 +25,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./build/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          files: ./build/jacoco/codeCoverageReport/codeCoverageReport.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
