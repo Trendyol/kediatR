@@ -7,6 +7,8 @@ plugins {
     id("kediatr-coverage")
     id("org.jlleitschuh.gradle.ktlint") version "11.4.0"
     java
+    jacoco
+    `jacoco-report-aggregation`
 }
 
 jacoco {
@@ -19,6 +21,8 @@ subprojectsOf("project") {
         plugin("kediatr-publishing")
         plugin("kediatr-coverage")
         plugin("java")
+        plugin("jacoco")
+        plugin("jacoco-report-aggregation")
     }
 
     java {
@@ -27,7 +31,6 @@ subprojectsOf("project") {
     }
 
     dependencies {
-        jacocoAggregation(project(project.path))
         implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     }
@@ -40,8 +43,10 @@ subprojectsOf("project") {
 
     tasks.test {
         useJUnitPlatform()
-        maxParallelForks = Runtime.getRuntime().availableProcessors()
-        finalizedBy(tasks.named<Copy>("testAggregateResults"))
+        reports {
+            junitXml.required.set(true)
+            html.required.set(true)
+        }
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -51,38 +56,14 @@ subprojectsOf("project") {
         }
     }
 
-    tasks.create<Copy>("testAggregateResults") {
-        from(tasks.test.get().reports.junitXml.outputLocation.get().asFile)
-        into("${rootProject.buildDir}/reports/test")
-        include("*.xml")
-        dependsOn(tasks.test)
-    }
-
     tasks.jacocoTestReport {
         dependsOn(tasks.test)
         reports {
             xml.required.set(true)
             csv.required.set(false)
-            html.required.set(false)
+            html.required.set(true)
         }
     }
-}
-
-allprojects {
-    repositories {
-        mavenCentral()
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-        }
-
-        maven {
-            url = uri("https://repo.maven.apache.org/maven2/")
-        }
-    }
-}
-
-tasks.check {
-    dependsOn(tasks.named("testCodeCoverageReport"))
 }
 
 fun subprojectsOf(
