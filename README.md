@@ -1,4 +1,4 @@
-# kediatR ![Release kediatR-core](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-core/badge.svg?branch=master) ![Release kediatR-spring-starter](https://github.com/Trendyol/kediatR/workflows/Release%20kediatR-spring-starter/badge.svg?branch=master) [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/v2.0/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
+# kediatR [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/2.x/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
 
 <img style="float: left" alt="Humus! The kediatr mascot" src="/humus.png" alt="drawing" width="80"/>
 
