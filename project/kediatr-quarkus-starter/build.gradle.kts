@@ -12,4 +12,13 @@ dependencies {
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("io.quarkus:quarkus-jacoco")
+}
+
+tasks.test.configure {
+    environment["QUARKUS_JACOCO_REPORT_LOCATION"] = "jacoco"
+    environment["QUARKUS_JACOCO_DATA_FILE"] = "test.exec"
+    doLast {
+        file("$buildDir/test.exec").renameTo(file("$buildDir/jacoco/test.exec"))
+    }
 }
