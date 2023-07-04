@@ -34,7 +34,7 @@ subprojectsOf("project") {
     }
 
     dependencies {
-        implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1"))
+        implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.2"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     }
 
