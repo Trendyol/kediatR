@@ -6,6 +6,8 @@ plugins {
     id("kediatr-publishing") apply false
     id("kediatr-coverage")
     id("org.jlleitschuh.gradle.ktlint") version "11.4.2"
+    id("com.palantir.git-version") version "3.0.0"
+    id("com.adarshr.test-logger") version "3.2.0"
     java
     jacoco
     `jacoco-report-aggregation`
@@ -22,6 +24,7 @@ subprojectsOf("project") {
         plugin("kediatr-coverage")
         plugin("java")
         plugin("jacoco")
+        plugin("com.adarshr.test-logger")
         plugin("jacoco-report-aggregation")
     }
 
@@ -43,6 +46,10 @@ subprojectsOf("project") {
 
     tasks.test {
         useJUnitPlatform()
+        testlogger {
+            setTheme("mocha")
+            this.showStandardStreams = true
+        }
         reports {
             junitXml.required.set(true)
             html.required.set(true)
