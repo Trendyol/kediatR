@@ -43,7 +43,7 @@ subprojectsOf("project") {
 
     dependencies {
         testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
-        testImplementation(platform("org.junit:junit-bom:5.9.3"))
+        testImplementation(platform("org.junit:junit-bom:5.10.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
     }
 
