@@ -34,12 +34,12 @@ subprojectsOf("project") {
     }
 
     dependencies {
-        implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.2"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+        implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3"))
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     }
 
     dependencies {
-        testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
+        testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
     }
