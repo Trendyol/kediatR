@@ -1,0 +1,18 @@
+/* Maximum space for text block */
+.md-grid {
+    /*max-width: 100%;*/
+    margin-top: 0
+}
+
+img {
+    width: 100%;
+}
+
+.md-social__link {
+    width: max-content;
+}
+
+.md-social__link:after {
+    content: "❤️ Trendyol";
+    display: flex;
+}
