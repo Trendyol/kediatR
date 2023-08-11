@@ -35,7 +35,7 @@ class MeasurePipelineBehaviour: PipelineBehaviour {
         next: RequestHandlerDelegate<TRequest, TResponse>
     ): TResponse {
         val start = System.currentTimeMillis()
-        val response = next()
+        val response = next(request)
         val end = System.currentTimeMillis()
         println("Request ${request::class.simpleName} took ${end - start} ms")
         return response
