@@ -16,9 +16,6 @@ dependencies {
 }
 
 tasks.test.configure {
-    environment["QUARKUS_JACOCO_REPORT_LOCATION"] = "jacoco"
-    environment["QUARKUS_JACOCO_DATA_FILE"] = "test.exec"
-    doLast {
-        file("$buildDir/test.exec").renameTo(file("$buildDir/jacoco/test.exec"))
-    }
+    environment["QUARKUS_JACOCO_REPORT_LOCATION"] = "/build/jacoco"
+    environment["QUARKUS_JACOCO_DATA_FILE"] = "build/jacoco/test.exec"
 }
