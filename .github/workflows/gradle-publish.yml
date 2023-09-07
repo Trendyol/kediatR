@@ -23,7 +23,7 @@ jobs:
         settings-path: ${{ github.workspace }}
 
     - name: Publish to Maven Repository
-      uses: gradle/gradle-build-action@v2.7.0
+      uses: gradle/gradle-build-action@v2.8.0
       if: startsWith(github.ref, 'refs/heads/2.x')
       with:
         arguments: publish
