@@ -5,6 +5,6 @@ dependencies {
 }
 
 dependencies {
-    testImplementation("io.insert-koin:koin-test:3.4.3")
-    testImplementation("io.insert-koin:koin-test-junit5:3.4.3")
+    testImplementation("io.insert-koin:koin-test:3.5.0")
+    testImplementation("io.insert-koin:koin-test-junit5:3.5.0")
 }
