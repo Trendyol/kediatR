@@ -31,3 +31,4 @@ jobs:
           fail_ci_if_error: true
           verbose: true
           java-version: 17
+        if: github.ref == 'refs/heads/main'
