@@ -26,7 +26,7 @@ jobs:
       uses: gradle/gradle-build-action@v2.9.0
       if: startsWith(github.ref, 'refs/heads/2.x')
       with:
-        arguments: publish
+        arguments: --build-cache publish
       env:
          gpg_private_key: ${{ secrets.gpg_private_key }}
          gpg_passphrase: ${{ secrets.gpg_passphrase }}
