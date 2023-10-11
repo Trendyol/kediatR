@@ -19,9 +19,11 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
 
-      - name: Gradle Build
-        run: |
-           ./gradlew build
+      - name: Gradle Build and Test
+        uses: gradle/gradle-build-action@v2.9.0
+        with:
+           arguments: --build-cache build
+          
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
