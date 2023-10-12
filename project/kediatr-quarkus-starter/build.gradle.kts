@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     api(project(":project:kediatr-core"))
-    implementation(platform("io.quarkus:quarkus-bom:3.4.2"))
+    implementation(platform("io.quarkus:quarkus-bom:3.4.3"))
     implementation("io.quarkus:quarkus-arc")
     implementation("jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1")
 }
