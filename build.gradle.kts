@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     id("kediatr-publishing") apply false
     id("kediatr-coverage")
-    id("org.jlleitschuh.gradle.ktlint") version "12.0.3"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.palantir.git-version") version "3.0.0"
     id("com.adarshr.test-logger") version "4.0.0"
     java
