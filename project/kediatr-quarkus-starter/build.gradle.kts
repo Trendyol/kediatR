@@ -1,5 +1,5 @@
 plugins {
-    id("io.quarkus") version "3.6.5"
+    id("io.quarkus") version "3.6.6"
 }
 
 dependencies {
