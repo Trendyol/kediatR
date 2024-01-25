@@ -12,6 +12,7 @@ dependencies {
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("io.quarkus:quarkus-jacoco")
 }
 
 tasks.test.configure {
