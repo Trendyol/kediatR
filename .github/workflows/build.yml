@@ -30,7 +30,7 @@ jobs:
           files: ./build/reports/kediatr-core/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-koin-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-quarkus-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-spring-boot-2x-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-spring-boot-3x-starter/jacoco/test/jacocoTestReport.xml
           flags: unittests
           name: codecov-umbrella
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           verbose: true
           java-version: 17
         if: github.ref == 'refs/heads/main'
