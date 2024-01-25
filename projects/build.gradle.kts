@@ -7,10 +7,6 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
-jacoco {
-    reportsDirectory.set(rootProject.layout.buildDirectory.dir("reports/jacoco"))
-}
-
 subprojects {
     apply {
         plugin("com.adarshr.test-logger")
@@ -44,6 +40,9 @@ subprojects {
             html.required.set(true)
         }
     }
+    jacoco {
+        reportsDirectory.set(rootProject.layout.buildDirectory.dir("reports/${project.name}/jacoco"))
+    }
     tasks.jacocoTestReport {
         dependsOn(tasks.test)
         reports {
@@ -51,10 +50,12 @@ subprojects {
             html.required.set(false)
             csv.required.set(false)
         }
+        executionData(this)
     }
 }
 
 tasks.create<JacocoReport>("jacocoRootReport") {
+    enabled = false
     this.group = "Reporting"
     subprojects.forEach { dependsOn(it.tasks.test) }
     subprojects.forEach {

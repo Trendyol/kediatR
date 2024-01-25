@@ -23,11 +23,11 @@ jobs:
         uses: gradle/gradle-build-action@v2.12.0
         with:
            arguments: --build-cache build
-          
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./build/jacoco/codeCoverageReport/codeCoverageReport.xml
+          files: ./build/reports/kediatr-core/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-koin-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-quarkus-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-spring-boot-2x-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-spring-boot-3x-starter/jacoco/test/jacocoTestReport.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
