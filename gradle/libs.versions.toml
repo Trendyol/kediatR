@@ -1,0 +1,6 @@
+[versions]
+kotlin = "1.9.22"
+
+[libraries]
+
+[plugins]

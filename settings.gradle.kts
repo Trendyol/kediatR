@@ -2,10 +2,11 @@
 
 rootProject.name = "kediatR"
 include(
-    "project:kediatr-core",
-    "project:kediatr-koin-starter",
-    "project:kediatr-quarkus-starter",
-    "project:kediatr-spring-starter"
+    "projects:kediatr-core",
+    "projects:kediatr-koin-starter",
+    "projects:kediatr-quarkus-starter",
+    "projects:kediatr-spring-boot-2x-starter",
+    "projects:kediatr-spring-boot-3x-starter"
 )
 
 dependencyResolutionManagement {
