@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": ["main", "2.x"],
+  "baseBranches": ["main"],
   "extends": [
     "config:base"
   ],
