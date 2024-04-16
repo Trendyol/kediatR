@@ -1,12 +1,12 @@
 plugins {
-    id("io.quarkus") version "3.9.2"
+    id("io.quarkus") version "3.9.3"
 }
 
 dependencies {
     api(project(":projects:kediatr-core"))
-    implementation(platform("io.quarkus:quarkus-bom:3.9.2"))
+    implementation(platform("io.quarkus:quarkus-bom:3.9.3"))
     implementation("io.quarkus:quarkus-arc")
-    implementation("jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1")
+    implementation("jakarta.enterprise:jakarta.enterprise.cdi-api:4.1.0")
 }
 
 dependencies {
