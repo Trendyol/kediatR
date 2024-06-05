@@ -3,7 +3,7 @@ group = "com.trendyol"
 plugins {
     kotlin("jvm") version libs.versions.kotlin.get()
     id("kediatr-publishing") apply false
-    id("com.palantir.git-version") version "3.0.0"
+    id("com.palantir.git-version") version "3.1.0"
     java
 }
 
