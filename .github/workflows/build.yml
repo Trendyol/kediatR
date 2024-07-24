@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
 
       - name: Gradle Build and Test
-        uses: gradle/gradle-build-action@v3.4.2
+        uses: gradle/gradle-build-action@v3.5.0
         with:
            arguments: --build-cache build test jacocoTestReport
 
