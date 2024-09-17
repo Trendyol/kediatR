@@ -1,7 +1,7 @@
 dependencies {
     api(project(":projects:kediatr-core"))
     implementation("org.reflections:reflections:0.10.2")
-    implementation("io.insert-koin:koin-core:3.5.6")
+    implementation("io.insert-koin:koin-core:4.0.0")
 }
 
 dependencies {
