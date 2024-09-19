@@ -1,4 +1,4 @@
-val springVersion = "3.3.3"
+val springVersion = "3.3.4"
 dependencies {
     api(project(":projects:kediatr-core"))
     implementation("org.springframework.boot:spring-boot-starter:$springVersion")
