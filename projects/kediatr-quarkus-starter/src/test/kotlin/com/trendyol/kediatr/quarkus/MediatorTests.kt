@@ -1,6 +1,6 @@
 package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.framewokUseCases.*
 import io.quarkus.test.junit.QuarkusTest
 import jakarta.enterprise.inject.Produces
@@ -29,10 +29,10 @@ class MediatorTests : MediatorUseCases() {
   fun notificationHandler(mediator: Mediator) = TestNotificationHandler(mediator)
 
   @Produces
-  fun pipelineBehaviors(): List<PipelineBehavior> = listOf(
-    ExceptionPipelineBehavior(),
-    LoggingPipelineBehavior()
-  )
+  fun pipeline1() = ExceptionPipelineBehavior()
+
+  @Produces
+  fun pipeline2() = LoggingPipelineBehavior()
 
   @Produces
   fun provideQueryHandler(mediator: Mediator) = TestQueryHandler(mediator)

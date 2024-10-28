@@ -9,8 +9,8 @@ kover {
     filters {
       excludes {
         androidGeneratedClasses()
-        this.packages("**generated**")
-        this.classes("**generated**")
+        packages("**generated**")
+        classes("**generated**")
       }
     }
   }
@@ -23,6 +23,10 @@ subprojects {
 
   kotlin {
     jvmToolchain(17)
+    compilerOptions {
+      freeCompilerArgs = listOf("-Xjsr305=strict")
+      allWarningsAsErrors = true
+    }
   }
 
   dependencies {

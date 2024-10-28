@@ -4,7 +4,8 @@ import com.trendyol.kediatr.HandlerNotFoundException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 abstract class MediatorUseCases : MediatorDIConvention {
   @Test
@@ -26,8 +27,10 @@ abstract class MediatorUseCases : MediatorDIConvention {
   @Test
   fun commandWithResult() = runTest {
     val count = 0
-    val result = testMediator.send(TestCommandWithResult(count))
+    val command = TestCommandWithResult(count)
+    val result = testMediator.send(command)
     result.value shouldBe count + 1
+    command.invocationCount() shouldBe 1
   }
 
   @Test
@@ -41,22 +44,29 @@ abstract class MediatorUseCases : MediatorDIConvention {
 
   @Test
   fun notification() = runTest {
-    testMediator.publish(TestNotification())
+    val notification = TestNotification()
+    testMediator.publish(notification)
+    notification.invocationCount() shouldBe 1
   }
 
   @Test
-  fun `should process command with async pipeline`() = runTest {
-    testMediator.send(TestPipelineCommand())
+  fun pipeline() = runTest {
+    val command = TestPipelineCommand()
+    testMediator.send(command)
+    command.visitedPipelines() shouldBe setOf(
+      ExceptionPipelineBehavior::class.simpleName,
+      LoggingPipelineBehavior::class.simpleName
+    )
   }
 
   @Test
-  fun `should process exception in async handler`() = runTest {
+  fun command_throws_exception() = runTest {
     val act = suspend { testMediator.send(TestBrokenCommand()) }
     assertThrows<Exception> { act() }
   }
 
   @Test
-  fun `should throw exception if given async query does not have handler bean`() = runTest {
+  fun query_without_handler() = runTest {
     val exception = shouldThrow<HandlerNotFoundException> {
       testMediator.send(NonExistQuery())
     }
@@ -65,9 +75,8 @@ abstract class MediatorUseCases : MediatorDIConvention {
   }
 
   @Test
-  fun `should retrieve result from async query handler bean`() = runTest {
+  fun query() = runTest {
     val result = testMediator.send(TestQuery(1))
-
     result shouldBe "hello 1"
   }
 }
