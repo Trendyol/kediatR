@@ -1,10 +1,11 @@
 dependencies {
-    api(project(":projects:kediatr-core"))
-    implementation("org.reflections:reflections:0.10.2")
-    implementation("io.insert-koin:koin-core:4.0.0")
+  api(projects.projects.kediatrCore)
+  implementation(libs.org.reflections)
+  implementation(libs.koin.core)
 }
 
 dependencies {
-    testImplementation("io.insert-koin:koin-test:4.0.0")
-    testImplementation("io.insert-koin:koin-test-junit5:4.0.0")
+  testImplementation(testFixtures(projects.projects.kediatrCore))
+  testImplementation(libs.koin.test)
+  testImplementation(libs.koin.test.junit5)
 }

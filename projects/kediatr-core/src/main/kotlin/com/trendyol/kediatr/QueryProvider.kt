@@ -6,10 +6,10 @@ package com.trendyol.kediatr
  * @param <H> type of handler
 </H> */
 internal class QueryProvider<H : QueryHandler<*, *>>(
-    private val dependencyProvider: DependencyProvider,
-    private val type: Class<H>
+  private val dependencyProvider: DependencyProvider,
+  private val type: Class<H>
 ) {
-    fun get(): H {
-        return dependencyProvider.getSingleInstanceOf(type)
-    }
+  fun get(): H {
+    return dependencyProvider.getSingleInstanceOf(type)
+  }
 }

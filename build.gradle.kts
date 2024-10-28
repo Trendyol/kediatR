@@ -1,25 +1,31 @@
 group = "com.trendyol"
 
 plugins {
-    kotlin("jvm") version libs.versions.kotlin.get()
-    id("kediatr-publishing") apply false
-    id("com.palantir.git-version") version "3.1.0"
-    java
+  kotlin("jvm") version libs.versions.kotlin.get()
+  java
+  id("kediatr-publishing") apply false
+  alias(libs.plugins.spotless)
 }
 
-val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
-val details = versionDetails()
-version = details.lastTag
+version = properties["version"].toString()
 
 subprojectsOf("projects") {
-    apply {
-        plugin("kotlin")
-        plugin("kediatr-publishing")
-        plugin("java")
-    }
+  apply {
+    plugin("kotlin")
+    plugin("kediatr-publishing")
+    plugin("java")
+    plugin(rootProject.libs.plugins.spotless.pluginId)
+  }
 
-    java {
-        withSourcesJar()
-        withJavadocJar()
+  spotless {
+    kotlin {
+      ktlint()
+        .setEditorConfigPath(rootProject.layout.projectDirectory.file(".editorconfig"))
     }
+  }
+
+  java {
+    withSourcesJar()
+    withJavadocJar()
+  }
 }

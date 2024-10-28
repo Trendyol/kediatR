@@ -1,6 +1,35 @@
 [versions]
 kotlin = "1.9.22"
+kotlinx = "1.9.0"
+kotest = "5.9.1"
+detekt = "1.23.7"
+junit = "5.11.3"
+koin = "4.0.0"
+quarkus = "3.16.0"
+jakarta = "4.1.0"
 
 [libraries]
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
+org-reflections = { module = "org.reflections:reflections", version = "0.10.2" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
+quarkusBom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
+quarkus-arc = { module = "io.quarkus:quarkus-arc", version.ref = "quarkus" }
+jakarta-enterpise-cdi-api = { module = "jakarta.enterprise:jakarta.enterprise.cdi-api", version.ref = "jakarta" }
+
+# test
+kotest-property-jvm = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }
+kotest-datatests = { module = "io.kotest:kotest-framework-datatest-jvm", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+quarkus-junit5 = { module = "io.quarkus:quarkus-junit5", version.ref = "quarkus" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 [plugins]
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.8.3" }
+testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
+quarkus = { id = "io.quarkus", version.ref = "quarkus" }

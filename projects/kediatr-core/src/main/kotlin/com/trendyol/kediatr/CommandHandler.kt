@@ -8,10 +8,10 @@ package com.trendyol.kediatr
  * @see Command
  */
 interface CommandHandler<TCommand : Command> {
-    /**
-     * Handles a command
-     *
-     * @param command the command to handle
-     */
-    suspend fun handle(command: TCommand)
+  /**
+   * Handles a command
+   *
+   * @param command the command to handle
+   */
+  suspend fun handle(command: TCommand)
 }
