@@ -6,5 +6,5 @@ package com.trendyol.kediatr
  * @since 1.0.9
  */
 class AggregateException(val exceptions: Collection<Throwable>) : RuntimeException() {
-    constructor(exceptions: Array<Throwable>) : this(exceptions.toList())
+  constructor(exceptions: Array<Throwable>) : this(exceptions.toList())
 }

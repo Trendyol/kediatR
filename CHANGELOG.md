@@ -11,14 +11,19 @@
 # What's Changed
 
 ## New
+
 * Support for Spring-Boot 3.1.0 #116 by @osoykan in https://github.com/Trendyol/kediatR/pull/117
 
 ## Package bumps
+
 * Update dependency io.quarkus:quarkus-bom to v3.0.3.Final by @renovate in https://github.com/Trendyol/kediatR/pull/110
 * Update plugin io.quarkus to v3.0.3.Final by @renovate in https://github.com/Trendyol/kediatR/pull/111
-* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-core to v1.7.1 by @renovate in https://github.com/Trendyol/kediatR/pull/114
-* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-test to v1.7.1 by @renovate in https://github.com/Trendyol/kediatR/pull/113
-* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-bom to v1.7.1 by @renovate in https://github.com/Trendyol/kediatR/pull/112
+* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-core to v1.7.1 by @renovate
+  in https://github.com/Trendyol/kediatR/pull/114
+* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-test to v1.7.1 by @renovate
+  in https://github.com/Trendyol/kediatR/pull/113
+* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-bom to v1.7.1 by @renovate
+  in https://github.com/Trendyol/kediatR/pull/112
 
 **Full Changelog**: https://github.com/Trendyol/kediatR/compare/v2.1.0...3.0.0-SNAPSHOT
 
@@ -27,10 +32,14 @@
 ## What's Changed
 
 ### Enhancements
-* Add possibility to invoke publish method with custom publishStrategy by @awaniak in https://github.com/Trendyol/kediatR/pull/92
-* Make the quarkus starter work again with quarkus 3.x.x by @lucas-dclrcq in https://github.com/Trendyol/kediatR/pull/109
+
+* Add possibility to invoke publish method with custom publishStrategy by @awaniak
+  in https://github.com/Trendyol/kediatR/pull/92
+* Make the quarkus starter work again with quarkus 3.x.x by @lucas-dclrcq
+  in https://github.com/Trendyol/kediatR/pull/109
 
 ### New Contributors
+
 * @renovate made their first contribution in https://github.com/Trendyol/kediatR/pull/44
 * @awaniak made their first contribution in https://github.com/Trendyol/kediatR/pull/92
 * @lucas-dclrcq made their first contribution in https://github.com/Trendyol/kediatR/pull/109
@@ -93,9 +102,12 @@
 * Update plugin io.quarkus to v3.0.1.Final by @renovate in https://github.com/Trendyol/kediatR/pull/102
 * Update plugin io.quarkus to v3.0.2.Final by @renovate in https://github.com/Trendyol/kediatR/pull/104
 * Update dependency io.quarkus:quarkus-bom to v2.16.7.Final by @renovate in https://github.com/Trendyol/kediatR/pull/105
-* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-core to v1.7.0 by @renovate in https://github.com/Trendyol/kediatR/pull/107
-* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-test to v1.7.0 by @renovate in https://github.com/Trendyol/kediatR/pull/108
-* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-bom to v1.7.0 by @renovate in https://github.com/Trendyol/kediatR/pull/106
+* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-core to v1.7.0 by @renovate
+  in https://github.com/Trendyol/kediatR/pull/107
+* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-test to v1.7.0 by @renovate
+  in https://github.com/Trendyol/kediatR/pull/108
+* Update dependency org.jetbrains.kotlinx:kotlinx-coroutines-bom to v1.7.0 by @renovate
+  in https://github.com/Trendyol/kediatR/pull/106
 
 **Full Changelog**: https://github.com/Trendyol/kediatR/compare/v2.0.0...v2.1.0
 
@@ -104,32 +116,37 @@
 This is the announcement release for 2.0.0; in other words, SNAPSHOT is promoted to release.
 
 # Breaking Changes
-- CommandBus renamed to Mediator #25 
+
+- CommandBus renamed to Mediator #25
 - ` executeCommand.* executeQuery.*, publishNotification.*` renamed to `send`
-- Pipeline behavior refactored with decorator pattern #31 
-- Sync code is deleted; now it supports only async invocation #26 
+- Pipeline behavior refactored with decorator pattern #31
+- Sync code is deleted; now it supports only async invocation #26
 
 ### Bug Fixes
 
 - general:
-  - fix name for pom while publishing ([4cf70ac](https://github.com/Trendyol/kediatR/commit/4cf70ac439ddf694decf779b601693bd902c150c))
+    - fix name for pom while
+      publishing ([4cf70ac](https://github.com/Trendyol/kediatR/commit/4cf70ac439ddf694decf779b601693bd902c150c))
 
 ## [v2.0-SNAPSHOT](https://github.com/Trendyol/kediatR/releases/tag/v2.0-SNAPSHOT) - 2022-10-19 09:10:36
 
 # Breaking Changes
-- CommandBus renamed to Mediator #25 
-- Pipeline behavior refactored with decorator pattern #31 
-- Sync code is deleted; now it supports only async invocation #26 
+
+- CommandBus renamed to Mediator #25
+- Pipeline behavior refactored with decorator pattern #31
+- Sync code is deleted; now it supports only async invocation #26
 
 ### Bug Fixes
 
 - general:
-  - fix the code snippet for sample kediatr-core usage ([e7f09ba](https://github.com/Trendyol/kediatR/commit/e7f09ba81cb07bd873dd22a9eca683b8d9b461eb)) ([#23](https://github.com/Trendyol/kediatR/pull/23))
+    - fix the code snippet for sample kediatr-core
+      usage ([e7f09ba](https://github.com/Trendyol/kediatR/commit/e7f09ba81cb07bd873dd22a9eca683b8d9b461eb)) ([#23](https://github.com/Trendyol/kediatR/pull/23))
 
 ### Refactor
 
 - general:
-  - refactor gradle ([3005893](https://github.com/Trendyol/kediatR/commit/3005893ece9745af2e78875c5334e10dc8373296))
-  - refactor gradle ([023651c](https://github.com/Trendyol/kediatR/commit/023651c1b316029afdaa0bf4e3c199ab80515025))
+    - refactor gradle ([3005893](https://github.com/Trendyol/kediatR/commit/3005893ece9745af2e78875c5334e10dc8373296))
+    - refactor gradle ([023651c](https://github.com/Trendyol/kediatR/commit/023651c1b316029afdaa0bf4e3c199ab80515025))
 
-\* *This CHANGELOG was automatically generated by [auto-generate-changelog](https://github.com/BobAnkh/auto-generate-changelog)*
+\* *This CHANGELOG was automatically generated
+by [auto-generate-changelog](https://github.com/BobAnkh/auto-generate-changelog)*

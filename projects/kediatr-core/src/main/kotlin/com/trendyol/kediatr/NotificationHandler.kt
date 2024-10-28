@@ -8,10 +8,10 @@ package com.trendyol.kediatr
  * @see Notification
  */
 interface NotificationHandler<in T> where T : Notification {
-    /**
-     * Handles a notification
-     *
-     * @param notification the notification to handle
-     */
-    suspend fun handle(notification: T)
+  /**
+   * Handles a notification
+   *
+   * @param notification the notification to handle
+   */
+  suspend fun handle(notification: T)
 }

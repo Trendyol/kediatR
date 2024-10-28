@@ -6,10 +6,10 @@ package com.trendyol.kediatr
  * @param <H> type of pipeline behavior
 </H> */
 internal class PipelineProvider<H : PipelineBehavior>(
-    private val dependencyProvider: DependencyProvider,
-    private val type: Class<H>
+  private val dependencyProvider: DependencyProvider,
+  private val type: Class<H>
 ) {
-    fun get(): H {
-        return dependencyProvider.getSingleInstanceOf(type)
-    }
+  fun get(): H {
+    return dependencyProvider.getSingleInstanceOf(type)
+  }
 }

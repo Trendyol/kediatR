@@ -1,21 +1,21 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    id("io.quarkus") version "3.16.0"
+  alias(libs.plugins.quarkus)
 }
 
 dependencies {
-    api(project(":projects:kediatr-core"))
-    implementation(platform("io.quarkus:quarkus-bom:3.16.0"))
-    implementation("io.quarkus:quarkus-arc")
-    implementation("jakarta.enterprise:jakarta.enterprise.cdi-api:4.1.0")
+  api(projects.projects.kediatrCore)
+  implementation(platform(libs.quarkusBom))
+  implementation(libs.quarkus.arc)
+  implementation(libs.jakarta.enterpise.cdi.api)
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-    testImplementation("io.quarkus:quarkus-junit5")
-    testImplementation("io.quarkus:quarkus-jacoco")
+  testImplementation(testFixtures(projects.projects.kediatrCore))
+  testImplementation(libs.quarkus.junit5)
 }
 
-tasks.test.configure {
-    environment["QUARKUS_JACOCO_REPORT_LOCATION"] = "/build/jacoco"
-    environment["QUARKUS_JACOCO_DATA_FILE"] = "build/jacoco/test.exec"
+tasks.withType<KotlinCompile> {
+  mustRunAfter(tasks.quarkusGenerateCode, tasks.quarkusGenerateCodeDev)
 }

@@ -8,10 +8,10 @@ package com.trendyol.kediatr
  * @see Query
  */
 interface QueryHandler<TQuery : Query<TResponse>, TResponse> {
-    /**
-     * Handles a query
-     *
-     * @param query the query to handle
-     */
-    suspend fun handle(query: TQuery): TResponse
+  /**
+   * Handles a query
+   *
+   * @param query the query to handle
+   */
+  suspend fun handle(query: TQuery): TResponse
 }

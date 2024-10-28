@@ -2,70 +2,35 @@
 
 package com.trendyol.kediatr.quarkus
 
-import com.trendyol.kediatr.DependencyProvider
-import com.trendyol.kediatr.Mediator
-import com.trendyol.kediatr.MediatorBuilder
+import com.trendyol.kediatr.*
 import io.quarkus.runtime.Startup
 import jakarta.enterprise.context.ApplicationScoped
-import jakarta.enterprise.inject.spi.Bean
 import jakarta.enterprise.inject.spi.BeanManager
-import java.util.concurrent.ConcurrentHashMap
 
 class KediatRBeanProvider(
-    private val beanManager: BeanManager
+  private val beanManager: BeanManager,
+  private val quarkusTypeScanner: QuarkusTypeScanner
 ) : DependencyProvider {
-    private val kediatrPackageNamePrefix = "com.trendyol.kediatr"
-    private val classHandlerMap: ConcurrentHashMap<Class<Any>, Any> = ConcurrentHashMap()
-    private var initialAllKediatrBeans: List<Bean<*>> = emptyList()
+  override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
+    val beans = beanManager.getBeans(clazz)
+    val bean = beans.firstOrNull() ?: error("No bean found for class $clazz")
+    val ctx = beanManager.createCreationalContext(bean)
+    return beanManager.getReference(bean, clazz, ctx) as T
+  }
 
-    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
-        val instance =
-            classHandlerMap.getOrPut(clazz as Class<Any>) {
-                val beans = beanManager.getBeans(clazz)
-                val bean = beanManager.resolve(beans)
-                val context = beanManager.createCreationalContext(bean)
-                beanManager.getReference(bean, bean.beanClass, context) as Any
-            }
-        return instance as T
-    }
-
-    override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> {
-        if (initialAllKediatrBeans.isEmpty()) {
-            initialAllKediatrBeans =
-                beanManager.getBeans(Object::class.java).filter { bean ->
-                    bean.types.any { type ->
-                        type.typeName.startsWith(kediatrPackageNamePrefix)
-                    }
-                }
-        }
-
-        val kediatrHandlerBeans: MutableList<Class<T>> = mutableListOf()
-        initialAllKediatrBeans.forEach { bean ->
-            val isKediatrHandlerBean =
-                bean.types.any { type ->
-                    type.typeName.startsWith(clazz.name)
-                }
-            if (isKediatrHandlerBean) {
-                val kediatrHandler =
-                    bean.types.first { !it.typeName.startsWith(clazz.name) && !it.typeName.equals(Object::class.java.name) }
-                kediatrHandlerBeans.add(kediatrHandler as Class<T>)
-            }
-        }
-
-        return kediatrHandlerBeans
-    }
+  override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> = quarkusTypeScanner.getSubTypesOf(clazz)
 }
 
 @ApplicationScoped
 class QuarkusMediatorBuilder {
-    @ApplicationScoped
-    fun kediatRBeanProvider(beanManager: BeanManager): KediatRBeanProvider {
-        return KediatRBeanProvider(beanManager)
-    }
+  @ApplicationScoped
+  fun kediatRBeanProvider(
+    beanManager: BeanManager,
+    quarkusTypeScanner: QuarkusTypeScanner
+  ): KediatRBeanProvider =
+    KediatRBeanProvider(beanManager, quarkusTypeScanner)
 
-    @ApplicationScoped
-    @Startup
-    fun mediator(kediatRBeanProvider: KediatRBeanProvider): Mediator {
-        return MediatorBuilder(kediatRBeanProvider).build()
-    }
+  @ApplicationScoped
+  @Startup
+  fun mediator(kediatRBeanProvider: KediatRBeanProvider): Mediator = MediatorBuilder(kediatRBeanProvider).build()
 }

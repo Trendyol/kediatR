@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   build-and-test:
@@ -19,15 +19,18 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: Gradle Build and Test
-        uses: gradle/gradle-build-action@v3.5.0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
-           arguments: --build-cache build test jacocoTestReport
+          gradle-version: current
+
+      - name: Gradle Build and Test
+        run: gradle --build-cache --configuration-cache build test koverXmlReport
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./build/reports/kediatr-core/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-koin-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-quarkus-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-spring-boot-2x-starter/jacoco/test/jacocoTestReport.xml,./build/reports/kediatr-spring-boot-3x-starter/jacoco/test/jacocoTestReport.xml
+          files: '**/build/reports/kover/report.xml'
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
