@@ -7,12 +7,17 @@ import jakarta.enterprise.inject.spi.*
 import java.lang.reflect.*
 
 @ApplicationScoped
-class QuarkusTypeScanner(
+class QuarkusTypeResolver(
   private val beanManager: BeanManager
 ) {
-  fun <T> getSubTypesOf(
-    clazz: Class<T>
-  ): Collection<Class<T>> = beanManager.getBeans(Any::class.java)
+  fun <T> resolveOrThrow(clazz: Class<T>): T {
+    val beans = beanManager.getBeans(clazz)
+    val bean = beans.firstOrNull() ?: error("No bean found for class $clazz")
+    val ctx = beanManager.createCreationalContext(bean)
+    return beanManager.getReference(bean, clazz, ctx) as T
+  }
+
+  fun <T> resolveTypesOrEmpty(clazz: Class<T>): Collection<Class<T>> = beanManager.getBeans(Any::class.java)
     .asSequence()
     .filterNot(::quarkusThings)
     .flatMap { it.types }
