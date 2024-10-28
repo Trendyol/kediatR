@@ -79,4 +79,11 @@ abstract class MediatorUseCases : MediatorDIConvention {
     val result = testMediator.send(TestQuery(1))
     result shouldBe "hello 1"
   }
+
+  @Test
+  fun inheritance_for_command_handler() = runTest {
+    val command = TestCommandForInheritance()
+    testMediator.send(command)
+    command.invocationCount() shouldBe 1
+  }
 }

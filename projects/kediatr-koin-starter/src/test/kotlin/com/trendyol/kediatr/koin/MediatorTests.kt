@@ -3,8 +3,10 @@ package com.trendyol.kediatr.koin
 import com.trendyol.kediatr.*
 import com.trendyol.kediatr.framewokUseCases.*
 import org.junit.jupiter.api.extension.RegisterExtension
-import org.koin.dsl.*
-import org.koin.test.*
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
 import org.koin.test.junit5.KoinTestExtension
 
 class MediatorTests : KoinTest, MediatorUseCases() {
@@ -22,6 +24,7 @@ class MediatorTests : KoinTest, MediatorUseCases() {
         single { TestNotificationHandler(get()) } bind NotificationHandler::class
         single { TestBrokenCommandHandler(get()) } bind CommandHandler::class
         single { TestPipelineCommandHandler(get()) } bind CommandHandler::class
+        single { TestInheritedCommandHandlerForSpecificCommand() } bind CommandHandler::class
       }
     )
   }

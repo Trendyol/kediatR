@@ -15,7 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest
     TestNotificationHandler::class,
     TestBrokenCommandHandler::class,
     TestPipelineCommandHandler::class,
-    TestCommandWithResultCommandHandler::class
+    TestCommandWithResultCommandHandler::class,
+    TestInheritedCommandHandlerForSpecificCommand::class
   ]
 )
 class MediatorTests : MediatorUseCases() {

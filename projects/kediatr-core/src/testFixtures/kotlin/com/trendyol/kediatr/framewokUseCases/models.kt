@@ -139,3 +139,13 @@ class TestQueryHandler(
     return "hello " + query.id
   }
 }
+
+class TestCommandForInheritance : Command, EnrichedWithMetadata()
+
+abstract class MyCommandHandlerBaseForSpecificCommand : CommandHandler<TestCommandForInheritance>
+
+class TestInheritedCommandHandlerForSpecificCommand : MyCommandHandlerBaseForSpecificCommand() {
+  override suspend fun handle(command: TestCommandForInheritance) {
+    command.incrementInvocationCount()
+  }
+}

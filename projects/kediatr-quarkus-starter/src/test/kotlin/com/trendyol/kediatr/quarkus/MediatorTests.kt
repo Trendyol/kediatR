@@ -26,6 +26,10 @@ class MediatorTests : MediatorUseCases() {
   fun handler4(mediator: Mediator): TestPipelineCommandHandler = TestPipelineCommandHandler(mediator)
 
   @Produces
+  fun handler5(): TestInheritedCommandHandlerForSpecificCommand =
+    TestInheritedCommandHandlerForSpecificCommand()
+
+  @Produces
   fun notificationHandler(mediator: Mediator) = TestNotificationHandler(mediator)
 
   @Produces
