@@ -90,4 +90,22 @@ class MediatorTests : MediatorUseCases() {
 
   @Produces
   fun <T, R> handler22() = ParameterizedQueryHandler<T, R>()
+
+  @Produces
+  fun pipeline4() = FirstPipelineBehaviour()
+
+  @Produces
+  fun pipeline5() = SecondPipelineBehaviour()
+
+  @Produces
+  fun pipeline6() = ThirdPipelineBehaviour()
+
+  @Produces
+  fun handler23() = CommandHandlerThatPassesThroughOrderedPipelineBehaviours()
+
+  @Produces
+  fun handler24() = QueryHandlerThatPassesThroughOrderedPipelineBehaviours()
+
+  @Produces
+  fun handler25() = NotificationHandlerThatPassesThroughOrderedPipelineBehaviours()
 }
