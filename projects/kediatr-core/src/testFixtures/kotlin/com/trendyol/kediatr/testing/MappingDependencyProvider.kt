@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package com.trendyol.kediatr.coreUseCases
+package com.trendyol.kediatr.testing
 
 import com.trendyol.kediatr.DependencyProvider
 import java.lang.reflect.ParameterizedType
@@ -8,15 +8,11 @@ import java.lang.reflect.ParameterizedType
 class MappingDependencyProvider(
   private val handlerMap: HashMap<Class<*>, Any>
 ) : DependencyProvider {
-  override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
-    return handlerMap[clazz] as T
-  }
+  override fun <T> getSingleInstanceOf(clazz: Class<T>): T = handlerMap[clazz] as T
 
   override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> = handlerMap
     .filter { filterInternal(it.key, clazz) }
-    .map {
-      it.key as Class<T>
-    }
+    .map { it.key as Class<T> }
 
   private fun <THandler> filterInternal(
     handler: Class<*>,

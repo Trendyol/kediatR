@@ -35,6 +35,5 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
           verbose: true
-          java-version: 17
           token: ${{ secrets.CODECOV_TOKEN }}
         if: github.ref == 'refs/heads/main'

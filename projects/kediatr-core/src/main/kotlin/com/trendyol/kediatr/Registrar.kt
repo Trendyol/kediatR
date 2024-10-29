@@ -65,7 +65,14 @@ abstract class Registrar {
   protected fun extractParameter(genericInterface: ParameterizedType): Class<*> =
     when (val typeArgument = genericInterface.actualTypeArguments[0]) {
       is ParameterizedType -> typeArgument.rawType as Class<*>
-      is TypeVariable<*> -> extractParameter((genericInterface.rawType as Class<*>).genericInterfaces[0] as ParameterizedType)
+      is TypeVariable<*> -> {
+        val rawType = (genericInterface.rawType as Class<*>)
+        when {
+          rawType.genericInterfaces.any() -> extractParameter(rawType.genericInterfaces[0] as ParameterizedType)
+          else -> rawType
+        }
+      }
+
       else -> typeArgument as Class<*>
     }
 }

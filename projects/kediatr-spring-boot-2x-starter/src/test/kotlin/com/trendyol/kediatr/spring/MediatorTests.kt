@@ -1,13 +1,15 @@
 package com.trendyol.kediatr.spring
 
 import com.trendyol.kediatr.Mediator
-import com.trendyol.kediatr.framewokUseCases.*
+import com.trendyol.kediatr.testing.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.*
 
 @SpringBootTest(
   classes = [
     KediatRAutoConfiguration::class,
+    MediatorTests.TestConfiguration::class,
     TestCommandHandler::class,
     ExceptionPipelineBehavior::class,
     LoggingPipelineBehavior::class,
@@ -16,7 +18,24 @@ import org.springframework.boot.test.context.SpringBootTest
     TestBrokenCommandHandler::class,
     TestPipelineCommandHandler::class,
     TestCommandWithResultCommandHandler::class,
-    TestInheritedCommandHandlerForSpecificCommand::class
+    TestInheritedCommandHandlerForSpecificCommand::class,
+    TestCommandHandlerWithoutInjection::class,
+    TestCommandHandlerForTypeLimitedInheritance::class,
+    ParameterizedCommandHandler::class,
+    ParameterizedCommandHandlerForInheritance::class,
+    ParameterizedCommandWithResultHandler::class,
+    ParameterizedCommandWithResultHandlerOfInheritedHandler::class,
+    APingHandler::class,
+    AnotherPingHandler::class,
+    Handler1ForNotificationOfMultipleHandlers::class,
+    Handler2ForNotificationOfMultipleHandlers::class,
+    InheritedNotificationHandler::class,
+    ParameterizedNotificationHandler::class,
+    ParameterizedNotificationHandlerForInheritance::class,
+    TestPipelineCommandHandlerWithoutInjection::class,
+    TestPipelineCommandHandlerThatFails::class,
+    InheritedPipelineBehaviour::class,
+    ParameterizedQueryHandler::class
   ]
 )
 class MediatorTests : MediatorUseCases() {
@@ -24,4 +43,12 @@ class MediatorTests : MediatorUseCases() {
   lateinit var mediator: Mediator
 
   override fun provideMediator(): Mediator = mediator
+
+  @Configuration
+  open class TestConfiguration {
+    @Bean
+    open fun mediatorAccessor(mediator: Mediator): MediatorAccessor {
+      return { mediator }
+    }
+  }
 }

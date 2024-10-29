@@ -1,12 +1,10 @@
 package com.trendyol.kediatr.koin
 
 import com.trendyol.kediatr.*
-import com.trendyol.kediatr.framewokUseCases.*
+import com.trendyol.kediatr.testing.*
 import org.junit.jupiter.api.extension.RegisterExtension
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import org.koin.test.KoinTest
-import org.koin.test.inject
+import org.koin.dsl.*
+import org.koin.test.*
 import org.koin.test.junit5.KoinTestExtension
 
 class MediatorTests : KoinTest, MediatorUseCases() {
@@ -16,6 +14,7 @@ class MediatorTests : KoinTest, MediatorUseCases() {
     modules(
       module {
         single { KediatRKoin.getMediator() }
+        single { InheritedPipelineBehaviour() }
         single { ExceptionPipelineBehavior() }
         single { LoggingPipelineBehavior() }
         single { TestCommandHandler(get()) }
@@ -25,6 +24,23 @@ class MediatorTests : KoinTest, MediatorUseCases() {
         single { TestBrokenCommandHandler(get()) } bind CommandHandler::class
         single { TestPipelineCommandHandler(get()) } bind CommandHandler::class
         single { TestInheritedCommandHandlerForSpecificCommand() } bind CommandHandler::class
+        single { TestCommandHandlerWithoutInjection() } bind CommandHandler::class
+        single { TestCommandHandlerForTypeLimitedInheritance() } bind CommandHandler::class
+        single { ParameterizedCommandHandler<String>() } bind CommandHandler::class
+        single { ParameterizedCommandHandlerForInheritance<String>() } bind CommandHandler::class
+        single { ParameterizedCommandWithResultHandler<Long, String>() } bind CommandWithResultHandler::class
+        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() } bind CommandWithResultHandler::class
+        single { APingHandler() } bind NotificationHandler::class
+        single { AnotherPingHandler() } bind NotificationHandler::class
+        single { Handler1ForNotificationOfMultipleHandlers() } bind NotificationHandler::class
+        single { Handler2ForNotificationOfMultipleHandlers() } bind NotificationHandler::class
+        single { InheritedNotificationHandler() } bind NotificationHandler::class
+        single { ParameterizedNotificationHandler<String>() } bind NotificationHandler::class
+        single { ParameterizedNotificationHandlerForInheritance<String>() } bind NotificationHandler::class
+        single { TestPipelineCommandHandlerWithoutInjection() } bind CommandHandler::class
+        single { TestPipelineCommandHandlerThatFails() } bind CommandHandler::class
+        single { ParameterizedQueryHandler<Long, String>() } bind QueryHandler::class
+        single<MediatorAccessor> { { get<Mediator>() } }
       }
     )
   }
