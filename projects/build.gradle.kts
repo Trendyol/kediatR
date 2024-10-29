@@ -4,17 +4,6 @@ plugins {
   alias(libs.plugins.kover)
 }
 
-kover {
-  reports {
-    filters {
-      excludes {
-        androidGeneratedClasses()
-        packages("**generated**")
-        classes("**generated**")
-      }
-    }
-  }
-}
 subprojects {
   apply {
     plugin(rootProject.libs.plugins.kover.pluginId)
@@ -29,8 +18,19 @@ subprojects {
     }
   }
 
+  kover {
+    reports {
+      filters {
+        excludes {
+          packages("com.trendyol.kediatr.testing")
+        }
+      }
+    }
+  }
+
   dependencies {
     implementation(rootProject.libs.kotlinx.coroutines.core)
+    kover(this@subprojects)
   }
 
   dependencies {
