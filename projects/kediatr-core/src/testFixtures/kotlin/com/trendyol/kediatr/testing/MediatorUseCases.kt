@@ -208,4 +208,37 @@ abstract class MediatorUseCases : MediatorTestConvention() {
     result shouldBe "60"
     query.invocationCount() shouldBe 1
   }
+
+  @Test
+  fun ordered_pipeline_behaviours_should_be_executed_in_order_for_command() = runTest {
+    val command = CommandThatPassesThroughOrderedPipelineBehaviours()
+    testMediator.send(command)
+    command.visitedPipelines() shouldBe listOf(
+      FirstPipelineBehaviour::class.simpleName,
+      SecondPipelineBehaviour::class.simpleName,
+      ThirdPipelineBehaviour::class.simpleName
+    )
+  }
+
+  @Test
+  fun ordered_pipeline_behaviours_should_be_executed_in_order_for_query() = runTest {
+    val query = QueryThatPassesThroughOrderedPipelineBehaviours()
+    testMediator.send(query)
+    query.visitedPipelines() shouldBe listOf(
+      FirstPipelineBehaviour::class.simpleName,
+      SecondPipelineBehaviour::class.simpleName,
+      ThirdPipelineBehaviour::class.simpleName
+    )
+  }
+
+  @Test
+  fun ordered_pipeline_behaviours_should_be_executed_in_order_for_notification() = runTest {
+    val notification = NotificationThatPassesThroughOrderedPipelineBehaviours()
+    testMediator.publish(notification)
+    notification.visitedPipelines() shouldBe listOf(
+      FirstPipelineBehaviour::class.simpleName,
+      SecondPipelineBehaviour::class.simpleName,
+      ThirdPipelineBehaviour::class.simpleName
+    )
+  }
 }

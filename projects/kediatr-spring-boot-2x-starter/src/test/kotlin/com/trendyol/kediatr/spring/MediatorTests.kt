@@ -35,7 +35,13 @@ import org.springframework.context.annotation.*
     TestPipelineCommandHandlerWithoutInjection::class,
     TestPipelineCommandHandlerThatFails::class,
     InheritedPipelineBehaviour::class,
-    ParameterizedQueryHandler::class
+    ParameterizedQueryHandler::class,
+    FirstPipelineBehaviour::class,
+    SecondPipelineBehaviour::class,
+    ThirdPipelineBehaviour::class,
+    CommandHandlerThatPassesThroughOrderedPipelineBehaviours::class,
+    QueryHandlerThatPassesThroughOrderedPipelineBehaviours::class,
+    NotificationHandlerThatPassesThroughOrderedPipelineBehaviours::class
   ]
 )
 class MediatorTests : MediatorUseCases() {

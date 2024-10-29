@@ -152,7 +152,12 @@ class TestCommandWithResultCommandHandler(val mediator: MediatorAccessor) : Comm
   }
 }
 
-class CommandThatPassesThroughPipelineBehaviours : Command, EnrichedWithMetadata()
+class CommandThatPassesThroughPipelineBehaviours :
+  Command,
+  EnrichedWithMetadata(),
+  CanPassLoggingPipelineBehaviour,
+  CanPassExceptionPipelineBehaviour,
+  CanPassInheritedPipelineBehaviour
 
 class TestPipelineCommandHandler(
   private val mediator: MediatorAccessor
@@ -163,7 +168,12 @@ class TestPipelineCommandHandler(
   }
 }
 
-class CommandForWithoutInjectionThatPassesThroughPipelineBehaviours : Command, EnrichedWithMetadata()
+class CommandForWithoutInjectionThatPassesThroughPipelineBehaviours :
+  Command,
+  EnrichedWithMetadata(),
+  CanPassLoggingPipelineBehaviour,
+  CanPassExceptionPipelineBehaviour,
+  CanPassInheritedPipelineBehaviour
 
 class TestPipelineCommandHandlerWithoutInjection : CommandHandler<CommandForWithoutInjectionThatPassesThroughPipelineBehaviours> {
   override suspend fun handle(command: CommandForWithoutInjectionThatPassesThroughPipelineBehaviours) {
@@ -293,6 +303,7 @@ class ParameterizedQueryHandler<TParam, TResponse> : QueryHandler<ParameterizedQ
 /**
  * Pipeline Behaviors
  */
+interface CanPassExceptionPipelineBehaviour
 
 class ExceptionPipelineBehavior : PipelineBehavior {
   override suspend fun <TRequest, TResponse> handle(
@@ -300,7 +311,10 @@ class ExceptionPipelineBehavior : PipelineBehavior {
     next: RequestHandlerDelegate<TRequest, TResponse>
   ): TResponse = try {
     when (request) {
-      is EnrichedWithMetadata -> request.visitedPipeline(this::class.java.simpleName)
+      is CanPassExceptionPipelineBehaviour -> {
+        request as EnrichedWithMetadata
+        request.visitedPipeline(this::class.java.simpleName)
+      }
     }
     next(request)
   } catch (ex: Exception) {
@@ -308,13 +322,18 @@ class ExceptionPipelineBehavior : PipelineBehavior {
   }
 }
 
+interface CanPassLoggingPipelineBehaviour
+
 class LoggingPipelineBehavior : PipelineBehavior {
   override suspend fun <TRequest, TResponse> handle(
     request: TRequest,
     next: RequestHandlerDelegate<TRequest, TResponse>
   ): TResponse {
     when (request) {
-      is EnrichedWithMetadata -> request.visitedPipeline(this::class.java.simpleName)
+      is CanPassLoggingPipelineBehaviour -> {
+        request as EnrichedWithMetadata
+        request.visitedPipeline(this::class.java.simpleName)
+      }
     }
     return next(request)
   }
@@ -322,13 +341,97 @@ class LoggingPipelineBehavior : PipelineBehavior {
 
 abstract class MyBasePipelineBehaviour : PipelineBehavior
 
+interface CanPassInheritedPipelineBehaviour
+
 class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
   override suspend fun <TRequest, TResponse> handle(
     request: TRequest,
     next: RequestHandlerDelegate<TRequest, TResponse>
   ): TResponse {
     when (request) {
-      is EnrichedWithMetadata -> request.visitedPipeline(this::class.java.simpleName)
+      is CanPassInheritedPipelineBehaviour -> {
+        request as EnrichedWithMetadata
+        request.visitedPipeline(this::class.java.simpleName)
+      }
+    }
+    return next(request)
+  }
+}
+
+interface OrderedPipelineUseCase
+
+class CommandThatPassesThroughOrderedPipelineBehaviours : Command, EnrichedWithMetadata(), OrderedPipelineUseCase
+
+class QueryThatPassesThroughOrderedPipelineBehaviours : Query<String>, EnrichedWithMetadata(), OrderedPipelineUseCase
+
+class NotificationThatPassesThroughOrderedPipelineBehaviours : Notification, EnrichedWithMetadata(), OrderedPipelineUseCase
+
+class CommandHandlerThatPassesThroughOrderedPipelineBehaviours : CommandHandler<CommandThatPassesThroughOrderedPipelineBehaviours> {
+  override suspend fun handle(command: CommandThatPassesThroughOrderedPipelineBehaviours) {
+    command.incrementInvocationCount()
+  }
+}
+
+class QueryHandlerThatPassesThroughOrderedPipelineBehaviours : QueryHandler<QueryThatPassesThroughOrderedPipelineBehaviours, String> {
+  override suspend fun handle(query: QueryThatPassesThroughOrderedPipelineBehaviours): String {
+    query.incrementInvocationCount()
+    return "hello"
+  }
+}
+
+class NotificationHandlerThatPassesThroughOrderedPipelineBehaviours :
+  NotificationHandler<NotificationThatPassesThroughOrderedPipelineBehaviours> {
+  override suspend fun handle(notification: NotificationThatPassesThroughOrderedPipelineBehaviours) {
+    notification.incrementInvocationCount()
+  }
+}
+
+class FirstPipelineBehaviour : PipelineBehavior {
+  override val order: Int = 1
+
+  override suspend fun <TRequest, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    when (request) {
+      is OrderedPipelineUseCase -> {
+        request as EnrichedWithMetadata
+        request.visitedPipeline(this::class.java.simpleName)
+      }
+    }
+    return next(request)
+  }
+}
+
+class SecondPipelineBehaviour : PipelineBehavior {
+  override val order: Int = 2
+
+  override suspend fun <TRequest, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    when (request) {
+      is OrderedPipelineUseCase -> {
+        request as EnrichedWithMetadata
+        request.visitedPipeline(this::class.java.simpleName)
+      }
+    }
+    return next(request)
+  }
+}
+
+class ThirdPipelineBehaviour : PipelineBehavior {
+  override val order: Int = 3
+
+  override suspend fun <TRequest, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    when (request) {
+      is OrderedPipelineUseCase -> {
+        request as EnrichedWithMetadata
+        request.visitedPipeline(this::class.java.simpleName)
+      }
     }
     return next(request)
   }

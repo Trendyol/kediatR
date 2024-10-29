@@ -31,7 +31,13 @@ class MediatorTests : MediatorUseCases() {
       ExceptionPipelineBehavior(),
       LoggingPipelineBehavior(),
       InheritedPipelineBehaviour(),
-      ParameterizedQueryHandler<Long, String>()
+      ParameterizedQueryHandler<Long, String>(),
+      FirstPipelineBehaviour(),
+      SecondPipelineBehaviour(),
+      ThirdPipelineBehaviour(),
+      CommandHandlerThatPassesThroughOrderedPipelineBehaviours(),
+      QueryHandlerThatPassesThroughOrderedPipelineBehaviours(),
+      NotificationHandlerThatPassesThroughOrderedPipelineBehaviours()
     )
   )
 

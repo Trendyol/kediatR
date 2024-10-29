@@ -14,9 +14,16 @@ class MediatorTests : KoinTest, MediatorUseCases() {
     modules(
       module {
         single { KediatRKoin.getMediator() }
+
+        // Pipeline behaviours
         single { InheritedPipelineBehaviour() }
         single { ExceptionPipelineBehavior() }
         single { LoggingPipelineBehavior() }
+        single { FirstPipelineBehaviour() }
+        single { SecondPipelineBehaviour() }
+        single { ThirdPipelineBehaviour() }
+
+        // Handlers
         single { TestCommandHandler(get()) }
         single { TestCommandWithResultCommandHandler(get()) } bind CommandWithResultHandler::class
         single { TestQueryHandler(get()) } bind QueryHandler::class
@@ -40,6 +47,11 @@ class MediatorTests : KoinTest, MediatorUseCases() {
         single { TestPipelineCommandHandlerWithoutInjection() } bind CommandHandler::class
         single { TestPipelineCommandHandlerThatFails() } bind CommandHandler::class
         single { ParameterizedQueryHandler<Long, String>() } bind QueryHandler::class
+        single { CommandHandlerThatPassesThroughOrderedPipelineBehaviours() } bind CommandHandler::class
+        single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() } bind QueryHandler::class
+        single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() } bind NotificationHandler::class
+
+        // Extra
         single<MediatorAccessor> { { get<Mediator>() } }
       }
     )

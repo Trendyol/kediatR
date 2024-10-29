@@ -46,7 +46,7 @@ class MediatorImpl(
     handler: RequestHandlerDelegate<TRequest, TResponse>
   ): TResponse =
     pipelineBehaviors
-      .reversed()
+      .sortedByDescending { it.order }
       .fold(handler) { next, pipeline ->
         { pipeline.handle(request) { next(it) } }
       }(request)
