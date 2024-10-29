@@ -7,6 +7,8 @@ junit = "5.11.3"
 koin = "4.0.0"
 quarkus = "3.16.0"
 jakarta = "4.1.0"
+spring-boot-2x = "2.7.18"
+spring-boot-3x = "3.3.5"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
@@ -16,6 +18,13 @@ junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
 quarkusBom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
 quarkus-arc = { module = "io.quarkus:quarkus-arc", version.ref = "quarkus" }
 jakarta-enterpise-cdi-api = { module = "jakarta.enterprise:jakarta.enterprise.cdi-api", version.ref = "jakarta" }
+
+spring-boot-3x-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot-3x" }
+spring-boot-3x-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "spring-boot-3x" }
+spring-boot-3x-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot-3x" }
+
+spring-boot-2x-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot-2x" }
+spring-boot-2x-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot-2x" }
 
 # test
 kotest-property-jvm = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }

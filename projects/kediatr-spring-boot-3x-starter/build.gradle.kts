@@ -1,11 +1,10 @@
-val springVersion = "3.3.5"
 dependencies {
-  api(project(":projects:kediatr-core"))
-  implementation("org.springframework.boot:spring-boot-starter:$springVersion")
-  implementation("org.springframework.boot:spring-boot-autoconfigure:$springVersion")
+  api(projects.projects.kediatrCore)
+  implementation(libs.spring.boot.get3x().starter)
+  implementation(libs.spring.boot.get3x().autoconfigure)
 }
 
 dependencies {
   testImplementation(testFixtures(projects.projects.kediatrCore))
-  testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion")
+  testImplementation(libs.spring.boot.get3x().starter.test)
 }
