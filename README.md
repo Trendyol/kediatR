@@ -6,7 +6,7 @@ Mediator implementation in kotlin with native coroutine support. Supports Spring
 providers.
 
 > [!TIP]
-> "kedi" in Turkish means cat 🐱 and kediatR ryhms with the C# equivalent library [mediatR](https://github.com/jbogard/MediatR) :)
+> "kedi" in Turkish means cat 🐱 and kediatR rhymes with the C# equivalent library [mediatR](https://github.com/jbogard/MediatR) :)
 
 Documentation is available at [https://trendyol.github.io/kediatR/](https://trendyol.github.io/kediatR/)
 
