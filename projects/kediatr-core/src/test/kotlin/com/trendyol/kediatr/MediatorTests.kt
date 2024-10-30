@@ -1,12 +1,13 @@
 package com.trendyol.kediatr
 
+import com.trendyol.kediatr.MappingDependencyProvider.Companion.createMediator
 import com.trendyol.kediatr.testing.*
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class MediatorTests : MediatorUseCases() {
   override fun provideMediator(): Mediator = createMediator(
-    types = listOf(
+    handlers = listOf(
       TestCommandHandler(mediator = { testMediator }),
       TestPipelineCommandHandler(mediator = { testMediator }),
       TestCommandWithResultCommandHandler(mediator = { testMediator }),
