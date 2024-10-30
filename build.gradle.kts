@@ -7,7 +7,7 @@ plugins {
   alias(libs.plugins.spotless)
 }
 
-version = properties["version"].toString()
+version = properties["version"]!!
 
 subprojectsOf("projects") {
   apply {
