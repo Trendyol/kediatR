@@ -5,6 +5,9 @@
 Mediator implementation in kotlin with native coroutine support. Supports Spring-Boot, Quarkus and Koin dependency
 providers.
 
+> [!TIP]
+> "kedi" in Turkish means cat 🐱 and kediatR ryhms with the C# equivalent library [mediatr](https://github.com/jbogard/MediatR) :)
+
 Documentation is available at [https://trendyol.github.io/kediatR/](https://trendyol.github.io/kediatR/)
 
 ## Show me the code
@@ -48,3 +51,4 @@ val mediator = // create mediator instance in-memory or with dependency injectio
 mediator.send(PingQuery()) // 1..1
 mediator.send(PingNotification()) // 0..N
 ```
+
