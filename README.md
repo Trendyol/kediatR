@@ -34,6 +34,9 @@ class PingNotificationHandler : NotificationHandler<PingNotification> {
 }
 
 class MeasurePipelineBehaviour : PipelineBehaviour {
+
+  override val order: Int = 0
+
   override suspend fun <TRequest, TResponse> handle(
     request: TRequest,
     next: RequestHandlerDelegate<TRequest, TResponse>
@@ -47,7 +50,7 @@ class MeasurePipelineBehaviour : PipelineBehaviour {
 }
 
 val mediator = // create mediator instance in-memory or with dependency injection, take a look at the documentation
-  mediator.send(PingCommand()) // 1..1
+mediator.send(PingCommand()) // 1..1
 mediator.send(PingQuery()) // 1..1
 mediator.send(PingNotification()) // 0..N
 ```
