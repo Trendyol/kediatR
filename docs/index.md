@@ -5,19 +5,11 @@ Mediator implementation for Kotlin.
 ## Usage
 
 ```diff
-+ $version = 3.0.0
++ $version = 3.1.1
 ```
 
 <details open>
 <summary>Gradle</summary>
-
-To use the SNAPSHOT version you need to add repository to your dependency management:
-
-```kotlin
- maven {
-     url = uri("https://oss.sonatype.org/content/repositories/snapshots")
- }
-```
 
 kediatR-core
 
@@ -25,10 +17,15 @@ kediatR-core
  implementation("com.trendyol:kediatr-core:$version")
 ```
 
-kediatR-spring-starter
+kediatR provides two different packages for spring-boot 2x and 3x. You can use the following dependencies according to
+your spring-boot version.
 
 ```kotlin
- implementation("com.trendyol:kediatr-spring-starter:$version")
+ implementation("com.trendyol:kediatr-spring-boot-2x-starter:$version")
+
+  // or
+
+ implementation("com.trendyol:kediatr-spring-boot-3x-starter:$version")
 ```
 
 kediatR-koin-starter
@@ -45,92 +42,14 @@ kediatR-quarkus-starter
 
 </details>
 
-<details>
-<summary>Maven</summary>
-
-To use the SNAPSHOT version you need to add repository to your dependency management:
-
-```xml
-<profiles>
-  <profile>
-     <id>allow-snapshots</id>
-        <activation><activeByDefault>true</activeByDefault></activation>
-     <repositories>
-       <repository>
-         <id>snapshots-repo</id>
-         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-         <releases><enabled>false</enabled></releases>
-         <snapshots><enabled>true</enabled></snapshots>
-       </repository>
-     </repositories>
-   </profile>
-</profiles>
-```
-
-kediatR-core
-
-```xml
-<dependency>
-  <groupId>com.trendyol</groupId>
-  <artifactId>kediatr-core</artifactId>
-  <version>$version</version>
-</dependency>
-```
-
-kediatR-spring-starter
-
-```xml
-<dependency>
-  <groupId>com.trendyol</groupId>
-  <artifactId>kediatr-spring-starter</artifactId>
-  <version>$version</version>
-</dependency>
-```
-
-kediatR-koin-starter
-
-```xml
-<dependency>
-  <groupId>com.trendyol</groupId>
-  <artifactId>kediatr-koin-starter</artifactId>
-  <version>$version</version>
-</dependency>
-```
-
-kediatR-quarkus-starter
-
-```xml
-<dependency>
-  <groupId>com.trendyol</groupId>
-  <artifactId>kediatr-quarkus-starter</artifactId>
-  <version>$version</version>
-</dependency>
-```
-
-</details>
-
 ### Command dispatching
 
 ```kotlin
-class ManualDependencyProvider(
-    private val handlerMap: HashMap<Class<*>, Any>
-) : DependencyProvider {
-    override fun <T> getSingleInstanceOf(clazz: Class<T>): T {
-        return handlerMap[clazz] as T
-    }
-
-    override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> {
-        return handlerMap
-            .filter { it.key.interfaces.contains(clazz) }
-            .map { it.key as Class<T> }
-    }
-}
+import com.trendyol.kediatr.MappingDependencyProvider.Companion.createMediator
 
 fun main() {
     val handler = HelloCommandHandler()
-    val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(HelloCommandHandler::class.java, handler))
-    val provider = ManualDependencyProvider(handlers)
-    val mediator: Mediator = MediatorBuilder(provider).build()
+    val mediator: Mediator = createMediator(handlers = listOf(handler))
     mediator.send(HelloCommand("hello"))
 }
 
@@ -141,18 +60,16 @@ class HelloCommandHandler : CommandHandler<HelloCommand> {
         println(command.message)
     }
 }
-
 ```
 
 ### Query dispatching
 
 ```kotlin
+import com.trendyol.kediatr.MappingDependencyProvider.Companion.createMediator
 
 fun main() {
     val handler = GetSomeDataQueryHandler()
-    val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(GetSomeDataQuery::class.java, handler))
-    val provider = ManualDependencyProvider(handlers)
-    val mediator: Mediator = MediatorBuilder(provider).build()
+    val mediator: Mediator = createMediator(handlers = listOf(handler))
     val result: String = mediator.send(GetSomeDataQuery(1))
     println(result)
 }
@@ -174,6 +91,9 @@ class GetSomeDataQueryHandler : QueryHandler<GetSomeDataQuery, String> {
 
 ```kotlin
 class CommandProcessingPipeline : PipelineBehavior {
+  
+    override val order: Int = 1
+  
     override suspend fun <TRequest, TResponse> handle(
         request: TRequest,
         next: RequestHandlerDelegate<TRequest, TResponse>
@@ -191,7 +111,6 @@ class CommandProcessingPipeline : PipelineBehavior {
 * Add _kediatr-spring_ dependency to your maven or gradle dependencies
 
 ```kotlin
-
 @Service
 class UserService(private val mediator: Mediator) {
     suspend fun findUser(id: Long) {
@@ -240,7 +159,6 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
         return UserDto(user.id, user.name, user.surname)
     }
 }
-
 ```
 
 ## Quarkus
@@ -255,10 +173,7 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
       kediatr:
         group-id: com.trendyol
         artifact-id: kediatr-quarkus-starter
- ```
-
-* Add @Startup annotation for every handler so that KediatR can prepare queries and commands on beginning of the
-  application.
+```
 
 ```kotlin
 class UserService(private val mediator: mediator) {
@@ -270,7 +185,6 @@ class UserService(private val mediator: mediator) {
 class GetUserByIdQuery(private val id: Long) : Query<UserDto>
 
 @ApplicationScoped
-@Startup
 class GetUserByIdQueryHandler(private val userRepository: UserRepository) : QueryHandler<GetUserByIdQuery, UserDto> {
     override suspend fun handle(query: GetUserByIdQuery): UserDto {
         val user = userRepository.findById(query.id)
@@ -278,12 +192,9 @@ class GetUserByIdQueryHandler(private val userRepository: UserRepository) : Quer
         return UserDto(user.id, user.name, user.surname)
     }
 }
-
 ```
 
-## Review Our IntelliJ Plugin
-
-### Warning: This plugin does not support v2.0+ yet.
+## Check Our IntelliJ Plugin
 
 <https://plugins.jetbrains.com/plugin/16017-kediatr-helper>
 
