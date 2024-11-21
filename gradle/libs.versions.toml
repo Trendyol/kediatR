@@ -8,7 +8,7 @@ koin = "4.0.0"
 quarkus = "3.17.0"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
-spring-boot-3x = "3.3.5"
+spring-boot-3x = "3.3.6"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
