@@ -1,10 +1,10 @@
 [versions]
 kotlin = "1.9.22"
-kotlinx = "1.9.0"
+kotlinx = "1.10.1"
 kotest = "5.9.1"
 detekt = "1.23.7"
 junit = "5.11.4"
-koin = "4.0.0"
+koin = "4.0.1"
 quarkus = "3.17.5"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
