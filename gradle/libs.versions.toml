@@ -40,5 +40,5 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.0" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
+spotless = { id = "com.diffplug.spotless", version = "7.0.2" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
