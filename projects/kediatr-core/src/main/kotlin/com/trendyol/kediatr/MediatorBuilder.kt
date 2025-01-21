@@ -22,7 +22,5 @@ class MediatorBuilder(
     return this
   }
 
-  fun build(registry: Registry = RegistryImpl(dependencyProvider)): Mediator {
-    return MediatorImpl(registry, defaultPublishStrategy)
-  }
+  fun build(registry: Registry = RegistryImpl(dependencyProvider)): Mediator = MediatorImpl(registry, defaultPublishStrategy)
 }

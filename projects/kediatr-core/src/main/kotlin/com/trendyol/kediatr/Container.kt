@@ -1,7 +1,9 @@
 package com.trendyol.kediatr
 
 @Suppress("UNCHECKED_CAST")
-internal class Container(dependencyProvider: DependencyProvider) : Registrar() {
+internal class Container(
+  dependencyProvider: DependencyProvider
+) : Registrar() {
   val commandMap = HashMap<Class<*>, CommandProvider<CommandHandler<Command>>>()
   val queryMap = HashMap<Class<*>, QueryProvider<QueryHandler<*, *>>>()
   val notificationMap = HashMap<Class<*>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
@@ -27,7 +29,8 @@ internal class Container(dependencyProvider: DependencyProvider) : Registrar() {
     }
 
     registerFor<NotificationHandler<Notification>, Notification>(dependencyProvider) { key, value ->
-      notificationMap.getOrPut(key) { mutableListOf() }
+      notificationMap
+        .getOrPut(key) { mutableListOf() }
         .add(NotificationProvider(dependencyProvider, value as Class<NotificationHandler<*>>))
     }
 

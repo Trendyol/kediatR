@@ -1,3 +1,5 @@
 package com.trendyol.kediatr
 
-class HandlerNotFoundException(message: String) : Exception(message)
+class HandlerNotFoundException(
+  message: String
+) : Exception(message)

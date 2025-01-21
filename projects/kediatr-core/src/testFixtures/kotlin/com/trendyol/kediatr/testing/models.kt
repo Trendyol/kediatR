@@ -37,7 +37,9 @@ abstract class EnrichedWithMetadata {
   }
 }
 
-class Result(val value: Int = 0)
+class Result(
+  val value: Int = 0
+)
 
 class TestNonExistCommand : Command
 
@@ -49,7 +51,9 @@ class NonExistQuery : Query<String>
  * Notifications
  */
 
-class TestNotification : Notification, EnrichedWithMetadata()
+class TestNotification :
+  EnrichedWithMetadata(),
+  Notification
 
 class TestNotificationHandler(
   private val mediator: MediatorAccessor
@@ -60,7 +64,9 @@ class TestNotificationHandler(
   }
 }
 
-open class Ping : Notification, EnrichedWithMetadata()
+open class Ping :
+  EnrichedWithMetadata(),
+  Notification
 
 class ExtendedPing : Ping()
 
@@ -76,7 +82,9 @@ class AnotherPingHandler : NotificationHandler<Ping> {
   }
 }
 
-class NotificationForMultipleHandlers : Notification, EnrichedWithMetadata()
+class NotificationForMultipleHandlers :
+  EnrichedWithMetadata(),
+  Notification
 
 class Handler1ForNotificationOfMultipleHandlers : NotificationHandler<NotificationForMultipleHandlers> {
   override suspend fun handle(notification: NotificationForMultipleHandlers) {
@@ -90,7 +98,9 @@ class Handler2ForNotificationOfMultipleHandlers : NotificationHandler<Notificati
   }
 }
 
-class PingForInherited : Notification, EnrichedWithMetadata()
+class PingForInherited :
+  EnrichedWithMetadata(),
+  Notification
 
 abstract class NotificationHandlerBase<TNotification : Notification> : NotificationHandler<TNotification>
 
@@ -100,7 +110,10 @@ class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>()
   }
 }
 
-class ParameterizedNotification<T>(val param: T) : Notification, EnrichedWithMetadata()
+class ParameterizedNotification<T>(
+  val param: T
+) : EnrichedWithMetadata(),
+  Notification
 
 class ParameterizedNotificationHandler<A> : NotificationHandler<ParameterizedNotification<A>> {
   override suspend fun handle(notification: ParameterizedNotification<A>) {
@@ -109,7 +122,10 @@ class ParameterizedNotificationHandler<A> : NotificationHandler<ParameterizedNot
   }
 }
 
-class ParameterizedNotificationForInheritance<T>(val param: T) : Notification, EnrichedWithMetadata()
+class ParameterizedNotificationForInheritance<T>(
+  val param: T
+) : EnrichedWithMetadata(),
+  Notification
 
 class ParameterizedNotificationHandlerForInheritance<T> : NotificationHandlerBase<ParameterizedNotificationForInheritance<T>>() {
   override suspend fun handle(notification: ParameterizedNotificationForInheritance<T>) {
@@ -122,7 +138,9 @@ class ParameterizedNotificationHandlerForInheritance<T> : NotificationHandlerBas
  * Commands
  */
 
-class TestCommandForWithoutInjection : Command, EnrichedWithMetadata()
+class TestCommandForWithoutInjection :
+  EnrichedWithMetadata(),
+  Command
 
 class TestCommandHandlerWithoutInjection : CommandHandler<TestCommandForWithoutInjection> {
   override suspend fun handle(command: TestCommandForWithoutInjection) {
@@ -130,7 +148,9 @@ class TestCommandHandlerWithoutInjection : CommandHandler<TestCommandForWithoutI
   }
 }
 
-class TestCommand : Command, EnrichedWithMetadata()
+class TestCommand :
+  EnrichedWithMetadata(),
+  Command
 
 class TestCommandHandler(
   private val mediator: MediatorAccessor
@@ -141,9 +161,14 @@ class TestCommandHandler(
   }
 }
 
-data class TestCommandWithResult(val invoked: Int = 0) : CommandWithResult<Result>, EnrichedWithMetadata()
+data class TestCommandWithResult(
+  val invoked: Int = 0
+) : EnrichedWithMetadata(),
+  CommandWithResult<Result>
 
-class TestCommandWithResultCommandHandler(val mediator: MediatorAccessor) : CommandWithResultHandler<TestCommandWithResult, Result> {
+class TestCommandWithResultCommandHandler(
+  val mediator: MediatorAccessor
+) : CommandWithResultHandler<TestCommandWithResult, Result> {
   override suspend fun handle(
     command: TestCommandWithResult
   ): Result = Result(command.invoked + 1).also {
@@ -153,8 +178,8 @@ class TestCommandWithResultCommandHandler(val mediator: MediatorAccessor) : Comm
 }
 
 class CommandThatPassesThroughPipelineBehaviours :
-  Command,
   EnrichedWithMetadata(),
+  Command,
   CanPassLoggingPipelineBehaviour,
   CanPassExceptionPipelineBehaviour,
   CanPassInheritedPipelineBehaviour
@@ -169,8 +194,8 @@ class TestPipelineCommandHandler(
 }
 
 class CommandForWithoutInjectionThatPassesThroughPipelineBehaviours :
-  Command,
   EnrichedWithMetadata(),
+  Command,
   CanPassLoggingPipelineBehaviour,
   CanPassExceptionPipelineBehaviour,
   CanPassInheritedPipelineBehaviour
@@ -181,7 +206,9 @@ class TestPipelineCommandHandlerWithoutInjection : CommandHandler<CommandForWith
   }
 }
 
-class CommandThatFailsWhilePassingThroughPipelineBehaviours : Command, EnrichedWithMetadata()
+class CommandThatFailsWhilePassingThroughPipelineBehaviours :
+  EnrichedWithMetadata(),
+  Command
 
 class TestPipelineCommandHandlerThatFails : CommandHandler<CommandThatFailsWhilePassingThroughPipelineBehaviours> {
   override suspend fun handle(command: CommandThatFailsWhilePassingThroughPipelineBehaviours) {
@@ -190,7 +217,9 @@ class TestPipelineCommandHandlerThatFails : CommandHandler<CommandThatFailsWhile
   }
 }
 
-class TestCommandThatFailsWithException : Command, EnrichedWithMetadata()
+class TestCommandThatFailsWithException :
+  EnrichedWithMetadata(),
+  Command
 
 class TestBrokenCommandHandler(
   private val mediator: MediatorAccessor
@@ -202,7 +231,9 @@ class TestBrokenCommandHandler(
   }
 }
 
-class TestCommandForInheritance : Command, EnrichedWithMetadata()
+class TestCommandForInheritance :
+  EnrichedWithMetadata(),
+  Command
 
 abstract class MyCommandHandlerBaseForSpecificCommand : CommandHandler<TestCommandForInheritance>
 
@@ -212,7 +243,9 @@ class TestInheritedCommandHandlerForSpecificCommand : MyCommandHandlerBaseForSpe
   }
 }
 
-class TestCommandForTypeLimitedInheritance : Command, EnrichedWithMetadata()
+class TestCommandForTypeLimitedInheritance :
+  EnrichedWithMetadata(),
+  Command
 
 abstract class TestBaseCommandHandlerForTypeLimitedInheritance<TCommand : Command> : CommandHandler<TCommand>
 
@@ -223,7 +256,10 @@ class TestCommandHandlerForTypeLimitedInheritance :
   }
 }
 
-class ParameterizedCommand<T>(val param: T) : Command, EnrichedWithMetadata()
+class ParameterizedCommand<T>(
+  val param: T
+) : EnrichedWithMetadata(),
+  Command
 
 class ParameterizedCommandHandler<T> : CommandHandler<ParameterizedCommand<T>> {
   override suspend fun handle(command: ParameterizedCommand<T>) {
@@ -232,7 +268,10 @@ class ParameterizedCommandHandler<T> : CommandHandler<ParameterizedCommand<T>> {
   }
 }
 
-class ParameterizedCommandForInheritedCommandHandler<T>(val param: T) : Command, EnrichedWithMetadata()
+class ParameterizedCommandForInheritedCommandHandler<T>(
+  val param: T
+) : EnrichedWithMetadata(),
+  Command
 
 abstract class ParameterizedCommandHandlerBaseForInheritedCommandHandler<A> :
   CommandHandler<ParameterizedCommandForInheritedCommandHandler<A>>
@@ -247,7 +286,8 @@ class ParameterizedCommandHandlerForInheritance<A> : ParameterizedCommandHandler
 class ParameterizedCommandWithResult<TParam, TReturn>(
   val param: TParam,
   val retFn: suspend (TParam) -> TReturn
-) : CommandWithResult<TReturn>, EnrichedWithMetadata()
+) : EnrichedWithMetadata(),
+  CommandWithResult<TReturn>
 
 class ParameterizedCommandWithResultHandler<TParam, TReturn> :
   CommandWithResultHandler<ParameterizedCommandWithResult<TParam, TReturn>, TReturn> {
@@ -258,7 +298,10 @@ class ParameterizedCommandWithResultHandler<TParam, TReturn> :
   }
 }
 
-data class ParameterizedCommandWithResultForInheritance<TParam>(val param: TParam) : CommandWithResult<String>, EnrichedWithMetadata()
+data class ParameterizedCommandWithResultForInheritance<TParam>(
+  val param: TParam
+) : EnrichedWithMetadata(),
+  CommandWithResult<String>
 
 abstract class ParameterizedCommandWithResultHandlerBase<TParam : CommandWithResult<String>> : CommandWithResultHandler<TParam, String>
 
@@ -275,7 +318,10 @@ class ParameterizedCommandWithResultHandlerOfInheritedHandler<TParam> :
  * Queries
  */
 
-class TestQuery(val id: Int) : Query<String>, EnrichedWithMetadata()
+class TestQuery(
+  val id: Int
+) : EnrichedWithMetadata(),
+  Query<String>
 
 class TestQueryHandler(
   private val mediator: MediatorAccessor
@@ -290,7 +336,8 @@ class TestQueryHandler(
 class ParameterizedQuery<TParam, TResponse>(
   val param: TParam,
   val retFn: suspend (TParam) -> TResponse
-) : Query<TResponse>, EnrichedWithMetadata()
+) : EnrichedWithMetadata(),
+  Query<TResponse>
 
 class ParameterizedQueryHandler<TParam, TResponse> : QueryHandler<ParameterizedQuery<TParam, TResponse>, TResponse> {
   override suspend fun handle(query: ParameterizedQuery<TParam, TResponse>): TResponse {
@@ -360,11 +407,20 @@ class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
 
 interface OrderedPipelineUseCase
 
-class CommandThatPassesThroughOrderedPipelineBehaviours : Command, EnrichedWithMetadata(), OrderedPipelineUseCase
+class CommandThatPassesThroughOrderedPipelineBehaviours :
+  EnrichedWithMetadata(),
+  Command,
+  OrderedPipelineUseCase
 
-class QueryThatPassesThroughOrderedPipelineBehaviours : Query<String>, EnrichedWithMetadata(), OrderedPipelineUseCase
+class QueryThatPassesThroughOrderedPipelineBehaviours :
+  EnrichedWithMetadata(),
+  Query<String>,
+  OrderedPipelineUseCase
 
-class NotificationThatPassesThroughOrderedPipelineBehaviours : Notification, EnrichedWithMetadata(), OrderedPipelineUseCase
+class NotificationThatPassesThroughOrderedPipelineBehaviours :
+  EnrichedWithMetadata(),
+  Notification,
+  OrderedPipelineUseCase
 
 class CommandHandlerThatPassesThroughOrderedPipelineBehaviours : CommandHandler<CommandThatPassesThroughOrderedPipelineBehaviours> {
   override suspend fun handle(command: CommandThatPassesThroughOrderedPipelineBehaviours) {

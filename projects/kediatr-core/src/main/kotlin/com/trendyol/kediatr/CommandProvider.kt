@@ -9,9 +9,7 @@ internal class CommandProvider<H : CommandHandler<*>>(
   private val dependencyProvider: DependencyProvider,
   private val type: Class<H>
 ) {
-  fun get(): H {
-    return dependencyProvider.getSingleInstanceOf(type)
-  }
+  fun get(): H = dependencyProvider.getSingleInstanceOf(type)
 }
 
 /**
@@ -24,7 +22,5 @@ internal class CommandWithResultProvider<H : CommandWithResultHandler<*, *>>(
   private val dependencyProvider: DependencyProvider,
   private val type: Class<H>
 ) {
-  fun get(): H {
-    return dependencyProvider.getSingleInstanceOf(type)
-  }
+  fun get(): H = dependencyProvider.getSingleInstanceOf(type)
 }

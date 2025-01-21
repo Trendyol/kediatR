@@ -7,7 +7,9 @@ import org.koin.dsl.*
 import org.koin.test.*
 import org.koin.test.junit5.KoinTestExtension
 
-class MediatorTests : KoinTest, MediatorUseCases() {
+class MediatorTests :
+  MediatorUseCases(),
+  KoinTest {
   @JvmField
   @RegisterExtension
   val koinTestExtension = KoinTestExtension.create {

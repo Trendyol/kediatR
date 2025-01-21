@@ -26,7 +26,8 @@ class RegistryImpl(
   override fun <TNotification : Notification> resolveNotificationHandlers(
     classOfNotification: Class<TNotification>
   ): Collection<NotificationHandler<TNotification>> =
-    registry.notificationMap.filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
+    registry.notificationMap
+      .filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
       .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
 
   override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {

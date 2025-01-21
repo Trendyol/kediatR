@@ -9,7 +9,5 @@ internal class QueryProvider<H : QueryHandler<*, *>>(
   private val dependencyProvider: DependencyProvider,
   private val type: Class<H>
 ) {
-  fun get(): H {
-    return dependencyProvider.getSingleInstanceOf(type)
-  }
+  fun get(): H = dependencyProvider.getSingleInstanceOf(type)
 }

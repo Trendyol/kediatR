@@ -13,7 +13,8 @@ class QuarkusTypeResolver(
 ) {
   private val resolveCache = ConcurrentHashMap<Class<*>, Any>()
   private val typesCache = ConcurrentHashMap<Class<*>, Collection<Class<*>>>()
-  private val beanTypes = beanManager.getBeans(Any::class.java)
+  private val beanTypes = beanManager
+    .getBeans(Any::class.java)
     .asSequence()
     .filterNot(::quarkusPackage)
     .flatMap { it.types }

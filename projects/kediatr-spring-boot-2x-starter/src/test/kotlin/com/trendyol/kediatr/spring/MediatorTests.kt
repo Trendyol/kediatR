@@ -53,8 +53,6 @@ class MediatorTests : MediatorUseCases() {
   @Configuration
   open class TestConfiguration {
     @Bean
-    open fun mediatorAccessor(mediator: Mediator): MediatorAccessor {
-      return { mediator }
-    }
+    open fun mediatorAccessor(mediator: Mediator): MediatorAccessor = { mediator }
   }
 }
