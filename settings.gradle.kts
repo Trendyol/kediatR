@@ -15,7 +15,7 @@ include(
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 plugins {
-  id("dev.aga.gradle.version-catalog-generator") version ("3.0.0")
+  id("dev.aga.gradle.version-catalog-generator") version ("3.2.0")
 }
 
 dependencyResolutionManagement {
@@ -32,8 +32,10 @@ dependencyResolutionManagement {
 
   versionCatalogs {
     generate("junitLibs") {
-      from(toml("junitBom"))
-      aliasPrefixGenerator = GeneratorConfig.NO_PREFIX
+      fromToml("junitBom")
+      using {
+        aliasPrefixGenerator = GeneratorConfig.NO_PREFIX
+      }
     }
   }
 }

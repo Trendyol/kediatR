@@ -13,7 +13,7 @@ subprojects {
   kotlin {
     jvmToolchain(17)
     compilerOptions {
-      freeCompilerArgs = listOf("-Xjsr305=strict")
+      freeCompilerArgs = listOf("-Xjsr305=strict", "-Xskip-metadata-version-check")
       allWarningsAsErrors = true
     }
   }
