@@ -32,8 +32,10 @@ dependencyResolutionManagement {
 
   versionCatalogs {
     generate("junitLibs") {
-      from(toml("junitBom"))
-      aliasPrefixGenerator = GeneratorConfig.NO_PREFIX
+      fromToml("junitBom")
+      using {
+        aliasPrefixGenerator = GeneratorConfig.NO_PREFIX
+      }
     }
   }
 }
