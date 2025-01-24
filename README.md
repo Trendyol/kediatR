@@ -55,3 +55,5 @@ mediator.send(PingQuery()) // 1..1
 mediator.send(PingNotification()) // 0..N
 ```
 
+
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Trendyol/kediatR/badge)](https://scorecard.dev/viewer/?uri=github.com/Trendyol/kediatR)
