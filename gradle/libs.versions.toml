@@ -4,11 +4,11 @@ kotlinx = "1.10.1"
 kotest = "5.9.1"
 detekt = "1.23.7"
 junit = "5.11.4"
-koin = "4.0.1"
-quarkus = "3.17.7"
+koin = "4.0.2"
+quarkus = "3.18.0"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
-spring-boot-3x = "3.4.1"
+spring-boot-3x = "3.4.2"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
