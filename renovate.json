@@ -4,19 +4,19 @@
     "main"
   ],
   "extends": [
-    "config:base",
+    "config:recommended",
     "schedule:earlyMondays"
   ],
   "packageRules": [
     {
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
-      "matchPackagePatterns": [
-        "*"
-      ],
       "matchUpdateTypes": [
         "minor",
         "patch"
+      ],
+      "matchPackageNames": [
+        "*"
       ]
     }
   ]
