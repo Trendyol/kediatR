@@ -1,3 +1,5 @@
+
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Trendyol/kediatR/badge)](https://scorecard.dev/viewer/?uri=github.com/Trendyol/kediatR)
 # kediatR [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/main/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr)
 
 <img style="float: left" alt="Humus! The kediatr mascot" src="/humus.png" alt="drawing" width="80"/>
