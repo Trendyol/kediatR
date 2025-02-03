@@ -37,3 +37,11 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
         if: github.ref == 'refs/heads/main'
+
+
+  security-gates:
+    uses: Trendyol/security-actions/.github/workflows/security-gates.yml@master
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
