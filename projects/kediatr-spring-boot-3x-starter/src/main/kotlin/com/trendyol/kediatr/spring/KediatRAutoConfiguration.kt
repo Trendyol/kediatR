@@ -2,6 +2,7 @@ package com.trendyol.kediatr.spring
 
 import com.trendyol.kediatr.*
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 
