@@ -1,6 +1,6 @@
 
 
-# kediatR [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/main/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Trendyol/kediatR/badge)](https://scorecard.dev/viewer/?uri=github.com/Trendyol/kediatR)
+# kediatR ![Release](https://img.shields.io/maven-central/v/com.trendyol/kediatr-core?label=latest-release&color=blue) [![codecov](https://codecov.io/gh/trendyol/kediatr/branch/main/graph/badge.svg)](https://codecov.io/gh/trendyol/kediatr) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Trendyol/kediatR/badge)](https://scorecard.dev/viewer/?uri=github.com/Trendyol/kediatR)
 
 <img style="float: left" alt="Humus! The kediatr mascot" src="/humus.png" alt="drawing" width="80"/>
 
