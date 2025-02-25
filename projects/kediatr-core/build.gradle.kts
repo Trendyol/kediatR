@@ -8,6 +8,7 @@ val testFixturesImplementation: Configuration by configurations.getting {
 
 dependencies {
   testFixturesImplementation(libs.kotest.assertions.core)
+  testFixturesImplementation(libs.kotest.runner.junit5)
   testFixturesImplementation(junitLibs.junitJupiterApi)
   testFixturesImplementation(libs.kotlinx.coroutines.test)
   testFixturesRuntimeOnly(junitLibs.junitJupiterEngine)
