@@ -54,6 +54,6 @@ class MeasurePipelineBehaviour : PipelineBehaviour {
 val mediator = // create mediator instance in-memory or with dependency injection, take a look at the documentation
 mediator.send(PingCommand()) // 1..1
 mediator.send(PingQuery()) // 1..1
-mediator.send(PingNotification()) // 0..N
+mediator.publish(PingNotification()) // 0..N
 ```
 
