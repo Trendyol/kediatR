@@ -17,5 +17,5 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-  mustRunAfter(tasks.quarkusGenerateCode, tasks.quarkusGenerateCodeDev)
+  mustRunAfter(tasks.quarkusGenerateCode, tasks.quarkusGenerateCodeDev, tasks.quarkusGeneratedSourcesClasses)
 }
