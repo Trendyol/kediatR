@@ -16,6 +16,13 @@ dependencies {
   testImplementation(libs.quarkus.junit5)
 }
 
-tasks.withType<KotlinCompile> {
-  mustRunAfter(tasks.quarkusGenerateCode, tasks.quarkusGenerateCodeDev, tasks.quarkusGeneratedSourcesClasses)
+// Workaround for Quarkus circular dependency issue
+// See: https://github.com/quarkusio/quarkus/issues/29698
+project.afterEvaluate {
+  getTasksByName("quarkusGenerateCode", true).forEach { task ->
+    task.setDependsOn(task.dependsOn.filterIsInstance<Provider<Task>>().filter { it.get().name != "processResources" })
+  }
+  getTasksByName("quarkusGenerateCodeDev", true).forEach { task ->
+    task.setDependsOn(task.dependsOn.filterIsInstance<Provider<Task>>().filter { it.get().name != "processResources" })
+  }
 }
