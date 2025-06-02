@@ -3,7 +3,7 @@ kotlin = "1.9.22"
 kotlinx = "1.10.2"
 kotest = "5.9.1"
 detekt = "1.23.8"
-junit = "5.12.2"
+junit = "5.13.0"
 koin = "4.0.4"
 quarkus = "3.23.0"
 jakarta = "4.1.0"
@@ -41,5 +41,5 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.1" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-spotless = { id = "com.diffplug.spotless", version = "7.0.3" }
+spotless = { id = "com.diffplug.spotless", version = "7.0.4" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
