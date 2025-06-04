@@ -41,7 +41,9 @@ class MediatorTests : MediatorUseCases() {
       NotificationHandlerThatPassesThroughOrderedPipelineBehaviours(),
       TestCommandBaseHandler(),
       TestQueryBaseHandler(),
-      TestCommandWithResultBaseHandler()
+      TestCommandWithResultBaseHandler(),
+      TestCommandForInheritanceWithFallbackHandlerHandler(),
+      TestCommandHandlerForCommandInherited2()
     )
   )
 

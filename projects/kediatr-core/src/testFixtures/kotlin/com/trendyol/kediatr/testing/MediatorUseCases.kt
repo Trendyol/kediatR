@@ -97,6 +97,19 @@ abstract class MediatorUseCases : MediatorTestConvention() {
   }
 
   @Test
+  fun inherited_command_with_fallback_gives_priority_to_its_handlers_otherwise_to_fallback_handler() = runTest {
+    val command = TestCommandForInheritanceWithFallback.TestCommandInherited1("id")
+    testMediator.send(command)
+    command.invocationCount() shouldBe 1
+    command.whereItWasInvokedFrom() shouldBe TestCommandForInheritanceWithFallbackHandlerHandler::class.java.name
+
+    val command2 = TestCommandForInheritanceWithFallback.TestCommandInherited2("id")
+    testMediator.send(command2)
+    command2.invocationCount() shouldBe 1
+    command2.whereItWasInvokedFrom() shouldBe TestCommandHandlerForCommandInherited2::class.java.name
+  }
+
+  @Test
   fun inherited_query_should_work() = runTest {
     val query = TestQueryBase.TestQueryInherited1("id")
     testMediator.send(query)

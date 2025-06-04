@@ -17,6 +17,12 @@ abstract class EnrichedWithMetadata {
 
   fun invocationCount(): Int = getMetadata(INVOCATION_COUNT) as? Int ?: 0
 
+  fun whereItWasInvokedFrom(): String = getMetadata("invokedFrom") as? String ?: "unknown"
+
+  fun invokedFrom(nameOfTheHandler: String) {
+    addMetadata("invokedFrom", nameOfTheHandler)
+  }
+
   internal fun visitedPipeline(pipeline: String) {
     val visitedPipelines = visitedPipelines().toMutableSet()
     visitedPipelines.add(pipeline)
@@ -552,5 +558,33 @@ class TestCommandWithResultBaseHandler : CommandWithResultHandler<TestCommandWit
   override suspend fun handle(command: TestCommandWithResultBase): String {
     command.incrementInvocationCount()
     return "${command.id} handled"
+  }
+}
+
+sealed class TestCommandForInheritanceWithFallback :
+  EnrichedWithMetadata(),
+  Command {
+  abstract val id: String
+
+  data class TestCommandInherited1(
+    override val id: String
+  ) : TestCommandForInheritanceWithFallback()
+
+  data class TestCommandInherited2(
+    override val id: String
+  ) : TestCommandForInheritanceWithFallback()
+}
+
+class TestCommandForInheritanceWithFallbackHandlerHandler : CommandHandler<TestCommandForInheritanceWithFallback> {
+  override suspend fun handle(command: TestCommandForInheritanceWithFallback) {
+    command.incrementInvocationCount()
+    command.invokedFrom(javaClass.name)
+  }
+}
+
+class TestCommandHandlerForCommandInherited2 : CommandHandler<TestCommandForInheritanceWithFallback.TestCommandInherited2> {
+  override suspend fun handle(command: TestCommandForInheritanceWithFallback.TestCommandInherited2) {
+    command.incrementInvocationCount()
+    command.invokedFrom(javaClass.name)
   }
 }

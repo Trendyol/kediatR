@@ -117,4 +117,10 @@ class MediatorTests : MediatorUseCases() {
 
   @Produces
   fun handler28() = TestCommandWithResultBaseHandler()
+
+  @Produces
+  fun handler29() = TestCommandForInheritanceWithFallbackHandlerHandler()
+
+  @Produces
+  fun handler30() = TestCommandHandlerForCommandInherited2()
 }
