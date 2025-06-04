@@ -8,7 +8,8 @@ class RegistryImpl(
   private val registry = Container(dependencyProvider)
 
   override fun <TCommand : Command> resolveCommandHandler(classOfCommand: Class<TCommand>): CommandHandler<TCommand> {
-    val handler = registry.commandMap[baseClassOrItself(classOfCommand, Command::class.java)]?.get()
+    val handler = registry.commandMap[classOfCommand]?.get()
+      ?: registry.commandMap[baseClassOrItself(classOfCommand, Command::class.java)]?.get()
       ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
     return handler as CommandHandler<TCommand>
   }
@@ -16,7 +17,8 @@ class RegistryImpl(
   override fun <TCommand : CommandWithResult<TResult>, TResult> resolveCommandWithResultHandler(
     classOfCommand: Class<TCommand>
   ): CommandWithResultHandler<TCommand, TResult> {
-    val handler = registry.commandWithResultMap[baseClassOrItself(classOfCommand, CommandWithResult::class.java)]?.get()
+    val handler = registry.commandWithResultMap[classOfCommand]?.get()
+      ?: registry.commandWithResultMap[baseClassOrItself(classOfCommand, CommandWithResult::class.java)]?.get()
       ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
     return handler as CommandWithResultHandler<TCommand, TResult>
   }
@@ -28,7 +30,8 @@ class RegistryImpl(
     .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
 
   override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {
-    val handler = registry.queryMap[baseClassOrItself(classOfQuery, Query::class.java)]?.get()
+    val handler = registry.queryMap[classOfQuery]?.get()
+      ?: registry.queryMap[baseClassOrItself(classOfQuery, Query::class.java)]?.get()
       ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
     return handler as QueryHandler<TQuery, TResult>
   }

@@ -55,6 +55,8 @@ class MediatorTests :
         single { TestCommandBaseHandler() } bind CommandHandler::class
         single { TestQueryBaseHandler() } bind QueryHandler::class
         single { TestCommandWithResultBaseHandler() } bind CommandWithResultHandler::class
+        single { TestCommandForInheritanceWithFallbackHandlerHandler() } bind CommandHandler::class
+        single { TestCommandHandlerForCommandInherited2() } bind CommandHandler::class
 
         // Extra
         single<MediatorAccessor> { { get<Mediator>() } }
