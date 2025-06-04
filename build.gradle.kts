@@ -27,6 +27,11 @@ subprojectsOf("projects") {
     }
   }
 
+  java {
+    withSourcesJar()
+    withJavadocJar()
+  }
+
   mavenPublishing {
     coordinates(groupId = rootProject.group.toString(), artifactId = project.name, version = rootProject.version.toString())
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)

@@ -17,3 +17,7 @@ dependencies {
 tasks.compileKotlin {
   mustRunAfter(tasks.compileQuarkusGeneratedSourcesJava, tasks.compileQuarkusTestGeneratedSourcesJava)
 }
+
+tasks.sourcesJar {
+  mustRunAfter(tasks.compileQuarkusGeneratedSourcesJava)
+}
