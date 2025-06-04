@@ -86,6 +86,41 @@ abstract class MediatorUseCases : MediatorTestConvention() {
   }
 
   @Test
+  fun inherited_command_should_work() = runTest {
+    val command = TestCommandBase.TestCommandInherited1("id")
+    testMediator.send(command)
+    command.invocationCount() shouldBe 1
+
+    val command2 = TestCommandBase.TestCommandInherited2("id")
+    testMediator.send(command2)
+    command2.invocationCount() shouldBe 1
+  }
+
+  @Test
+  fun inherited_query_should_work() = runTest {
+    val query = TestQueryBase.TestQueryInherited1("id")
+    testMediator.send(query)
+    query.invocationCount() shouldBe 1
+
+    val query2 = TestQueryBase.TestQueryInherited2("id2")
+    testMediator.send(query2)
+    query2.invocationCount() shouldBe 1
+  }
+
+  @Test
+  fun inherited_command_with_result_should_work() = runTest {
+    val command = TestCommandWithResultBase.TestCommandWithResultInherited1("id1")
+    val result = testMediator.send(command)
+    result shouldBe "id1 handled"
+    command.invocationCount() shouldBe 1
+
+    val command2 = TestCommandWithResultBase.TestCommandWithResultInherited2("id2")
+    val result2 = testMediator.send(command2)
+    result2 shouldBe "id2 handled"
+    command2.invocationCount() shouldBe 1
+  }
+
+  @Test
   fun command_is_routed_to_its_handler() = runTest {
     val command = TestCommandForWithoutInjection()
     testMediator.send(command)

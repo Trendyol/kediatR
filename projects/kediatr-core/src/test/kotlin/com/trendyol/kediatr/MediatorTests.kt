@@ -38,7 +38,10 @@ class MediatorTests : MediatorUseCases() {
       ThirdPipelineBehaviour(),
       CommandHandlerThatPassesThroughOrderedPipelineBehaviours(),
       QueryHandlerThatPassesThroughOrderedPipelineBehaviours(),
-      NotificationHandlerThatPassesThroughOrderedPipelineBehaviours()
+      NotificationHandlerThatPassesThroughOrderedPipelineBehaviours(),
+      TestCommandBaseHandler(),
+      TestQueryBaseHandler(),
+      TestCommandWithResultBaseHandler()
     )
   )
 
