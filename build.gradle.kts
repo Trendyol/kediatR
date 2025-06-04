@@ -28,7 +28,6 @@ subprojectsOf("projects") {
 
   java {
     withSourcesJar()
-    withJavadocJar()
   }
 
   mavenPublishing {

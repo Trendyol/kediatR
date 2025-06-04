@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.quarkus)
+  java
 }
 
 dependencies {
@@ -21,3 +22,5 @@ tasks.compileKotlin {
 tasks.sourcesJar {
   mustRunAfter(tasks.compileQuarkusGeneratedSourcesJava)
 }
+
+
