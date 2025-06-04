@@ -108,4 +108,13 @@ class MediatorTests : MediatorUseCases() {
 
   @Produces
   fun handler25() = NotificationHandlerThatPassesThroughOrderedPipelineBehaviours()
+
+  @Produces
+  fun handler26() = TestCommandBaseHandler()
+
+  @Produces
+  fun handler27() = TestQueryBaseHandler()
+
+  @Produces
+  fun handler28() = TestCommandWithResultBaseHandler()
 }

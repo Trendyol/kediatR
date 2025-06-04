@@ -492,3 +492,65 @@ class ThirdPipelineBehaviour : PipelineBehavior {
     return next(request)
   }
 }
+
+sealed class TestCommandBase :
+  EnrichedWithMetadata(),
+  Command {
+  abstract val id: String
+
+  data class TestCommandInherited1(
+    override val id: String
+  ) : TestCommandBase()
+
+  data class TestCommandInherited2(
+    override val id: String
+  ) : TestCommandBase()
+}
+
+class TestCommandBaseHandler : CommandHandler<TestCommandBase> {
+  override suspend fun handle(command: TestCommandBase) {
+    command.incrementInvocationCount()
+  }
+}
+
+sealed class TestQueryBase :
+  EnrichedWithMetadata(),
+  Query<String> {
+  abstract val id: String
+
+  data class TestQueryInherited1(
+    override val id: String
+  ) : TestQueryBase()
+
+  data class TestQueryInherited2(
+    override val id: String
+  ) : TestQueryBase()
+}
+
+class TestQueryBaseHandler : QueryHandler<TestQueryBase, String> {
+  override suspend fun handle(query: TestQueryBase): String {
+    query.incrementInvocationCount()
+    return query.id
+  }
+}
+
+sealed class TestCommandWithResultBase :
+  EnrichedWithMetadata(),
+  CommandWithResult<String> {
+  abstract val id: String
+
+  data class TestCommandWithResultInherited1(
+    override val id: String
+  ) : TestCommandWithResultBase()
+
+  data class TestCommandWithResultInherited2(
+    override val id: String
+  ) : TestCommandWithResultBase()
+}
+
+class TestCommandWithResultBaseHandler : CommandWithResultHandler<TestCommandWithResultBase, String> {
+  override suspend fun handle(command: TestCommandWithResultBase): String {
+    command.incrementInvocationCount()
+    return "${command.id} handled"
+  }
+}

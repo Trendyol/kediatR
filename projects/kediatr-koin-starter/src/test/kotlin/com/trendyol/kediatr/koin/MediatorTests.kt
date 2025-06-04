@@ -52,6 +52,9 @@ class MediatorTests :
         single { CommandHandlerThatPassesThroughOrderedPipelineBehaviours() } bind CommandHandler::class
         single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() } bind QueryHandler::class
         single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() } bind NotificationHandler::class
+        single { TestCommandBaseHandler() } bind CommandHandler::class
+        single { TestQueryBaseHandler() } bind QueryHandler::class
+        single { TestCommandWithResultBaseHandler() } bind CommandWithResultHandler::class
 
         // Extra
         single<MediatorAccessor> { { get<Mediator>() } }

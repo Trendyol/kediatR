@@ -41,7 +41,10 @@ import org.springframework.context.annotation.*
     ThirdPipelineBehaviour::class,
     CommandHandlerThatPassesThroughOrderedPipelineBehaviours::class,
     QueryHandlerThatPassesThroughOrderedPipelineBehaviours::class,
-    NotificationHandlerThatPassesThroughOrderedPipelineBehaviours::class
+    NotificationHandlerThatPassesThroughOrderedPipelineBehaviours::class,
+    TestCommandBaseHandler::class,
+    TestQueryBaseHandler::class,
+    TestCommandWithResultBaseHandler::class
   ]
 )
 class MediatorTests : MediatorUseCases() {
