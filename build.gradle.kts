@@ -14,7 +14,6 @@ version = properties["version"]!!
 subprojectsOf("projects") {
   apply {
     plugin("kotlin")
-    plugin("kediatr-publishing")
     plugin("java")
     plugin(rootProject.libs.plugins.spotless.pluginId)
     plugin(rootProject.libs.plugins.maven.publish.pluginId)
