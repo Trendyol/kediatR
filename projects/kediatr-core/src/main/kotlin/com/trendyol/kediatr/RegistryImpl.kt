@@ -9,7 +9,7 @@ class RegistryImpl(
 
   override fun <TCommand : Command> resolveCommandHandler(classOfCommand: Class<TCommand>): CommandHandler<TCommand> {
     val handler = registry.commandMap[baseClassOrItself(classOfCommand, Command::class.java)]?.get()
-        ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
+      ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
     return handler as CommandHandler<TCommand>
   }
 
@@ -17,7 +17,7 @@ class RegistryImpl(
     classOfCommand: Class<TCommand>
   ): CommandWithResultHandler<TCommand, TResult> {
     val handler = registry.commandWithResultMap[baseClassOrItself(classOfCommand, CommandWithResult::class.java)]?.get()
-        ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
+      ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
     return handler as CommandWithResultHandler<TCommand, TResult>
   }
 
@@ -25,11 +25,11 @@ class RegistryImpl(
     classOfNotification: Class<TNotification>
   ): Collection<NotificationHandler<TNotification>> = registry.notificationMap
     .filter { (k, _) -> k.isAssignableFrom(classOfNotification) }
-      .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
+    .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
 
   override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {
     val handler = registry.queryMap[baseClassOrItself(classOfQuery, Query::class.java)]?.get()
-        ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
+      ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
     return handler as QueryHandler<TQuery, TResult>
   }
 
@@ -52,8 +52,8 @@ class RegistryImpl(
     clazz: Class<*>,
     clazzWanted: Class<*>
   ): Class<*> =
-    generateSequence(clazz) { it.superclass }             // ↪ generate the chain: clazz, clazz.superclass, clazz.superclass.superclass, …
-      .filter { clazzWanted.isAssignableFrom(it) }      // ↪ keep only those that actually “implement/extend” clazzWanted
-      .lastOrNull()                                      // ↪ pick the *last* (farthest‐up) match
-      ?: clazz                                               // ↪ if none matched, return the original clazz
+    generateSequence(clazz) { it.superclass } // ↪ generate the chain: clazz, clazz.superclass, clazz.superclass.superclass, …
+      .filter { clazzWanted.isAssignableFrom(it) } // ↪ keep only those that actually “implement/extend” clazzWanted
+      .lastOrNull() // ↪ pick the *last* (farthest‐up) match
+      ?: clazz // ↪ if none matched, return the original clazz
 }

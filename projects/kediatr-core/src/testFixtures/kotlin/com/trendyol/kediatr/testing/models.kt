@@ -493,7 +493,9 @@ class ThirdPipelineBehaviour : PipelineBehavior {
   }
 }
 
-sealed class TestCommandBase : Command, EnrichedWithMetadata() {
+sealed class TestCommandBase :
+  EnrichedWithMetadata(),
+  Command {
   abstract val id: String
 
   data class TestCommandInherited1(
@@ -505,13 +507,15 @@ sealed class TestCommandBase : Command, EnrichedWithMetadata() {
   ) : TestCommandBase()
 }
 
-class TestCommandBaseHandler() : CommandHandler<TestCommandBase> {
+class TestCommandBaseHandler : CommandHandler<TestCommandBase> {
   override suspend fun handle(command: TestCommandBase) {
     command.incrementInvocationCount()
   }
 }
 
-sealed class TestQueryBase : Query<String>, EnrichedWithMetadata() {
+sealed class TestQueryBase :
+  EnrichedWithMetadata(),
+  Query<String> {
   abstract val id: String
 
   data class TestQueryInherited1(
@@ -530,7 +534,9 @@ class TestQueryBaseHandler : QueryHandler<TestQueryBase, String> {
   }
 }
 
-sealed class TestCommandWithResultBase : CommandWithResult<String>, EnrichedWithMetadata() {
+sealed class TestCommandWithResultBase :
+  EnrichedWithMetadata(),
+  CommandWithResult<String> {
   abstract val id: String
 
   data class TestCommandWithResultInherited1(
