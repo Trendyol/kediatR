@@ -43,3 +43,4 @@ testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.spotless", version = "7.0.4" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.31.0" }
