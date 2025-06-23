@@ -5,10 +5,10 @@ kotest = "5.9.1"
 detekt = "1.23.8"
 junit = "5.13.1"
 koin = "4.1.0"
-quarkus = "3.23.3"
+quarkus = "3.24.0"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
-spring-boot-3x = "3.5.0"
+spring-boot-3x = "3.5.3"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
@@ -43,4 +43,4 @@ testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.spotless", version = "7.0.4" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.32.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.33.0" }
