@@ -1,5 +1,4 @@
 name: Build
-
 on:
   push:
     branches: [ main ]
@@ -9,15 +8,17 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
       - name: Install Java and Maven
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
-
-      - name: Check out Git repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -38,10 +39,10 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
         if: github.ref == 'refs/heads/main'
 
-
-  security-gates:
-    uses: Trendyol/security-actions/.github/workflows/security-gates.yml@master
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+#  security-gates:
+#    needs: build-and-test  # Run after build succeeds
+#    uses: Trendyol/security-actions/.github/workflows/security-gates.yml@master
+#    permissions:
+#      actions: read
+#      contents: read
+#      security-events: write

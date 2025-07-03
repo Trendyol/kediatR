@@ -27,7 +27,7 @@ class MediatorTests :
 
         // Handlers
         single { TestCommandHandler(get()) }
-        single { TestCommandWithResultCommandHandler(get()) } bind CommandWithResultHandler::class
+        single { TestCommandWithResultCommandHandler(get()) } bind CommandHandler::class
         single { TestQueryHandler(get()) } bind QueryHandler::class
         single { TestNotificationHandler(get()) } bind NotificationHandler::class
         single { TestBrokenCommandHandler(get()) } bind CommandHandler::class
@@ -37,8 +37,8 @@ class MediatorTests :
         single { TestCommandHandlerForTypeLimitedInheritance() } bind CommandHandler::class
         single { ParameterizedCommandHandler<String>() } bind CommandHandler::class
         single { ParameterizedCommandHandlerForInheritance<String>() } bind CommandHandler::class
-        single { ParameterizedCommandWithResultHandler<Long, String>() } bind CommandWithResultHandler::class
-        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() } bind CommandWithResultHandler::class
+        single { ParameterizedCommandWithResultHandler<Long, String>() } bind CommandHandler::class
+        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() } bind CommandHandler::class
         single { APingHandler() } bind NotificationHandler::class
         single { AnotherPingHandler() } bind NotificationHandler::class
         single { Handler1ForNotificationOfMultipleHandlers() } bind NotificationHandler::class
@@ -54,7 +54,7 @@ class MediatorTests :
         single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() } bind NotificationHandler::class
         single { TestCommandBaseHandler() } bind CommandHandler::class
         single { TestQueryBaseHandler() } bind QueryHandler::class
-        single { TestCommandWithResultBaseHandler() } bind CommandWithResultHandler::class
+        single { TestCommandWithResultBaseHandler() } bind CommandHandler::class
         single { TestCommandForInheritanceWithFallbackHandlerHandler() } bind CommandHandler::class
         single { TestCommandHandlerForCommandInherited2() } bind CommandHandler::class
 

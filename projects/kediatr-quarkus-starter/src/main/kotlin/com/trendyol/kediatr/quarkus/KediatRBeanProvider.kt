@@ -19,5 +19,5 @@ class QuarkusMediatorBuilder {
 
   @ApplicationScoped
   @Startup
-  fun mediator(kediatRBeanProvider: KediatRBeanProvider): Mediator = MediatorBuilder(kediatRBeanProvider).build()
+  fun mediator(kediatRBeanProvider: KediatRBeanProvider): Mediator = Mediator.build(kediatRBeanProvider)
 }

@@ -1,0 +1,53 @@
+package com.trendyol.kediatr
+
+/**
+ * Exception thrown when no handler is found for a specific query or command type.
+ *
+ * This exception is typically thrown by the Registry when attempting to resolve
+ * a handler for a query or command type that has no registered handler implementation.
+ * It indicates a configuration issue where the dependency provider is not configured
+ * to provide the required handler.
+ *
+ * @param message Descriptive message about which handler was not found
+ * @see Registry.resolveCommandHandler
+ * @see Registry.resolveQueryHandler
+ * @see DependencyProvider
+ */
+class HandlerNotFoundException(message: String) : Exception(message)
+
+/**
+ * A container for one or more exceptions that occurred during multiple task execution.
+ *
+ * This exception is thrown by the [PublishStrategy.ContinueOnExceptionPublishStrategy] when one or more
+ * notification handlers fail during processing. It aggregates all the individual exceptions
+ * that occurred, allowing the caller to examine each failure while still maintaining
+ * the exception flow.
+ *
+ * Example usage:
+ * ```kotlin
+ * try {
+ *     mediator.publish(notification, PublishStrategy.CONTINUE_ON_EXCEPTION)
+ * } catch (e: AggregateException) {
+ *     e.exceptions.forEach { exception ->
+ *         logger.error("Handler failed", exception)
+ *     }
+ * }
+ * ```
+ *
+ * @param exceptions Collection of exceptions that occurred during execution
+ * @see PublishStrategy.ContinueOnExceptionPublishStrategy
+ */
+class AggregateException(
+  /**
+   * The collection of exceptions that were aggregated.
+   * Contains all the individual exceptions that occurred during the operation.
+   */
+  val exceptions: Collection<Throwable>
+) : RuntimeException() {
+  /**
+   * Constructor that accepts an array of exceptions.
+   *
+   * @param exceptions Array of exceptions to aggregate
+   */
+  constructor(exceptions: Array<Throwable>) : this(exceptions.toList())
+}
