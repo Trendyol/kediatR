@@ -5,8 +5,10 @@ Mediator implementation for Kotlin.
 ## Usage
 
 ```diff
-+ $version = 3.1.1
++ $version = {CURRENT_VERSION}
 ```
+
+[Get latest version](https://github.com/Trendyol/kediatR/releases)
 
 <details open>
 <summary>Gradle</summary>
