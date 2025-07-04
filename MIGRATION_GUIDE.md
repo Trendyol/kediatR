@@ -1,6 +1,6 @@
 # kediatR Migration Guide
 
-## Breaking Changes: Command Type Hierarchy Unification
+## From v3.x to v4.x Breaking Changes: Command Type Hierarchy Unification
 
 This migration guide covers the breaking changes introduced in the command type hierarchy unification. The main change is the removal of `CommandWithResult` and `CommandWithResultHandler` interfaces in favor of a unified `Command<TResult>` interface.
 
