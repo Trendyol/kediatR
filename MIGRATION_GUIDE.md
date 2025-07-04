@@ -7,7 +7,9 @@ This migration guide covers the breaking changes introduced in the command type 
 ### Summary of Changes
 
 - **Removed**: `CommandWithResult` interface
-- **Removed**: `CommandWithResultHandler` interface  
+- **Removed**: `CommandWithResultHandler` interface
+- **Removed** `MediatorBuilder` class hence the usage of PublishStrategy is now directly from `Mediator#publish(notification, strategy = default)`
+- **Removed** `Mediator#publish(notification)` since have already interface method with `PublishStrategy` -> `Mediator#publish(notification, strategy = default)` this is not a breaking change.
 - **Modified**: `Command` interface now accepts a generic type parameter `TResult`
 - **Added**: `Command.Unit` nested interface for commands that don't return results
 - **Modified**: `CommandHandler` interface now handles both unit and result-returning commands
