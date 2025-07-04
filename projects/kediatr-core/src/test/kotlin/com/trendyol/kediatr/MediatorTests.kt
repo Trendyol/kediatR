@@ -1,9 +1,7 @@
 package com.trendyol.kediatr
 
-import com.trendyol.kediatr.MappingDependencyProvider.Companion.createMediator
+import com.trendyol.kediatr.HandlerRegistryProvider.Companion.createMediator
 import com.trendyol.kediatr.testing.*
-import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Test
 
 class MediatorTests : MediatorUseCases() {
   override fun provideMediator(): Mediator = createMediator(
@@ -46,17 +44,4 @@ class MediatorTests : MediatorUseCases() {
       TestCommandHandlerForCommandInherited2()
     )
   )
-
-  @Test
-  fun `when a publish strategy is defined it should be set`() {
-    listOf(
-      ContinueOnExceptionPublishStrategy(),
-      ParallelNoWaitPublishStrategy(),
-      ParallelWhenAllPublishStrategy(),
-      StopOnExceptionPublishStrategy()
-    ).forEach {
-      val builder = MediatorBuilder(MappingDependencyProvider(hashMapOf())).withPublishStrategy(it)
-      builder.defaultPublishStrategy shouldBe it
-    }
-  }
 }

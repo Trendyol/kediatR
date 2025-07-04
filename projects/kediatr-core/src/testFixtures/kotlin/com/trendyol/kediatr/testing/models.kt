@@ -47,9 +47,9 @@ class Result(
   val value: Int = 0
 )
 
-class TestNonExistCommand : Command
+class TestNonExistCommand : Command.Unit
 
-class NonExistCommandWithResult : CommandWithResult<Result>
+class NonExistCommandWithResult : Command.Unit
 
 class NonExistQuery : Query<String>
 
@@ -146,9 +146,9 @@ class ParameterizedNotificationHandlerForInheritance<T> : NotificationHandlerBas
 
 class TestCommandForWithoutInjection :
   EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
-class TestCommandHandlerWithoutInjection : CommandHandler<TestCommandForWithoutInjection> {
+class TestCommandHandlerWithoutInjection : CommandHandler.Unit<TestCommandForWithoutInjection> {
   override suspend fun handle(command: TestCommandForWithoutInjection) {
     command.incrementInvocationCount()
   }
@@ -156,11 +156,11 @@ class TestCommandHandlerWithoutInjection : CommandHandler<TestCommandForWithoutI
 
 class TestCommand :
   EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
 class TestCommandHandler(
   private val mediator: MediatorAccessor
-) : CommandHandler<TestCommand> {
+) : CommandHandler.Unit<TestCommand> {
   override suspend fun handle(command: TestCommand) {
     mediator() shouldNotBe null
     command.incrementInvocationCount()
@@ -170,11 +170,11 @@ class TestCommandHandler(
 data class TestCommandWithResult(
   val invoked: Int = 0
 ) : EnrichedWithMetadata(),
-  CommandWithResult<Result>
+  Command<Result>
 
 class TestCommandWithResultCommandHandler(
   val mediator: MediatorAccessor
-) : CommandWithResultHandler<TestCommandWithResult, Result> {
+) : CommandHandler<TestCommandWithResult, Result> {
   override suspend fun handle(
     command: TestCommandWithResult
   ): Result = Result(command.invoked + 1).also {
@@ -185,14 +185,14 @@ class TestCommandWithResultCommandHandler(
 
 class CommandThatPassesThroughPipelineBehaviours :
   EnrichedWithMetadata(),
-  Command,
+  Command.Unit,
   CanPassLoggingPipelineBehaviour,
   CanPassExceptionPipelineBehaviour,
   CanPassInheritedPipelineBehaviour
 
 class TestPipelineCommandHandler(
   private val mediator: MediatorAccessor
-) : CommandHandler<CommandThatPassesThroughPipelineBehaviours> {
+) : CommandHandler.Unit<CommandThatPassesThroughPipelineBehaviours> {
   override suspend fun handle(command: CommandThatPassesThroughPipelineBehaviours) {
     mediator shouldNotBe null
     command.incrementInvocationCount()
@@ -201,12 +201,12 @@ class TestPipelineCommandHandler(
 
 class CommandForWithoutInjectionThatPassesThroughPipelineBehaviours :
   EnrichedWithMetadata(),
-  Command,
+  Command.Unit,
   CanPassLoggingPipelineBehaviour,
   CanPassExceptionPipelineBehaviour,
   CanPassInheritedPipelineBehaviour
 
-class TestPipelineCommandHandlerWithoutInjection : CommandHandler<CommandForWithoutInjectionThatPassesThroughPipelineBehaviours> {
+class TestPipelineCommandHandlerWithoutInjection : CommandHandler.Unit<CommandForWithoutInjectionThatPassesThroughPipelineBehaviours> {
   override suspend fun handle(command: CommandForWithoutInjectionThatPassesThroughPipelineBehaviours) {
     command.incrementInvocationCount()
   }
@@ -214,9 +214,9 @@ class TestPipelineCommandHandlerWithoutInjection : CommandHandler<CommandForWith
 
 class CommandThatFailsWhilePassingThroughPipelineBehaviours :
   EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
-class TestPipelineCommandHandlerThatFails : CommandHandler<CommandThatFailsWhilePassingThroughPipelineBehaviours> {
+class TestPipelineCommandHandlerThatFails : CommandHandler.Unit<CommandThatFailsWhilePassingThroughPipelineBehaviours> {
   override suspend fun handle(command: CommandThatFailsWhilePassingThroughPipelineBehaviours) {
     command.incrementInvocationCount()
     throw Exception()
@@ -225,11 +225,11 @@ class TestPipelineCommandHandlerThatFails : CommandHandler<CommandThatFailsWhile
 
 class TestCommandThatFailsWithException :
   EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
 class TestBrokenCommandHandler(
   private val mediator: MediatorAccessor
-) : CommandHandler<TestCommandThatFailsWithException> {
+) : CommandHandler.Unit<TestCommandThatFailsWithException> {
   override suspend fun handle(command: TestCommandThatFailsWithException) {
     mediator shouldNotBe null
     command.incrementInvocationCount()
@@ -239,9 +239,9 @@ class TestBrokenCommandHandler(
 
 class TestCommandForInheritance :
   EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
-abstract class MyCommandHandlerBaseForSpecificCommand : CommandHandler<TestCommandForInheritance>
+abstract class MyCommandHandlerBaseForSpecificCommand : CommandHandler.Unit<TestCommandForInheritance>
 
 class TestInheritedCommandHandlerForSpecificCommand : MyCommandHandlerBaseForSpecificCommand() {
   override suspend fun handle(command: TestCommandForInheritance) {
@@ -251,9 +251,9 @@ class TestInheritedCommandHandlerForSpecificCommand : MyCommandHandlerBaseForSpe
 
 class TestCommandForTypeLimitedInheritance :
   EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
-abstract class TestBaseCommandHandlerForTypeLimitedInheritance<TCommand : Command> : CommandHandler<TCommand>
+abstract class TestBaseCommandHandlerForTypeLimitedInheritance<TCommand : Command.Unit> : CommandHandler.Unit<TCommand>
 
 class TestCommandHandlerForTypeLimitedInheritance :
   TestBaseCommandHandlerForTypeLimitedInheritance<TestCommandForTypeLimitedInheritance>() {
@@ -265,9 +265,9 @@ class TestCommandHandlerForTypeLimitedInheritance :
 class ParameterizedCommand<T>(
   val param: T
 ) : EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
-class ParameterizedCommandHandler<T> : CommandHandler<ParameterizedCommand<T>> {
+class ParameterizedCommandHandler<T> : CommandHandler.Unit<ParameterizedCommand<T>> {
   override suspend fun handle(command: ParameterizedCommand<T>) {
     command.param shouldNotBe null
     command.incrementInvocationCount()
@@ -277,10 +277,10 @@ class ParameterizedCommandHandler<T> : CommandHandler<ParameterizedCommand<T>> {
 class ParameterizedCommandForInheritedCommandHandler<T>(
   val param: T
 ) : EnrichedWithMetadata(),
-  Command
+  Command.Unit
 
 abstract class ParameterizedCommandHandlerBaseForInheritedCommandHandler<A> :
-  CommandHandler<ParameterizedCommandForInheritedCommandHandler<A>>
+  CommandHandler.Unit<ParameterizedCommandForInheritedCommandHandler<A>>
 
 class ParameterizedCommandHandlerForInheritance<A> : ParameterizedCommandHandlerBaseForInheritedCommandHandler<A>() {
   override suspend fun handle(command: ParameterizedCommandForInheritedCommandHandler<A>) {
@@ -293,10 +293,9 @@ class ParameterizedCommandWithResult<TParam, TReturn>(
   val param: TParam,
   val retFn: suspend (TParam) -> TReturn
 ) : EnrichedWithMetadata(),
-  CommandWithResult<TReturn>
+  Command<TReturn>
 
-class ParameterizedCommandWithResultHandler<TParam, TReturn> :
-  CommandWithResultHandler<ParameterizedCommandWithResult<TParam, TReturn>, TReturn> {
+class ParameterizedCommandWithResultHandler<TParam, TReturn> : CommandHandler<ParameterizedCommandWithResult<TParam, TReturn>, TReturn> {
   override suspend fun handle(command: ParameterizedCommandWithResult<TParam, TReturn>): TReturn {
     command.param shouldNotBe null
     command.incrementInvocationCount()
@@ -307,9 +306,9 @@ class ParameterizedCommandWithResultHandler<TParam, TReturn> :
 data class ParameterizedCommandWithResultForInheritance<TParam>(
   val param: TParam
 ) : EnrichedWithMetadata(),
-  CommandWithResult<String>
+  Command<String>
 
-abstract class ParameterizedCommandWithResultHandlerBase<TParam : CommandWithResult<String>> : CommandWithResultHandler<TParam, String>
+abstract class ParameterizedCommandWithResultHandlerBase<TParam : Command<String>> : CommandHandler<TParam, String>
 
 class ParameterizedCommandWithResultHandlerOfInheritedHandler<TParam> :
   ParameterizedCommandWithResultHandlerBase<ParameterizedCommandWithResultForInheritance<TParam>>() {
@@ -415,7 +414,7 @@ interface OrderedPipelineUseCase
 
 class CommandThatPassesThroughOrderedPipelineBehaviours :
   EnrichedWithMetadata(),
-  Command,
+  Command.Unit,
   OrderedPipelineUseCase
 
 class QueryThatPassesThroughOrderedPipelineBehaviours :
@@ -428,7 +427,7 @@ class NotificationThatPassesThroughOrderedPipelineBehaviours :
   Notification,
   OrderedPipelineUseCase
 
-class CommandHandlerThatPassesThroughOrderedPipelineBehaviours : CommandHandler<CommandThatPassesThroughOrderedPipelineBehaviours> {
+class CommandHandlerThatPassesThroughOrderedPipelineBehaviours : CommandHandler.Unit<CommandThatPassesThroughOrderedPipelineBehaviours> {
   override suspend fun handle(command: CommandThatPassesThroughOrderedPipelineBehaviours) {
     command.incrementInvocationCount()
   }
@@ -501,7 +500,7 @@ class ThirdPipelineBehaviour : PipelineBehavior {
 
 sealed class TestCommandBase :
   EnrichedWithMetadata(),
-  Command {
+  Command.Unit {
   abstract val id: String
 
   data class TestCommandInherited1(
@@ -513,7 +512,7 @@ sealed class TestCommandBase :
   ) : TestCommandBase()
 }
 
-class TestCommandBaseHandler : CommandHandler<TestCommandBase> {
+class TestCommandBaseHandler : CommandHandler.Unit<TestCommandBase> {
   override suspend fun handle(command: TestCommandBase) {
     command.incrementInvocationCount()
   }
@@ -542,7 +541,7 @@ class TestQueryBaseHandler : QueryHandler<TestQueryBase, String> {
 
 sealed class TestCommandWithResultBase :
   EnrichedWithMetadata(),
-  CommandWithResult<String> {
+  Command<String> {
   abstract val id: String
 
   data class TestCommandWithResultInherited1(
@@ -554,7 +553,7 @@ sealed class TestCommandWithResultBase :
   ) : TestCommandWithResultBase()
 }
 
-class TestCommandWithResultBaseHandler : CommandWithResultHandler<TestCommandWithResultBase, String> {
+class TestCommandWithResultBaseHandler : CommandHandler<TestCommandWithResultBase, String> {
   override suspend fun handle(command: TestCommandWithResultBase): String {
     command.incrementInvocationCount()
     return "${command.id} handled"
@@ -563,7 +562,7 @@ class TestCommandWithResultBaseHandler : CommandWithResultHandler<TestCommandWit
 
 sealed class TestCommandForInheritanceWithFallback :
   EnrichedWithMetadata(),
-  Command {
+  Command.Unit {
   abstract val id: String
 
   data class TestCommandInherited1(
@@ -575,14 +574,14 @@ sealed class TestCommandForInheritanceWithFallback :
   ) : TestCommandForInheritanceWithFallback()
 }
 
-class TestCommandForInheritanceWithFallbackHandlerHandler : CommandHandler<TestCommandForInheritanceWithFallback> {
+class TestCommandForInheritanceWithFallbackHandlerHandler : CommandHandler.Unit<TestCommandForInheritanceWithFallback> {
   override suspend fun handle(command: TestCommandForInheritanceWithFallback) {
     command.incrementInvocationCount()
     command.invokedFrom(javaClass.name)
   }
 }
 
-class TestCommandHandlerForCommandInherited2 : CommandHandler<TestCommandForInheritanceWithFallback.TestCommandInherited2> {
+class TestCommandHandlerForCommandInherited2 : CommandHandler.Unit<TestCommandForInheritanceWithFallback.TestCommandInherited2> {
   override suspend fun handle(command: TestCommandForInheritanceWithFallback.TestCommandInherited2) {
     command.incrementInvocationCount()
     command.invokedFrom(javaClass.name)

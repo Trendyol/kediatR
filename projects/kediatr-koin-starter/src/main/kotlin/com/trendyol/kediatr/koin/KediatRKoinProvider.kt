@@ -33,6 +33,6 @@ class KediatRKoinProvider : DependencyProvider {
 
 class KediatRKoin {
   companion object {
-    fun getMediator() = MediatorBuilder(KediatRKoinProvider()).build()
+    fun getMediator() = Mediator.build(KediatRKoinProvider())
   }
 }

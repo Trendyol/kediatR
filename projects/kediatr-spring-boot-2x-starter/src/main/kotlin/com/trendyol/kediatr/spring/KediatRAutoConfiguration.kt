@@ -1,6 +1,6 @@
 package com.trendyol.kediatr.spring
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.Mediator
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext
@@ -18,5 +18,5 @@ open class KediatRAutoConfiguration {
   @ConditionalOnMissingBean
   open fun mediator(
     kediatRSpringBeanProvider: KediatRSpringBeanProvider
-  ): Mediator = MediatorBuilder(kediatRSpringBeanProvider).build()
+  ): Mediator = Mediator.build(kediatRSpringBeanProvider)
 }
