@@ -20,7 +20,6 @@ This migration guide covers the breaking changes introduced in the command type 
 ```kotlin
 // Unit commands (no result)
 interface Command {
-  val type: Class<out Command> get() = this::class.java
 }
 
 interface CommandHandler<TCommand : Command> {
@@ -29,7 +28,6 @@ interface CommandHandler<TCommand : Command> {
 
 // Commands with results
 interface CommandWithResult<TResult> {
-  val type: Class<out CommandWithResult<TResult>> get() = this::class.java
 }
 
 interface CommandWithResultHandler<TCommand : CommandWithResult<TResult>, TResult> {
@@ -42,8 +40,6 @@ interface CommandWithResultHandler<TCommand : CommandWithResult<TResult>, TResul
 ```kotlin
 // Unified command interface
 interface Command<TResult> {
-  val type: Class<out Command<TResult>> get() = this::class.java
-
   // Nested interface for unit commands
   interface Unit : Command<kotlin.Unit>
 }
