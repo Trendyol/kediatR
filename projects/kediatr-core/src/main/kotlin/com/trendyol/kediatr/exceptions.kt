@@ -13,7 +13,9 @@ package com.trendyol.kediatr
  * @see Registry.resolveQueryHandler
  * @see DependencyProvider
  */
-class HandlerNotFoundException(message: String) : Exception(message)
+class HandlerNotFoundException(
+  message: String
+) : Exception(message)
 
 /**
  * A container for one or more exceptions that occurred during multiple task execution.
