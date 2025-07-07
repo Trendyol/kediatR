@@ -501,7 +501,7 @@ abstract class MediatorUseCases : MediatorTestConvention() {
 
   @Test
   fun slow_notification_with_parallel_when_all_strategy_should_wait_for_all_handlers() = runTest {
-    val notification = SlowNotification(50)
+    val notification = SlowNotification(500)
     val startTime = System.currentTimeMillis()
 
     testMediator.publish(notification, PublishStrategy.PARALLEL_WHEN_ALL)
