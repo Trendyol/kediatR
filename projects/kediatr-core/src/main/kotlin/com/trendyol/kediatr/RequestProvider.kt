@@ -1,27 +1,26 @@
 package com.trendyol.kediatr
 
 /**
- * Internal provider class for creating command handler instances with dependency injection support.
+ * Internal provider class for creating request handler instances with dependency injection support.
  *
- * This class acts as a factory for command handlers, using the dependency provider
+ * This class acts as a factory for request handlers, using the dependency provider
  * to resolve and instantiate handler instances. It's used internally by the Registry
- * to manage the lifecycle and creation of command handlers.
+ * to manage the lifecycle and creation of request handlers.
  *
- * @param H The type of command handler that extends CommandHandler
+ * @param H The type of request handler that extends RequestHandler
  * @param dependencyProvider The dependency provider used to resolve handler instances
  * @param type The class type of the handler to create
- * @see CommandHandler
  * @see DependencyProvider
  * @see Registry
  */
-internal class CommandProvider<H : CommandHandler<*, *>>(
+internal class RequestProvider<H : RequestHandler<*, *>>(
   private val dependencyProvider: DependencyProvider,
   private val type: Class<H>
 ) {
   /**
-   * Creates and returns a new instance of the command handler.
+   * Creates and returns a new instance of the request handler.
    *
-   * @return A new instance of the command handler resolved through the dependency provider
+   * @return A new instance of the request handler resolved through the dependency provider
    * @throws Exception if the handler cannot be instantiated or resolved
    */
   fun get(): H = dependencyProvider.getSingleInstanceOf(type)

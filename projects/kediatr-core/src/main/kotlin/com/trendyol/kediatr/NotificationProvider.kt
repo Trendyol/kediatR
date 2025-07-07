@@ -5,7 +5,7 @@ package com.trendyol.kediatr
  *
  * This class acts as a factory for notification handlers, using the dependency provider
  * to resolve and instantiate handler instances. It's used internally by the Registry
- * to manage the lifecycle and creation of notification handlers. Unlike query and command
+ * to manage the lifecycle and creation of notification handlers. Unlike request
  * handlers, multiple notification handlers can exist for the same notification type.
  *
  * @param H The type of notification handler that extends NotificationHandler

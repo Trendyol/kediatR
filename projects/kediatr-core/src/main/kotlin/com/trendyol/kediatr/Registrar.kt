@@ -11,8 +11,7 @@ import java.lang.reflect.*
  * generic interfaces, inheritance chains, and parameterized types.
  *
  * The Registrar is used by the Container class to automatically discover and register:
- * - QueryHandler implementations
- * - CommandHandler implementations
+ * - RequestHandler implementations for queries and commands
  * - NotificationHandler implementations
  * - PipelineBehavior implementations
  *
@@ -20,16 +19,16 @@ import java.lang.reflect.*
  * @see DependencyProvider
  */
 @Suppress("UNCHECKED_CAST")
-abstract class Registrar {
+internal abstract class Registrar {
   /**
-   * Registers handlers that handle a specific parameter type (used for queries, commands, and notifications).
+   * Registers handlers that handle a specific parameter type (used for requests and notifications).
    *
    * This method discovers all implementations of the specified handler type from the dependency provider
    * and registers them with their corresponding parameter types. It's used for handlers that process
-   * specific message types (queries, commands, notifications).
+   * specific message types (requests, notifications).
    *
-   * @param THandler The type of handler to register (e.g., QueryHandler, CommandHandler)
-   * @param TParameter The type of parameter the handler processes (e.g., Query, Command, Notification)
+   * @param THandler The type of handler to register (e.g., RequestHandler, NotificationHandler)
+   * @param TParameter The type of parameter the handler processes (e.g., Request, Notification)
    * @param dependencyProvider The dependency provider to discover handlers from
    * @param registrar The callback function to register each handler with its parameter type
    */
@@ -131,7 +130,7 @@ abstract class Registrar {
    *
    * This method analyzes parameterized types to extract the actual type arguments,
    * handling various scenarios including:
-   * - Direct parameterized types (e.g., QueryHandler<MyQuery, String>)
+   * - Direct parameterized types (e.g., RequestHandler<MyRequest, String>)
    * - Type variables with bounds
    * - Nested generic types
    * - Inheritance chains with generic interfaces

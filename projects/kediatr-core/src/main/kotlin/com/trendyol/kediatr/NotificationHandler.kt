@@ -3,7 +3,7 @@ package com.trendyol.kediatr
 /**
  * Interface to be implemented for a non-blocking notification handler.
  *
- * Unlike query and command handlers, multiple notification handlers can be registered
+ * Unlike request handlers, multiple notification handlers can be registered
  * for the same notification type. Notifications follow a fire-and-forget pattern where
  * the publisher doesn't expect a response, making them ideal for implementing:
  * - Event processing

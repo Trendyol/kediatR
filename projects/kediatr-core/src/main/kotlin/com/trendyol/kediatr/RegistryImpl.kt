@@ -20,7 +20,7 @@ package com.trendyol.kediatr
  * @see Container
  * @see DependencyProvider
  */
-class RegistryImpl(
+internal class RegistryImpl(
   dependencyProvider: DependencyProvider
 ) : Registry {
   /**
@@ -29,28 +29,28 @@ class RegistryImpl(
   private val registry = Container(dependencyProvider)
 
   /**
-   * Resolves the command handler for the specified command type.
+   * Resolves the request handler for the specified request type.
    *
    * This method performs a two-stage lookup:
-   * 1. Direct lookup by the exact command class
-   * 2. Fallback lookup through the inheritance chain to find handlers for base command types
+   * 1. Direct lookup by the exact request class
+   * 2. Fallback lookup through the inheritance chain to find handlers for base request types
    *
-   * This enables polymorphic command handling where a handler for a base command type
-   * can process derived command types.
+   * This enables polymorphic request handling where a handler for a base request type
+   * can process derived request types.
    *
-   * @param TCommand The type of command that extends Command<TResult>
-   * @param TResult The type of result that the command handler will return
-   * @param classOfCommand The class object representing the command type
-   * @return The command handler instance for the specified command type
-   * @throws HandlerNotFoundException if no handler is found for the command type or its base types
+   * @param TRequest The type of request that extends Request<TResult>
+   * @param TResult The type of result that the request handler will return
+   * @param classOfRequest The class object representing the request type
+   * @return The request handler instance for the specified request type
+   * @throws HandlerNotFoundException if no handler is found for the request type or its base types
    */
-  override fun <TCommand : Command<TResult>, TResult> resolveCommandHandler(
-    classOfCommand: Class<TCommand>
-  ): CommandHandler<TCommand, TResult> {
-    val handler = registry.commandMap[classOfCommand]?.get()
-      ?: registry.commandMap[baseClassOrItself(classOfCommand, Command::class.java)]?.get()
-      ?: throw HandlerNotFoundException("handler could not be found for ${classOfCommand.name}")
-    return handler as CommandHandler<TCommand, TResult>
+  override fun <TRequest : Request<TResult>, TResult> resolveHandler(
+    classOfRequest: Class<TRequest>
+  ): RequestHandler<TRequest, TResult> {
+    val handler = registry.requestHandlerMap[classOfRequest]?.get()
+      ?: registry.requestHandlerMap[baseClassOrItself(classOfRequest, Request::class.java)]?.get()
+      ?: throw HandlerNotFoundException("handler could not be found for ${classOfRequest.name}")
+    return handler as RequestHandler<TRequest, TResult>
   }
 
   /**
@@ -72,29 +72,6 @@ class RegistryImpl(
     .flatMap { (_, v) -> v.map { it.get() as NotificationHandler<TNotification> } }
 
   /**
-   * Resolves the query handler for the specified query type.
-   *
-   * This method performs a two-stage lookup:
-   * 1. Direct lookup by the exact query class
-   * 2. Fallback lookup through the inheritance chain to find handlers for base query types
-   *
-   * This enables polymorphic query handling where a handler for a base query type
-   * can process derived query types.
-   *
-   * @param TQuery The type of query that extends Query<TResult>
-   * @param TResult The type of result that the query handler will return
-   * @param classOfQuery The class object representing the query type
-   * @return The query handler instance for the specified query type
-   * @throws HandlerNotFoundException if no handler is found for the query type or its base types
-   */
-  override fun <TQuery : Query<TResult>, TResult> resolveQueryHandler(classOfQuery: Class<TQuery>): QueryHandler<TQuery, TResult> {
-    val handler = registry.queryMap[classOfQuery]?.get()
-      ?: registry.queryMap[baseClassOrItself(classOfQuery, Query::class.java)]?.get()
-      ?: throw HandlerNotFoundException("handler could not be found for ${classOfQuery.name}")
-    return handler as QueryHandler<TQuery, TResult>
-  }
-
-  /**
    * Gets all registered pipeline behaviors.
    *
    * This method retrieves all pipeline behaviors that have been registered with the container.
@@ -110,18 +87,18 @@ class RegistryImpl(
    *
    * This method enables polymorphic handler resolution by finding the most specific
    * base class that matches the desired interface. It's used to support scenarios
-   * where a handler is registered for a base command/query type but needs to handle
+   * where a handler is registered for a base request type but needs to handle
    * derived types.
    *
    * Example:
    * ```kotlin
-   * abstract class BaseCommand : Command<Unit>
-   * class SpecificCommand : BaseCommand()
+   * abstract class BaseRequest : Request<Unit>
+   * class SpecificRequest : BaseRequest()
    *
-   * // Handler registered for BaseCommand
-   * class BaseCommandHandler : CommandHandler<BaseCommand, Unit>
+   * // Handler registered for BaseRequest
+   * class BaseRequestHandler : RequestHandler<BaseRequest, Unit>
    *
-   * // This method will find BaseCommand when looking up SpecificCommand
+   * // This method will find BaseRequest when looking up SpecificRequest
    * ```
    *
    * - Uses a purely functional style: generateSequence → filter → lastOrNull.

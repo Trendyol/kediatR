@@ -26,19 +26,19 @@ class MediatorTests :
         single { ThirdPipelineBehaviour() }
 
         // Handlers
-        single { TestCommandHandler(get()) }
-        single { TestCommandWithResultCommandHandler(get()) } bind CommandHandler::class
-        single { TestQueryHandler(get()) } bind QueryHandler::class
+        single { TestRequestHandler(get()) }
+        single { TestCommandWithResultRequestHandler(get()) } bind RequestHandler::class
+        single { TestQueryHandler(get()) } bind RequestHandler::class
         single { TestNotificationHandler(get()) } bind NotificationHandler::class
-        single { TestBrokenCommandHandler(get()) } bind CommandHandler::class
-        single { TestPipelineCommandHandler(get()) } bind CommandHandler::class
-        single { TestInheritedCommandHandlerForSpecificCommand() } bind CommandHandler::class
-        single { TestCommandHandlerWithoutInjection() } bind CommandHandler::class
-        single { TestCommandHandlerForTypeLimitedInheritance() } bind CommandHandler::class
-        single { ParameterizedCommandHandler<String>() } bind CommandHandler::class
-        single { ParameterizedCommandHandlerForInheritance<String>() } bind CommandHandler::class
-        single { ParameterizedCommandWithResultHandler<Long, String>() } bind CommandHandler::class
-        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() } bind CommandHandler::class
+        single { TestBrokenRequestHandler(get()) } bind RequestHandler::class
+        single { TestPipelineRequestHandler(get()) } bind RequestHandler::class
+        single { TestInheritedRequestHandlerForSpecificCommand() } bind RequestHandler::class
+        single { TestRequestHandlerWithoutInjection() } bind RequestHandler::class
+        single { TestRequestHandlerForTypeLimitedInheritance() } bind RequestHandler::class
+        single { ParameterizedRequestHandler<String>() } bind RequestHandler::class
+        single { ParameterizedRequestHandlerForInheritance<String>() } bind RequestHandler::class
+        single { ParameterizedCommandWithResultHandler<Long, String>() } bind RequestHandler::class
+        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() } bind RequestHandler::class
         single { APingHandler() } bind NotificationHandler::class
         single { AnotherPingHandler() } bind NotificationHandler::class
         single { Handler1ForNotificationOfMultipleHandlers() } bind NotificationHandler::class
@@ -46,17 +46,17 @@ class MediatorTests :
         single { InheritedNotificationHandler() } bind NotificationHandler::class
         single { ParameterizedNotificationHandler<String>() } bind NotificationHandler::class
         single { ParameterizedNotificationHandlerForInheritance<String>() } bind NotificationHandler::class
-        single { TestPipelineCommandHandlerWithoutInjection() } bind CommandHandler::class
-        single { TestPipelineCommandHandlerThatFails() } bind CommandHandler::class
-        single { ParameterizedQueryHandler<Long, String>() } bind QueryHandler::class
-        single { CommandHandlerThatPassesThroughOrderedPipelineBehaviours() } bind CommandHandler::class
-        single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() } bind QueryHandler::class
+        single { TestPipelineRequestHandlerWithoutInjection() } bind RequestHandler::class
+        single { TestPipelineRequestHandlerThatFails() } bind RequestHandler::class
+        single { ParameterizedQueryHandler<Long, String>() } bind RequestHandler::class
+        single { RequestHandlerThatPassesThroughOrderedPipelineBehaviours() } bind RequestHandler::class
+        single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() } bind RequestHandler::class
         single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() } bind NotificationHandler::class
-        single { TestCommandBaseHandler() } bind CommandHandler::class
-        single { TestQueryBaseHandler() } bind QueryHandler::class
-        single { TestCommandWithResultBaseHandler() } bind CommandHandler::class
-        single { TestCommandForInheritanceWithFallbackHandlerHandler() } bind CommandHandler::class
-        single { TestCommandHandlerForCommandInherited2() } bind CommandHandler::class
+        single { TestCommandBaseHandler() } bind RequestHandler::class
+        single { TestQueryBaseHandler() } bind RequestHandler::class
+        single { TestCommandWithResultBaseHandler() } bind RequestHandler::class
+        single { TestCommandForInheritanceWithFallbackHandlerHandler() } bind RequestHandler::class
+        single { TestRequestHandlerForCommandInherited2() } bind RequestHandler::class
 
         // Extra
         single<MediatorAccessor> { { get<Mediator>() } }

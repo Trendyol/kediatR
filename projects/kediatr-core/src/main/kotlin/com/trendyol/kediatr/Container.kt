@@ -6,8 +6,7 @@ package com.trendyol.kediatr
  * This class extends Registrar and acts as a central registry that discovers and organizes
  * all handlers and behaviors from the dependency provider. It maintains separate collections
  * for different types of handlers:
- * - Query handlers (one-to-one mapping)
- * - Command handlers (one-to-one mapping)
+ * - Request handlers (one-to-one mapping for both queries and commands)
  * - Notification handlers (one-to-many mapping)
  * - Pipeline behaviors (set of unique behaviors)
  *
@@ -16,8 +15,7 @@ package com.trendyol.kediatr
  *
  * @param dependencyProvider The dependency provider used to discover and resolve handlers
  * @see Registrar
- * @see QueryProvider
- * @see CommandProvider
+ * @see RequestProvider
  * @see NotificationProvider
  * @see PipelineProvider
  */
@@ -26,10 +24,10 @@ internal class Container(
   dependencyProvider: DependencyProvider
 ) : Registrar() {
   /**
-   * Map storing query handlers where the key is the query class and the value is the query provider.
-   * Each query type should have exactly one handler.
+   * Map storing request handlers where the key is the request class and the value is the request provider.
+   * Each request type should have exactly one handler.
    */
-  val queryMap = HashMap<Class<*>, QueryProvider<QueryHandler<*, *>>>()
+  val requestHandlerMap = HashMap<Class<*>, RequestProvider<RequestHandler<Request<*>, *>>>()
 
   /**
    * Map storing notification handlers where the key is the notification class and the value is a list of providers.
@@ -42,25 +40,9 @@ internal class Container(
    */
   val pipelineSet = HashSet<PipelineProvider<*>>()
 
-  /**
-   * Map storing command handlers where the key is the command class and the value is the command provider.
-   * Each command type should have exactly one handler.
-   */
-  val commandMap = HashMap<Class<*>, CommandProvider<*>>()
-
   init {
-    // Register query handlers - one handler per query type
-    registerFor<QueryHandler<Query<*>, *>, Query<*>>(dependencyProvider) { key, value ->
-      queryMap[key] = QueryProvider(dependencyProvider, value as Class<QueryHandler<*, *>>)
-    }
-
-    // Register command handlers - one handler per command type
-    registerFor<CommandHandler<Command<*>, *>, Command<*>>(dependencyProvider) { key, value ->
-      commandMap[key] =
-        CommandProvider(
-          dependencyProvider,
-          value as Class<CommandHandler<*, *>>
-        )
+    registerFor<RequestHandler<Request<*>, *>, Request<*>>(dependencyProvider) { key, value ->
+      requestHandlerMap[key] = RequestProvider(dependencyProvider, value)
     }
 
     // Register notification handlers - multiple handlers per notification type allowed

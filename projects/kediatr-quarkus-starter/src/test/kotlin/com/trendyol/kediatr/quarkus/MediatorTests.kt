@@ -14,19 +14,19 @@ class MediatorTests : MediatorUseCases() {
   override fun provideMediator(): Mediator = mediator
 
   @Produces
-  fun handler1(mediator: Mediator) = TestCommandHandler({ mediator })
+  fun handler1(mediator: Mediator) = TestRequestHandler({ mediator })
 
   @Produces
-  fun handler2(mediator: Mediator) = TestCommandWithResultCommandHandler({ mediator })
+  fun handler2(mediator: Mediator) = TestCommandWithResultRequestHandler({ mediator })
 
   @Produces
-  fun handler3(mediator: Mediator) = TestBrokenCommandHandler({ mediator })
+  fun handler3(mediator: Mediator) = TestBrokenRequestHandler({ mediator })
 
   @Produces
-  fun handler4(mediator: Mediator) = TestPipelineCommandHandler({ mediator })
+  fun handler4(mediator: Mediator) = TestPipelineRequestHandler({ mediator })
 
   @Produces
-  fun handler5() = TestInheritedCommandHandlerForSpecificCommand()
+  fun handler5() = TestInheritedRequestHandlerForSpecificCommand()
 
   @Produces
   fun notificationHandler(mediator: Mediator) = TestNotificationHandler({ mediator })
@@ -44,16 +44,16 @@ class MediatorTests : MediatorUseCases() {
   fun queryHandler(mediator: Mediator) = TestQueryHandler({ mediator })
 
   @Produces
-  fun handler6() = TestCommandHandlerWithoutInjection()
+  fun handler6() = TestRequestHandlerWithoutInjection()
 
   @Produces
-  fun handler7() = TestCommandHandlerForTypeLimitedInheritance()
+  fun handler7() = TestRequestHandlerForTypeLimitedInheritance()
 
   @Produces
-  fun <T> handler8(): ParameterizedCommandHandler<T> = ParameterizedCommandHandler()
+  fun <T> handler8(): ParameterizedRequestHandler<T> = ParameterizedRequestHandler()
 
   @Produces
-  fun <T> handler9() = ParameterizedCommandHandlerForInheritance<T>()
+  fun <T> handler9() = ParameterizedRequestHandlerForInheritance<T>()
 
   @Produces
   fun <T, R> handler10() = ParameterizedCommandWithResultHandler<T, R>()
@@ -83,10 +83,10 @@ class MediatorTests : MediatorUseCases() {
   fun <T> handler18() = ParameterizedNotificationHandlerForInheritance<T>()
 
   @Produces
-  fun handler19() = TestPipelineCommandHandlerWithoutInjection()
+  fun handler19() = TestPipelineRequestHandlerWithoutInjection()
 
   @Produces
-  fun handler20() = TestPipelineCommandHandlerThatFails()
+  fun handler20() = TestPipelineRequestHandlerThatFails()
 
   @Produces
   fun <T, R> handler22() = ParameterizedQueryHandler<T, R>()
@@ -101,7 +101,7 @@ class MediatorTests : MediatorUseCases() {
   fun pipeline6() = ThirdPipelineBehaviour()
 
   @Produces
-  fun handler23() = CommandHandlerThatPassesThroughOrderedPipelineBehaviours()
+  fun handler23() = RequestHandlerThatPassesThroughOrderedPipelineBehaviours()
 
   @Produces
   fun handler24() = QueryHandlerThatPassesThroughOrderedPipelineBehaviours()
@@ -122,5 +122,5 @@ class MediatorTests : MediatorUseCases() {
   fun handler29() = TestCommandForInheritanceWithFallbackHandlerHandler()
 
   @Produces
-  fun handler30() = TestCommandHandlerForCommandInherited2()
+  fun handler30() = TestRequestHandlerForCommandInherited2()
 }
