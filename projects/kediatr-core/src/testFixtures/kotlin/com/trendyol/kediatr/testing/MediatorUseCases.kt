@@ -363,10 +363,10 @@ abstract class MediatorUseCases : MediatorTestConvention() {
 
   @Test
   fun long_running_request_should_complete_successfully() = runTest {
-    val request = LongRunningRequest(50)
+    val request = LongRunningRequest(500)
     val result = testMediator.send(request)
 
-    result shouldBe "completed-after-50ms-modified"
+    result shouldBe "completed-after-500ms-modified"
     request.invocationCount().get() shouldBe 1
     request.executionTime() shouldBeGreaterThan 0L // Allow more variance for test environments
   }
