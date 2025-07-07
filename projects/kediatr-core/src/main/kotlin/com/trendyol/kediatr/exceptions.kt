@@ -43,12 +43,5 @@ class AggregateException(
    * The collection of exceptions that were aggregated.
    * Contains all the individual exceptions that occurred during the operation.
    */
-  val exceptions: Collection<Throwable>
-) : RuntimeException() {
-  /**
-   * Constructor that accepts an array of exceptions.
-   *
-   * @param exceptions Array of exceptions to aggregate
-   */
-  constructor(exceptions: Array<Throwable>) : this(exceptions.toList())
-}
+  val exceptions: Iterable<Throwable>
+) : RuntimeException()
