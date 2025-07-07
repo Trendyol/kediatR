@@ -1,9 +1,9 @@
 package com.trendyol.kediatr.koin
 
-import com.trendyol.kediatr.*
+import com.trendyol.kediatr.Mediator
 import com.trendyol.kediatr.testing.*
 import org.junit.jupiter.api.extension.RegisterExtension
-import org.koin.dsl.*
+import org.koin.dsl.module
 import org.koin.test.*
 import org.koin.test.junit5.KoinTestExtension
 
@@ -24,39 +24,67 @@ class MediatorTests :
         single { FirstPipelineBehaviour() }
         single { SecondPipelineBehaviour() }
         single { ThirdPipelineBehaviour() }
+        single { ModifyingPipelineBehavior() }
+        single { TimingPipelineBehavior() }
+        single { ConditionalPipelineBehavior() }
 
         // Handlers
         single { TestRequestHandler(get()) }
-        single { TestCommandWithResultRequestHandler(get()) } bind RequestHandler::class
-        single { TestQueryHandler(get()) } bind RequestHandler::class
-        single { TestNotificationHandler(get()) } bind NotificationHandler::class
-        single { TestBrokenRequestHandler(get()) } bind RequestHandler::class
-        single { TestPipelineRequestHandler(get()) } bind RequestHandler::class
-        single { TestInheritedRequestHandlerForSpecificCommand() } bind RequestHandler::class
-        single { TestRequestHandlerWithoutInjection() } bind RequestHandler::class
-        single { TestRequestHandlerForTypeLimitedInheritance() } bind RequestHandler::class
-        single { ParameterizedRequestHandler<String>() } bind RequestHandler::class
-        single { ParameterizedRequestHandlerForInheritance<String>() } bind RequestHandler::class
-        single { ParameterizedCommandWithResultHandler<Long, String>() } bind RequestHandler::class
-        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() } bind RequestHandler::class
-        single { APingHandler() } bind NotificationHandler::class
-        single { AnotherPingHandler() } bind NotificationHandler::class
-        single { Handler1ForNotificationOfMultipleHandlers() } bind NotificationHandler::class
-        single { Handler2ForNotificationOfMultipleHandlers() } bind NotificationHandler::class
-        single { InheritedNotificationHandler() } bind NotificationHandler::class
-        single { ParameterizedNotificationHandler<String>() } bind NotificationHandler::class
-        single { ParameterizedNotificationHandlerForInheritance<String>() } bind NotificationHandler::class
-        single { TestPipelineRequestHandlerWithoutInjection() } bind RequestHandler::class
-        single { TestPipelineRequestHandlerThatFails() } bind RequestHandler::class
-        single { ParameterizedQueryHandler<Long, String>() } bind RequestHandler::class
-        single { RequestHandlerThatPassesThroughOrderedPipelineBehaviours() } bind RequestHandler::class
-        single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() } bind RequestHandler::class
-        single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() } bind NotificationHandler::class
-        single { TestCommandBaseHandler() } bind RequestHandler::class
-        single { TestQueryBaseHandler() } bind RequestHandler::class
-        single { TestCommandWithResultBaseHandler() } bind RequestHandler::class
-        single { TestCommandForInheritanceWithFallbackHandlerHandler() } bind RequestHandler::class
-        single { TestRequestHandlerForCommandInherited2() } bind RequestHandler::class
+        single { TestCommandWithResultRequestHandler(get()) }
+        single { TestQueryHandler(get()) }
+        single { TestNotificationHandler(get()) }
+        single { TestBrokenRequestHandler(get()) }
+        single { TestPipelineRequestHandler(get()) }
+        single { TestInheritedRequestHandlerForSpecificCommand() }
+        single { TestRequestHandlerWithoutInjection() }
+        single { TestRequestHandlerForTypeLimitedInheritance() }
+        single { ParameterizedRequestHandler<String>() }
+        single { ParameterizedRequestHandlerForInheritance<String>() }
+        single { ParameterizedCommandWithResultHandler<Long, String>() }
+        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() }
+        single { APingHandler() }
+        single { AnotherPingHandler() }
+        single { Handler1ForNotificationOfMultipleHandlers() }
+        single { Handler2ForNotificationOfMultipleHandlers() }
+        single { InheritedNotificationHandler() }
+        single { ParameterizedNotificationHandler<String>() }
+        single { ParameterizedNotificationHandlerForInheritance<String>() }
+        single { TestPipelineRequestHandlerWithoutInjection() }
+        single { TestPipelineRequestHandlerThatFails() }
+        single { ParameterizedQueryHandler<Long, String>() }
+        single { RequestHandlerThatPassesThroughOrderedPipelineBehaviours() }
+        single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() }
+        single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() }
+        single { TestCommandBaseHandler() }
+        single { TestQueryBaseHandler() }
+        single { TestCommandWithResultBaseHandler() }
+        single { TestCommandForInheritanceWithFallbackHandlerHandler() }
+        single { TestRequestHandlerForCommandInherited2() }
+
+        // New Edge Case Handlers (that actually exist)
+        single { RequestWithNullableResultHandler() }
+        single { RequestWithNullParameterHandler() }
+        single { NestedGenericRequestHandler<String, Int>() }
+        single { WildcardGenericRequestHandler<Double>() }
+        single { ConcurrentRequestHandler() }
+        single { LongRunningRequestHandler() }
+        single { MultiInterfaceRequestHandler() }
+        single { EmptyRequestHandler() }
+        single { VoidResultRequestHandler() }
+        single { CollectionRequestHandler() }
+        single { RequestThatThrowsSpecificExceptionHandler() }
+        single { RequestThatThrowsRuntimeExceptionHandler() }
+        single { ComplexPipelineRequestHandler() }
+        single { ComplexDataRequestHandler() }
+
+        // New Edge Case Notification Handlers (that actually exist)
+        single { NotificationThatThrowsExceptionHandler1() }
+        single { NotificationThatThrowsExceptionHandler2() }
+        single { NotificationThatThrowsExceptionHandler3() }
+        single { SlowNotificationHandler1() }
+        single { SlowNotificationHandler2() }
+        single { SlowNotificationHandler3() }
+        single { SelfReferencingRequestHandler(get()) }
 
         // Extra
         single<MediatorAccessor> { { get<Mediator>() } }

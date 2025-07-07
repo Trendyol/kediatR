@@ -46,7 +46,31 @@ import org.springframework.context.annotation.*
     TestQueryBaseHandler::class,
     TestCommandWithResultBaseHandler::class,
     TestCommandForInheritanceWithFallbackHandlerHandler::class,
-    TestRequestHandlerForCommandInherited2::class
+    TestRequestHandlerForCommandInherited2::class,
+    ModifyingPipelineBehavior::class,
+    TimingPipelineBehavior::class,
+    ConditionalPipelineBehavior::class,
+    RequestWithNullableResultHandler::class,
+    RequestWithNullParameterHandler::class,
+    NestedGenericRequestHandler::class,
+    WildcardGenericRequestHandler::class,
+    ConcurrentRequestHandler::class,
+    LongRunningRequestHandler::class,
+    MultiInterfaceRequestHandler::class,
+    EmptyRequestHandler::class,
+    VoidResultRequestHandler::class,
+    CollectionRequestHandler::class,
+    RequestThatThrowsSpecificExceptionHandler::class,
+    RequestThatThrowsRuntimeExceptionHandler::class,
+    ComplexPipelineRequestHandler::class,
+    ComplexDataRequestHandler::class,
+    NotificationThatThrowsExceptionHandler1::class,
+    NotificationThatThrowsExceptionHandler2::class,
+    NotificationThatThrowsExceptionHandler3::class,
+    SlowNotificationHandler1::class,
+    SlowNotificationHandler2::class,
+    SlowNotificationHandler3::class,
+    SelfReferencingRequestHandler::class
   ]
 )
 class MediatorTests : MediatorUseCases() {

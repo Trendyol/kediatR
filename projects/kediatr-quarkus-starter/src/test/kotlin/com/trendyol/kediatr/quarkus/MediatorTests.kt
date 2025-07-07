@@ -123,4 +123,76 @@ class MediatorTests : MediatorUseCases() {
 
   @Produces
   fun handler30() = TestRequestHandlerForCommandInherited2()
+
+  @Produces
+  fun pipelineModifying() = ModifyingPipelineBehavior()
+
+  @Produces
+  fun pipelineTiming() = TimingPipelineBehavior()
+
+  @Produces
+  fun pipelineConditional() = ConditionalPipelineBehavior()
+
+  @Produces
+  fun handlerNullableResult() = RequestWithNullableResultHandler()
+
+  @Produces
+  fun handlerNullParameter() = RequestWithNullParameterHandler()
+
+  @Produces
+  fun <T, R> handlerNestedGeneric() = NestedGenericRequestHandler<T, R>()
+
+  @Produces
+  fun <T> handlerWildcardGeneric() = WildcardGenericRequestHandler<T>()
+
+  @Produces
+  fun handlerConcurrent() = ConcurrentRequestHandler()
+
+  @Produces
+  fun handlerLongRunning() = LongRunningRequestHandler()
+
+  @Produces
+  fun handlerMultiInterface() = MultiInterfaceRequestHandler()
+
+  @Produces
+  fun handlerEmpty() = EmptyRequestHandler()
+
+  @Produces
+  fun handlerVoidResult() = VoidResultRequestHandler()
+
+  @Produces
+  fun handlerCollection() = CollectionRequestHandler()
+
+  @Produces
+  fun handlerSpecificException() = RequestThatThrowsSpecificExceptionHandler()
+
+  @Produces
+  fun handlerRuntimeException() = RequestThatThrowsRuntimeExceptionHandler()
+
+  @Produces
+  fun handlerComplexPipeline() = ComplexPipelineRequestHandler()
+
+  @Produces
+  fun handlerComplexData() = ComplexDataRequestHandler()
+
+  @Produces
+  fun notificationHandlerException1() = NotificationThatThrowsExceptionHandler1()
+
+  @Produces
+  fun notificationHandlerException2() = NotificationThatThrowsExceptionHandler2()
+
+  @Produces
+  fun notificationHandlerException3() = NotificationThatThrowsExceptionHandler3()
+
+  @Produces
+  fun notificationHandlerSlow1() = SlowNotificationHandler1()
+
+  @Produces
+  fun notificationHandlerSlow2() = SlowNotificationHandler2()
+
+  @Produces
+  fun notificationHandlerSlow3() = SlowNotificationHandler3()
+
+  @Produces
+  fun selfReferencingRequestHandler(mediator: Mediator) = SelfReferencingRequestHandler { mediator }
 }

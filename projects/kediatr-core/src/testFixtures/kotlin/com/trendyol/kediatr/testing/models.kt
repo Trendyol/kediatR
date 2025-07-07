@@ -4,18 +4,21 @@ package com.trendyol.kediatr.testing
 
 import com.trendyol.kediatr.*
 import io.kotest.matchers.shouldNotBe
+import kotlinx.coroutines.delay
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 typealias MediatorAccessor = () -> Mediator
 
 abstract class EnrichedWithMetadata {
-  private val metadata = mutableMapOf<String, Any>()
+  private val metadata = ConcurrentHashMap<String, Any>()
 
   internal fun incrementInvocationCount() {
-    val invocationCount = invocationCount()
-    addMetadata(INVOCATION_COUNT, invocationCount + 1)
+    val invocationCount = invocationCount().incrementAndGet()
+    addMetadata(INVOCATION_COUNT, AtomicInteger(invocationCount))
   }
 
-  fun invocationCount(): Int = getMetadata(INVOCATION_COUNT) as? Int ?: 0
+  fun invocationCount(): AtomicInteger = getMetadata(INVOCATION_COUNT) as? AtomicInteger ?: AtomicInteger(0)
 
   fun whereItWasInvokedFrom(): String = getMetadata("invokedFrom") as? String ?: "unknown"
 
@@ -31,6 +34,28 @@ abstract class EnrichedWithMetadata {
 
   fun visitedPipelines(): Set<String> = getMetadata(VISITED_PIPELINES) as? Set<String> ?: emptySet()
 
+  internal fun addOrderedPipeline(pipeline: String) {
+    val visitedPipelines = orderedVisitedPipelines().toMutableList()
+    visitedPipelines.add(pipeline)
+    addMetadata(ORDERED_VISITED_PIPELINES, visitedPipelines)
+  }
+
+  fun orderedVisitedPipelines(): List<String> = getMetadata(ORDERED_VISITED_PIPELINES) as? List<String> ?: emptyList()
+
+  internal fun recordExecutionTime(time: Long) {
+    addMetadata("executionTime", time)
+  }
+
+  fun executionTime(): Long = getMetadata("executionTime") as? Long ?: 0L
+
+  internal fun recordThreadId(threadId: Long) {
+    val threadIds = threadIds().toMutableSet()
+    threadIds.add(threadId)
+    addMetadata("threadIds", threadIds)
+  }
+
+  fun threadIds(): Set<Long> = getMetadata("threadIds") as? Set<Long> ?: emptySet()
+
   private fun addMetadata(key: String, value: Any) {
     metadata[key] = value
   }
@@ -40,6 +65,7 @@ abstract class EnrichedWithMetadata {
   companion object {
     private const val INVOCATION_COUNT = "invocationCount"
     private const val VISITED_PIPELINES = "visitedPipelines"
+    private const val ORDERED_VISITED_PIPELINES = "orderedVisitedPipelines"
   }
 }
 
@@ -585,5 +611,367 @@ class TestRequestHandlerForCommandInherited2 : RequestHandler.Unit<TestCommandFo
   override suspend fun handle(request: TestCommandForInheritanceWithFallback.TestCommandInherited2) {
     request.incrementInvocationCount()
     request.invokedFrom(javaClass.name)
+  }
+}
+
+// Null Value Handling
+class RequestWithNullableResult : Request<String?>
+
+class RequestWithNullableResultHandler : RequestHandler<RequestWithNullableResult, String?> {
+  override suspend fun handle(request: RequestWithNullableResult): String? = null
+}
+
+class RequestWithNullParameter(
+  val nullValue: String?
+) : EnrichedWithMetadata(),
+  Request<String>
+
+class RequestWithNullParameterHandler : RequestHandler<RequestWithNullParameter, String> {
+  override suspend fun handle(request: RequestWithNullParameter): String {
+    request.incrementInvocationCount()
+    return request.nullValue ?: "null-handled"
+  }
+}
+
+// Complex Generic Scenarios
+class NestedGenericRequest<T, U>(
+  val outer: T,
+  val inner: U
+) : EnrichedWithMetadata(),
+  Request<Pair<T, U>>
+
+class NestedGenericRequestHandler<T, U> : RequestHandler<NestedGenericRequest<T, U>, Pair<T, U>> {
+  override suspend fun handle(request: NestedGenericRequest<T, U>): Pair<T, U> {
+    request.incrementInvocationCount()
+    return Pair(request.outer, request.inner)
+  }
+}
+
+// Wildcard Generic Handling
+class WildcardGenericRequest<T>(
+  val value: T
+) : EnrichedWithMetadata(),
+  Request<Double>
+
+class WildcardGenericRequestHandler<T> : RequestHandler<WildcardGenericRequest<T>, Double> {
+  override suspend fun handle(request: WildcardGenericRequest<T>): Double {
+    request.incrementInvocationCount()
+    return request.value.toString().toDouble()
+  }
+}
+
+// Concurrent Execution Testing
+class ConcurrentRequest(
+  val id: Int
+) : EnrichedWithMetadata(),
+  Request<String>
+
+class ConcurrentRequestHandler : RequestHandler<ConcurrentRequest, String> {
+  companion object {
+    val executionCounter = AtomicInteger(0)
+  }
+
+  override suspend fun handle(request: ConcurrentRequest): String {
+    request.incrementInvocationCount()
+    request.recordThreadId(Thread.currentThread().id)
+    val execution = executionCounter.incrementAndGet()
+    delay(10) // Simulate some work
+    return "concurrent-${request.id}-execution-$execution"
+  }
+}
+
+// Long Running Request
+class LongRunningRequest(
+  val duration: Long
+) : EnrichedWithMetadata(),
+  Request<String>
+
+class LongRunningRequestHandler : RequestHandler<LongRunningRequest, String> {
+  override suspend fun handle(request: LongRunningRequest): String {
+    request.incrementInvocationCount()
+    val startTime = System.currentTimeMillis()
+    delay(request.duration)
+    val endTime = System.currentTimeMillis()
+    request.recordExecutionTime(endTime - startTime)
+    return "completed-after-${request.duration}ms"
+  }
+}
+
+// Self-Referencing Request
+class SelfReferencingRequest(
+  val depth: Int
+) : EnrichedWithMetadata(),
+  Request<Int>
+
+class SelfReferencingRequestHandler(
+  private val mediator: MediatorAccessor
+) : RequestHandler<SelfReferencingRequest, Int> {
+  override suspend fun handle(request: SelfReferencingRequest): Int {
+    request.incrementInvocationCount()
+    return if (request.depth > 0) {
+      val nextRequest = SelfReferencingRequest(request.depth - 1)
+      mediator().send(nextRequest) + 1
+    } else {
+      0
+    }
+  }
+}
+
+// Multiple Interface Implementation
+interface FirstMarker
+
+interface SecondMarker
+
+class MultiInterfaceRequest :
+  EnrichedWithMetadata(),
+  Request.Unit,
+  FirstMarker,
+  SecondMarker
+
+class MultiInterfaceRequestHandler : RequestHandler.Unit<MultiInterfaceRequest> {
+  override suspend fun handle(request: MultiInterfaceRequest) {
+    request.incrementInvocationCount()
+  }
+}
+
+// Empty Request/Response
+class EmptyRequest : Request.Unit
+
+class EmptyRequestHandler : RequestHandler.Unit<EmptyRequest> {
+  override suspend fun handle(request: EmptyRequest) {
+    // Intentionally empty
+  }
+}
+
+class VoidResultRequest : Request<Unit>
+
+class VoidResultRequestHandler : RequestHandler<VoidResultRequest, Unit> {
+  override suspend fun handle(request: VoidResultRequest) {
+    // Returns Unit explicitly
+  }
+}
+
+// Collection Handling
+class CollectionRequest(
+  val items: List<String>
+) : EnrichedWithMetadata(),
+  Request<Set<String>>
+
+class CollectionRequestHandler : RequestHandler<CollectionRequest, Set<String>> {
+  override suspend fun handle(request: CollectionRequest): Set<String> {
+    request.incrementInvocationCount()
+    return request.items.toSet()
+  }
+}
+
+// Exception Scenarios
+class RequestThatThrowsSpecificException :
+  EnrichedWithMetadata(),
+  Request<String>
+
+class RequestThatThrowsSpecificExceptionHandler : RequestHandler<RequestThatThrowsSpecificException, String> {
+  override suspend fun handle(request: RequestThatThrowsSpecificException): String {
+    request.incrementInvocationCount()
+    throw IllegalArgumentException("Specific exception for testing")
+  }
+}
+
+class RequestThatThrowsRuntimeException :
+  EnrichedWithMetadata(),
+  Request<String>
+
+class RequestThatThrowsRuntimeExceptionHandler : RequestHandler<RequestThatThrowsRuntimeException, String> {
+  override suspend fun handle(request: RequestThatThrowsRuntimeException): String {
+    request.incrementInvocationCount()
+    throw RuntimeException("Runtime exception for testing")
+  }
+}
+
+// Notification Edge Cases
+class NotificationWithoutHandlers :
+  EnrichedWithMetadata(),
+  Notification
+
+class NotificationThatThrowsException :
+  EnrichedWithMetadata(),
+  Notification
+
+class NotificationThatThrowsExceptionHandler1 : NotificationHandler<NotificationThatThrowsException> {
+  override suspend fun handle(notification: NotificationThatThrowsException) {
+    notification.incrementInvocationCount()
+    throw RuntimeException("Handler 1 exception")
+  }
+}
+
+class NotificationThatThrowsExceptionHandler2 : NotificationHandler<NotificationThatThrowsException> {
+  override suspend fun handle(notification: NotificationThatThrowsException) {
+    notification.incrementInvocationCount()
+    throw IllegalStateException("Handler 2 exception")
+  }
+}
+
+class NotificationThatThrowsExceptionHandler3 : NotificationHandler<NotificationThatThrowsException> {
+  override suspend fun handle(notification: NotificationThatThrowsException) {
+    notification.incrementInvocationCount()
+    // This one succeeds
+  }
+}
+
+// Slow Notification Handlers
+class SlowNotification(
+  val handlerDelay: Long
+) : EnrichedWithMetadata(),
+  Notification
+
+class SlowNotificationHandler1 : NotificationHandler<SlowNotification> {
+  override suspend fun handle(notification: SlowNotification) {
+    notification.incrementInvocationCount()
+    notification.recordThreadId(Thread.currentThread().id)
+    val startTime = System.currentTimeMillis()
+    delay(notification.handlerDelay)
+    val endTime = System.currentTimeMillis()
+    notification.recordExecutionTime(endTime - startTime)
+  }
+}
+
+class SlowNotificationHandler2 : NotificationHandler<SlowNotification> {
+  override suspend fun handle(notification: SlowNotification) {
+    notification.incrementInvocationCount()
+    notification.recordThreadId(Thread.currentThread().id)
+    delay(notification.handlerDelay / 2)
+  }
+}
+
+class SlowNotificationHandler3 : NotificationHandler<SlowNotification> {
+  override suspend fun handle(notification: SlowNotification) {
+    notification.incrementInvocationCount()
+    notification.recordThreadId(Thread.currentThread().id)
+    delay(notification.handlerDelay * 2)
+  }
+}
+
+// Complex Pipeline Behavior Testing
+interface CanPassComplexPipeline
+
+class ComplexPipelineRequest :
+  EnrichedWithMetadata(),
+  Request<String>,
+  CanPassComplexPipeline
+
+class ComplexPipelineRequestHandler : RequestHandler<ComplexPipelineRequest, String> {
+  override suspend fun handle(request: ComplexPipelineRequest): String {
+    request.incrementInvocationCount()
+    return "processed"
+  }
+}
+
+class ModifyingPipelineBehavior : PipelineBehavior {
+  override val order: Int = 100
+
+  override suspend fun <TRequest : Message, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    when (request) {
+      is CanPassComplexPipeline -> {
+        request as EnrichedWithMetadata
+        request.addOrderedPipeline(this::class.java.simpleName)
+      }
+    }
+    val result = next(request)
+
+    // Modify response if it's a string
+    return if (result is String) {
+      "$result-modified" as TResponse
+    } else {
+      result
+    }
+  }
+}
+
+class ConditionalPipelineBehavior : PipelineBehavior {
+  override val order: Int = 50
+
+  override suspend fun <TRequest : Message, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse = when (request) {
+    is CanPassComplexPipeline -> {
+      request as EnrichedWithMetadata
+      request.addOrderedPipeline(this::class.java.simpleName)
+      // Skip processing for specific conditions
+      if (request is ComplexPipelineRequest) {
+        next(request)
+      } else {
+        next(request)
+      }
+    }
+
+    else -> next(request)
+  }
+}
+
+class TimingPipelineBehavior : PipelineBehavior {
+  override val order: Int = 1
+
+  override suspend fun <TRequest : Message, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    val startTime = System.currentTimeMillis()
+
+    when (request) {
+      is CanPassComplexPipeline -> {
+        request as EnrichedWithMetadata
+        request.addOrderedPipeline(this::class.java.simpleName)
+      }
+    }
+
+    val result = next(request)
+
+    when (request) {
+      is EnrichedWithMetadata -> {
+        val endTime = System.currentTimeMillis()
+        request.recordExecutionTime(endTime - startTime)
+      }
+    }
+
+    return result
+  }
+}
+
+// Data Classes with Complex Properties
+data class ComplexDataRequest(
+  val id: Long,
+  val name: String,
+  val metadata: Map<String, Any>,
+  val tags: Set<String>,
+  val nested: NestedData
+) : EnrichedWithMetadata(),
+  Request<ComplexDataResponse>
+
+data class NestedData(
+  val value: String,
+  val count: Int
+)
+
+data class ComplexDataResponse(
+  val processedId: Long,
+  val processedName: String,
+  val processedMetadata: Map<String, Any>,
+  val processedTags: Set<String>,
+  val processedNested: NestedData
+)
+
+class ComplexDataRequestHandler : RequestHandler<ComplexDataRequest, ComplexDataResponse> {
+  override suspend fun handle(request: ComplexDataRequest): ComplexDataResponse {
+    request.incrementInvocationCount()
+    return ComplexDataResponse(
+      processedId = request.id * 2,
+      processedName = "processed-${request.name}",
+      processedMetadata = request.metadata + ("processed" to true),
+      processedTags = request.tags + "processed",
+      processedNested = request.nested.copy(value = "processed-${request.nested.value}")
+    )
   }
 }
