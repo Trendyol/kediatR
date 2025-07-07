@@ -1,16 +1,15 @@
 package com.trendyol.kediatr
 
 /**
- * Exception thrown when no handler is found for a specific query or command type.
+ * Exception thrown when no handler is found for a specific request type.
  *
  * This exception is typically thrown by the Registry when attempting to resolve
- * a handler for a query or command type that has no registered handler implementation.
+ * a handler for a request type that has no registered handler implementation.
  * It indicates a configuration issue where the dependency provider is not configured
  * to provide the required handler.
  *
  * @param message Descriptive message about which handler was not found
- * @see Registry.resolveCommandHandler
- * @see Registry.resolveQueryHandler
+ * @see Registry.resolveHandler
  * @see DependencyProvider
  */
 class HandlerNotFoundException(

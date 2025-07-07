@@ -6,7 +6,7 @@ package com.trendyol.kediatr
  * This class acts as a factory for pipeline behaviors, using the dependency provider
  * to resolve and instantiate behavior instances. It's used internally by the Registry
  * to manage the lifecycle and creation of pipeline behaviors that provide cross-cutting
- * concerns for queries and commands.
+ * concerns for requests.
  *
  * @param H The type of pipeline behavior that extends PipelineBehavior
  * @param dependencyProvider The dependency provider used to resolve behavior instances

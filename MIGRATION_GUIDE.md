@@ -1,25 +1,38 @@
 # kediatR Migration Guide
 
-## From v3.x to v4.x Breaking Changes: Command Type Hierarchy Unification
+## From v3.x to v4.x Breaking Changes: Complete Architecture Overhaul
 
-This migration guide covers the breaking changes introduced in the command type hierarchy unification. The main change is the removal of `CommandWithResult` and `CommandWithResultHandler` interfaces in favor of a unified `Command<TResult>` interface.
+This migration guide covers the major breaking changes introduced in v4.x, which includes a complete architecture overhaul with unified request/response patterns and simplified API design.
 
 ### Summary of Changes
 
-- **Removed**: `CommandWithResult` interface
-- **Removed**: `CommandWithResultHandler` interface
-- **Removed** `MediatorBuilder` class hence the usage of PublishStrategy is now directly from `Mediator#publish(notification, strategy = default)`
-- **Removed** `Mediator#publish(notification)` since have already interface method with `PublishStrategy` -> `Mediator#publish(notification, strategy = default)` this is not a breaking change.
-- **Modified**: `Command` interface now accepts a generic type parameter `TResult`
-- **Added**: `Command.Unit` nested interface for commands that don't return results
-- **Modified**: `CommandHandler` interface now handles both unit and result-returning commands
-- **Added**: `CommandHandler.Unit` nested interface for unit command handlers
+#### Removed Interfaces and Classes
+- **Removed**: `CommandWithResult<TResult>` interface
+- **Removed**: `CommandWithResultHandler<TCommand, TResult>` interface
+- **Removed**: `Command` interface (replaced with `Request<TResult>`)
+- **Removed**: `CommandHandler<TCommand>` interface (replaced with `RequestHandler<TRequest, TResult>`)
+- **Removed**: `Query<TResult>` interface (replaced with `Request<TResult>`)
+- **Removed**: `QueryHandler<TQuery, TResult>` interface (replaced with `RequestHandler<TRequest, TResult>`)
+- **Removed**: `MediatorBuilder` class
+- **Removed**: `CommandProvider`, `QueryProvider` classes (replaced with `RequestProvider`)
+
+#### New Unified Architecture
+- **Added**: `Message` sealed interface as the base for all messages
+- **Added**: `Request<TResponse>` interface for all request types (commands and queries)
+- **Added**: `Request.Unit` nested interface for requests that don't return results
+- **Added**: `RequestHandler<TRequest, TResult>` interface for all request handlers
+- **Added**: `RequestHandler.Unit<TRequest>` nested interface for unit request handlers
+- **Modified**: `Mediator` interface now has a unified `send()` method for all requests
+- **Modified**: `Mediator.publish()` now requires explicit `PublishStrategy` parameter (with default)
+- **Modified**: `PipelineBehavior` now works with `Message` instead of separate types
+- **Modified**: All dependency providers now use `RequestHandler` instead of separate command/query handlers
 
 ### Before (Old API)
 
 ```kotlin
-// Unit commands (no result)
+// Commands (no result)
 interface Command {
+  val type: Class<out Command> get() = this::class.java
 }
 
 interface CommandHandler<TCommand : Command> {
@@ -28,28 +41,66 @@ interface CommandHandler<TCommand : Command> {
 
 // Commands with results
 interface CommandWithResult<TResult> {
+  val type: Class<out CommandWithResult<TResult>> get() = this::class.java
 }
 
 interface CommandWithResultHandler<TCommand : CommandWithResult<TResult>, TResult> {
   suspend fun handle(command: TCommand): TResult
+}
+
+// Queries
+interface Query<TResult> {
+  val type: Class<out Query<TResult>> get() = this::class.java
+}
+
+interface QueryHandler<TQuery : Query<TResult>, TResult> {
+  suspend fun handle(query: TQuery): TResult
+}
+
+// Mediator with separate methods
+interface Mediator {
+  suspend fun <TQuery : Query<TResponse>, TResponse> send(query: TQuery): TResponse
+  suspend fun <TCommand : Command<TResult>, TResult> send(command: TCommand): TResult
+  suspend fun <T : Notification> publish(notification: T)
+  suspend fun <T : Notification> publish(notification: T, publishStrategy: PublishStrategy)
+}
+
+// MediatorBuilder for configuration
+class MediatorBuilder(dependencyProvider: DependencyProvider) {
+  fun withPublishStrategy(strategy: PublishStrategy): MediatorBuilder
+  fun build(): Mediator
 }
 ```
 
 ### After (New API)
 
 ```kotlin
-// Unified command interface
-interface Command<TResult> {
-  // Nested interface for unit commands
-  interface Unit : Command<kotlin.Unit>
+// Unified message hierarchy
+sealed interface Message
+
+// Unified request interface for commands and queries
+interface Request<out TResponse> : Message {
+  interface Unit : Request<kotlin.Unit>
 }
 
-// Unified command handler interface
-interface CommandHandler<TCommand : Command<TResult>, TResult> {
-  suspend fun handle(command: TCommand): TResult
+// Unified request handler interface
+interface RequestHandler<TRequest : Request<TResult>, TResult> {
+  suspend fun handle(request: TRequest): TResult
+  
+  interface Unit<TRequest : Request.Unit> : RequestHandler<TRequest, kotlin.Unit>
+}
 
-  // Nested interface for unit command handlers
-  interface Unit<TCommand : Command.Unit> : CommandHandler<TCommand, kotlin.Unit>
+// Notifications remain the same but now extend Message
+interface Notification : Message
+
+// Simplified Mediator interface
+interface Mediator {
+  suspend fun <TRequest : Request<TResponse>, TResponse> send(request: TRequest): TResponse
+  suspend fun <T : Notification> publish(notification: T, publishStrategy: PublishStrategy = PublishStrategy.DEFAULT)
+  
+  companion object {
+    fun build(dependencyProvider: DependencyProvider): Mediator
+  }
 }
 ```
 
@@ -61,8 +112,12 @@ To ease the migration process, you can temporarily add type aliases to your code
 
 ```kotlin
 // Add these type aliases to ease migration
-typealias CommandWithResult<T> = Command<T>
-typealias CommandWithResultHandler<TCommand, TResult> = CommandHandler<TCommand, TResult>
+typealias Command = Request.Unit
+typealias CommandWithResult<T> = Request<T>
+typealias CommandHandler<TCommand> = RequestHandler.Unit<TCommand>
+typealias CommandWithResultHandler<TCommand, TResult> = RequestHandler<TCommand, TResult>
+typealias Query<T> = Request<T>
+typealias QueryHandler<TQuery, TResult> = RequestHandler<TQuery, TResult>
 ```
 
 **Benefits:**
@@ -93,12 +148,12 @@ class CreateUserCommandHandler : CommandHandler<CreateUserCommand> {
 
 **After:**
 ```kotlin
-class CreateUserCommand : Command.Unit {
+class CreateUserCommand : Request.Unit {
   // command properties
 }
 
-class CreateUserCommandHandler : CommandHandler.Unit<CreateUserCommand> {
-  override suspend fun handle(command: CreateUserCommand) {
+class CreateUserCommandHandler : RequestHandler.Unit<CreateUserCommand> {
+  override suspend fun handle(request: CreateUserCommand) {
     // handle command
   }
 }
@@ -122,43 +177,100 @@ class GetUserCommandHandler : CommandWithResultHandler<GetUserCommand, User> {
 
 **After:**
 ```kotlin
-class GetUserCommand(val userId: String) : Command<User> {
+class GetUserCommand(val userId: String) : Request<User> {
   // command properties
 }
 
-class GetUserCommandHandler : CommandHandler<GetUserCommand, User> {
-  override suspend fun handle(command: GetUserCommand): User {
+class GetUserCommandHandler : RequestHandler<GetUserCommand, User> {
+  override suspend fun handle(request: GetUserCommand): User {
     // handle command and return result
-    return userRepository.findById(command.userId)
+    return userRepository.findById(request.userId)
   }
 }
 ```
 
-### 3. Update Mediator Usage
+### 3. Update Queries
 
-The mediator usage remains the same - no changes needed:
-
+**Before:**
 ```kotlin
-// Unit commands
-mediator.send(CreateUserCommand())
+class GetUserQuery(val userId: String) : Query<User> {
+  // query properties
+}
 
-// Commands with results
-val user = mediator.send(GetUserCommand("123"))
+class GetUserQueryHandler : QueryHandler<GetUserQuery, User> {
+  override suspend fun handle(query: GetUserQuery): User {
+    // handle query and return result
+    return userRepository.findById(query.userId)
+  }
+}
 ```
 
-### 4. Update Dependency Injection Registration
+**After:**
+```kotlin
+class GetUserQuery(val userId: String) : Request<User> {
+  // query properties
+}
 
-The handler registration remains the same since the framework automatically detects the correct handler types:
+class GetUserQueryHandler : RequestHandler<GetUserQuery, User> {
+  override suspend fun handle(request: GetUserQuery): User {
+    // handle query and return result
+    return userRepository.findById(request.userId)
+  }
+}
+```
+
+### 4. Update Mediator Usage
+
+The mediator usage remains mostly the same, but now all requests use the unified `send()` method:
+
+```kotlin
+// Unit commands (no change)
+mediator.send(CreateUserCommand())
+
+// Commands with results (no change)
+val user = mediator.send(GetUserCommand("123"))
+
+// Queries (no change)
+val user = mediator.send(GetUserQuery("123"))
+
+// Notifications now require explicit PublishStrategy (with default)
+mediator.publish(UserCreatedNotification(user.id)) // Uses default strategy
+mediator.publish(UserCreatedNotification(user.id), PublishStrategy.PARALLEL_NO_WAIT)
+```
+
+### 5. Update Mediator Creation
+
+**Before:**
+```kotlin
+val mediator = MediatorBuilder(dependencyProvider)
+  .withPublishStrategy(ParallelNoWaitPublishStrategy())
+  .build()
+```
+
+**After:**
+```kotlin
+val mediator = Mediator.build(dependencyProvider)
+// PublishStrategy is now specified per publish call
+```
+
+### 6. Update Dependency Injection Registration
+
+Handler registration needs to be updated to use the new interfaces:
 
 #### Spring Boot
 ```kotlin
 @Component
-class CreateUserCommandHandler : CommandHandler.Unit<CreateUserCommand> {
+class CreateUserCommandHandler : RequestHandler.Unit<CreateUserCommand> {
   // implementation
 }
 
 @Component  
-class GetUserCommandHandler : CommandHandler<GetUserCommand, User> {
+class GetUserCommandHandler : RequestHandler<GetUserCommand, User> {
+  // implementation
+}
+
+@Component
+class GetUserQueryHandler : RequestHandler<GetUserQuery, User> {
   // implementation
 }
 ```
@@ -166,17 +278,19 @@ class GetUserCommandHandler : CommandHandler<GetUserCommand, User> {
 #### Koin
 ```kotlin
 module {
-  single { CreateUserCommandHandler() } bind CommandHandler::class
-  single { GetUserCommandHandler() } bind CommandHandler::class
+  single { CreateUserCommandHandler() } bind RequestHandler::class
+  single { GetUserCommandHandler() } bind RequestHandler::class
+  single { GetUserQueryHandler() } bind RequestHandler::class
 }
 ```
 
 #### Manual Registration
 ```kotlin
-val mediator = MappingDependencyProvider.createMediator(
+val mediator = HandlerRegistryProvider.createMediator(
   handlers = listOf(
     CreateUserCommandHandler(),
-    GetUserCommandHandler()
+    GetUserCommandHandler(),
+    GetUserQueryHandler()
   )
 )
 ```
@@ -198,10 +312,10 @@ class ParameterizedCommandHandler<T> : CommandHandler<ParameterizedCommand<T>> {
 
 **After:**
 ```kotlin
-class ParameterizedCommand<T>(val param: T) : Command.Unit
+class ParameterizedCommand<T>(val param: T) : Request.Unit
 
-class ParameterizedCommandHandler<T> : CommandHandler.Unit<ParameterizedCommand<T>> {
-  override suspend fun handle(command: ParameterizedCommand<T>) {
+class ParameterizedCommandHandler<T> : RequestHandler.Unit<ParameterizedCommand<T>> {
+  override suspend fun handle(request: ParameterizedCommand<T>) {
     // handle
   }
 }
@@ -229,12 +343,12 @@ class ParameterizedCommandWithResultHandler<TParam, TReturn> :
 class ParameterizedCommandWithResult<TParam, TReturn>(
   val param: TParam,
   val retFn: suspend (TParam) -> TReturn
-) : Command<TReturn>
+) : Request<TReturn>
 
 class ParameterizedCommandWithResultHandler<TParam, TReturn> : 
-  CommandHandler<ParameterizedCommandWithResult<TParam, TReturn>, TReturn> {
-  override suspend fun handle(command: ParameterizedCommandWithResult<TParam, TReturn>): TReturn {
-    return command.retFn(command.param)
+  RequestHandler<ParameterizedCommandWithResult<TParam, TReturn>, TReturn> {
+  override suspend fun handle(request: ParameterizedCommandWithResult<TParam, TReturn>): TReturn {
+    return request.retFn(request.param)
   }
 }
 ```
@@ -258,50 +372,111 @@ class BaseCommandHandler : CommandHandler<BaseCommand> {
 
 **After:**
 ```kotlin
-sealed class BaseCommand : Command.Unit {
+sealed class BaseCommand : Request.Unit {
   abstract val id: String
 }
 
 class SpecificCommand(override val id: String) : BaseCommand()
 
-class BaseCommandHandler : CommandHandler.Unit<BaseCommand> {
-  override suspend fun handle(command: BaseCommand) {
+class BaseCommandHandler : RequestHandler.Unit<BaseCommand> {
+  override suspend fun handle(request: BaseCommand) {
     // handle
+  }
+}
+```
+
+### 4. Pipeline Behaviors
+
+**Before:**
+```kotlin
+class LoggingPipelineBehavior : PipelineBehavior {
+  override suspend fun <TRequest, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    println("Before: $request")
+    val response = next(request)
+    println("After: $response")
+    return response
+  }
+}
+```
+
+**After:**
+```kotlin
+class LoggingPipelineBehavior : PipelineBehavior {
+  override suspend fun <TRequest : Message, TResponse> handle(
+    request: TRequest,
+    next: RequestHandlerDelegate<TRequest, TResponse>
+  ): TResponse {
+    println("Before: $request")
+    val response = next(request)
+    println("After: $response")
+    return response
   }
 }
 ```
 
 ## Benefits of the New API
 
-1. **Unified Interface**: Single `Command<TResult>` interface for all command types
-2. **Type Safety**: Better compile-time type checking with generic result types
-3. **Cleaner API**: Fewer interfaces to understand and implement
-4. **Consistency**: Aligns with `Query<TResult>` pattern already used in the library
-5. **Backward Compatibility**: Pipeline behaviors and mediator usage remain unchanged
+1. **Unified Architecture**: Single `Request<TResult>` interface for all request types (commands and queries)
+2. **Simplified API**: Fewer interfaces to understand - only `Request`, `RequestHandler`, and `Notification`
+3. **Type Safety**: Better compile-time type checking with generic result types
+4. **Consistent Patterns**: All requests follow the same pattern regardless of type
+5. **Cleaner Dependency Injection**: Single `RequestHandler` interface for all DI frameworks
+6. **Flexible Publishing**: Explicit control over notification publishing strategies
+7. **Better Testability**: Simpler mocking with unified handler interface
+8. **Future-Proof**: Extensible architecture that can accommodate new request types
 
 ## Checklist for Migration
 
-- [ ] Replace `Command` implementations with `Command.Unit`
-- [ ] Replace `CommandHandler<TCommand>` with `CommandHandler.Unit<TCommand>`
-- [ ] Replace `CommandWithResult<TResult>` with `Command<TResult>`
-- [ ] Replace `CommandWithResultHandler<TCommand, TResult>` with `CommandHandler<TCommand, TResult>`
+- [ ] Replace `Command` implementations with `Request.Unit`
+- [ ] Replace `CommandHandler<TCommand>` with `RequestHandler.Unit<TCommand>`
+- [ ] Replace `CommandWithResult<TResult>` with `Request<TResult>`
+- [ ] Replace `CommandWithResultHandler<TCommand, TResult>` with `RequestHandler<TCommand, TResult>`
+- [ ] Replace `Query<TResult>` implementations with `Request<TResult>`
+- [ ] Replace `QueryHandler<TQuery, TResult>` with `RequestHandler<TQuery, TResult>`
+- [ ] Update `MediatorBuilder` usage to use `Mediator.build()` directly
+- [ ] Update `Mediator.publish()` calls to include explicit `PublishStrategy` (optional, has default)
+- [ ] Update pipeline behaviors to use `<TRequest : Message, TResponse>` constraint
+- [ ] Update dependency injection registrations to use `RequestHandler` instead of separate handler types
 - [ ] Update import statements to remove references to deleted interfaces
-- [ ] Test all command handlers to ensure they work correctly
+- [ ] Update handler method parameters from `command`/`query` to `request`
+- [ ] Test all handlers to ensure they work correctly
 - [ ] Update any custom extensions or utilities that referenced the old interfaces
 
 ## Troubleshooting
 
 ### Common Compilation Errors
 
-1. **"Unresolved reference: CommandWithResult"**
-   - Replace with `Command<TResult>`
+1. **"Unresolved reference: Command"**
+   - Replace with `Request.Unit` for unit commands
 
-2. **"Unresolved reference: CommandWithResultHandler"**
-   - Replace with `CommandHandler<TCommand, TResult>`
+2. **"Unresolved reference: CommandWithResult"**
+   - Replace with `Request<TResult>`
 
-3. **"Type mismatch" errors on unit commands**
-   - Ensure unit commands implement `Command.Unit`
-   - Ensure unit handlers implement `CommandHandler.Unit<TCommand>`
+3. **"Unresolved reference: CommandWithResultHandler"**
+   - Replace with `RequestHandler<TCommand, TResult>`
+
+4. **"Unresolved reference: Query"**
+   - Replace with `Request<TResult>`
+
+5. **"Unresolved reference: QueryHandler"**
+   - Replace with `RequestHandler<TQuery, TResult>`
+
+6. **"Unresolved reference: CommandHandler"**
+   - Replace with `RequestHandler.Unit<TCommand>` for unit commands
+   - Replace with `RequestHandler<TCommand, TResult>` for commands with results
+
+7. **"Unresolved reference: MediatorBuilder"**
+   - Replace with `Mediator.build(dependencyProvider)`
+
+8. **"Type mismatch" errors on unit commands**
+   - Ensure unit commands implement `Request.Unit`
+   - Ensure unit handlers implement `RequestHandler.Unit<TCommand>`
+
+9. **"Wrong number of type arguments" on pipeline behaviors**
+   - Add `Message` constraint: `<TRequest : Message, TResponse>`
 
 ### Runtime Issues
 

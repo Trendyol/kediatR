@@ -106,7 +106,7 @@ abstract class MediatorUseCases : MediatorTestConvention() {
     val command2 = TestCommandForInheritanceWithFallback.TestCommandInherited2("id")
     testMediator.send(command2)
     command2.invocationCount() shouldBe 1
-    command2.whereItWasInvokedFrom() shouldBe TestCommandHandlerForCommandInherited2::class.java.name
+    command2.whereItWasInvokedFrom() shouldBe TestRequestHandlerForCommandInherited2::class.java.name
   }
 
   @Test
@@ -172,7 +172,7 @@ abstract class MediatorUseCases : MediatorTestConvention() {
 
   @Test
   fun generic_parameterized_command_class_should_be_routed_to_inherited_handler() = runTest {
-    val command = ParameterizedCommandForInheritedCommandHandler("Netherlands")
+    val command = ParameterizedCommandForInheritedRequestHandler("Netherlands")
     testMediator.send(command)
     command.invocationCount() shouldBe 1
   }

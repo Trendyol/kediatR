@@ -6,16 +6,16 @@ import com.trendyol.kediatr.testing.*
 class MediatorTests : MediatorUseCases() {
   override fun provideMediator(): Mediator = createMediator(
     handlers = listOf(
-      TestCommandHandler(mediator = { testMediator }),
-      TestPipelineCommandHandler(mediator = { testMediator }),
-      TestCommandWithResultCommandHandler(mediator = { testMediator }),
+      TestRequestHandler(mediator = { testMediator }),
+      TestPipelineRequestHandler(mediator = { testMediator }),
+      TestCommandWithResultRequestHandler(mediator = { testMediator }),
       TestNotificationHandler(mediator = { testMediator }),
       TestQueryHandler(mediator = { testMediator }),
-      TestCommandHandlerWithoutInjection(),
-      TestInheritedCommandHandlerForSpecificCommand(),
-      TestCommandHandlerForTypeLimitedInheritance(),
-      ParameterizedCommandHandler<String>(),
-      ParameterizedCommandHandlerForInheritance<String>(),
+      TestRequestHandlerWithoutInjection(),
+      TestInheritedRequestHandlerForSpecificCommand(),
+      TestRequestHandlerForTypeLimitedInheritance(),
+      ParameterizedRequestHandler<String>(),
+      ParameterizedRequestHandlerForInheritance<String>(),
       ParameterizedCommandWithResultHandler<Long, String>(),
       ParameterizedCommandWithResultHandlerOfInheritedHandler<String>(),
       APingHandler(),
@@ -25,8 +25,8 @@ class MediatorTests : MediatorUseCases() {
       InheritedNotificationHandler(),
       ParameterizedNotificationHandler<String>(),
       ParameterizedNotificationHandlerForInheritance<String>(),
-      TestPipelineCommandHandlerWithoutInjection(),
-      TestPipelineCommandHandlerThatFails(),
+      TestPipelineRequestHandlerWithoutInjection(),
+      TestPipelineRequestHandlerThatFails(),
       ExceptionPipelineBehavior(),
       LoggingPipelineBehavior(),
       InheritedPipelineBehaviour(),
@@ -34,14 +34,14 @@ class MediatorTests : MediatorUseCases() {
       FirstPipelineBehaviour(),
       SecondPipelineBehaviour(),
       ThirdPipelineBehaviour(),
-      CommandHandlerThatPassesThroughOrderedPipelineBehaviours(),
+      RequestHandlerThatPassesThroughOrderedPipelineBehaviours(),
       QueryHandlerThatPassesThroughOrderedPipelineBehaviours(),
       NotificationHandlerThatPassesThroughOrderedPipelineBehaviours(),
       TestCommandBaseHandler(),
       TestQueryBaseHandler(),
       TestCommandWithResultBaseHandler(),
       TestCommandForInheritanceWithFallbackHandlerHandler(),
-      TestCommandHandlerForCommandInherited2()
+      TestRequestHandlerForCommandInherited2()
     )
   )
 }

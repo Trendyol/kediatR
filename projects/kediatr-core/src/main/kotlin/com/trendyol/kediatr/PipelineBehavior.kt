@@ -1,10 +1,13 @@
 package com.trendyol.kediatr
 
+import com.trendyol.kediatr.PipelineBehavior.Companion.HIGHEST_PRECEDENCE
+import com.trendyol.kediatr.PipelineBehavior.Companion.LOWEST_PRECEDENCE
+
 /**
  * Interface to be implemented for a non-blocking pipeline behavior.
  *
  * Pipeline behaviors are cross-cutting concerns that wrap around the execution
- * of queries and commands. They can be used to implement functionality such as:
+ * of requests and notifications. They can be used to implement functionality such as:
  * - Logging and auditing
  * - Validation
  * - Caching
@@ -56,16 +59,16 @@ interface PipelineBehavior {
   val order: Int get() = HIGHEST_PRECEDENCE
 
   /**
-   * Process to invoke before and after handling any query or command.
+   * Process to invoke before and after handling any request or notification.
    *
-   * This method is called for every request that goes through the mediator.
+   * This method is called for every message that goes through the mediator.
    * The behavior can execute logic before calling the next delegate, and/or
    * after the next delegate returns. The behavior must call the next delegate
    * to continue the pipeline execution.
    *
    * Example implementation:
    * ```kotlin
-   * override suspend fun <TRequest, TResponse> handle(
+   * override suspend fun <TRequest : Message, TResponse> handle(
    *     request: TRequest,
    *     next: RequestHandlerDelegate<TRequest, TResponse>
    * ): TResponse {
@@ -81,14 +84,14 @@ interface PipelineBehavior {
    * }
    * ```
    *
-   * @param TRequest The type of request being handled (Query or Command)
+   * @param TRequest The type of message being handled (Request or Notification)
    * @param TResponse The type of response being returned
-   * @param request The request instance to handle
+   * @param request The message instance to handle
    * @param next The delegate that represents the next step in the pipeline
    * @return The response from the pipeline execution
    * @throws Exception any exception thrown by the pipeline or handler
    */
-  suspend fun <TRequest, TResponse> handle(
+  suspend fun <TRequest : Message, TResponse> handle(
     request: TRequest,
     next: RequestHandlerDelegate<TRequest, TResponse>
   ): TResponse

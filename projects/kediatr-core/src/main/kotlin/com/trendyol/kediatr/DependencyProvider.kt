@@ -4,19 +4,18 @@ package com.trendyol.kediatr
  * Dependency provider interface for resolving handler instances and discovering subtypes.
  *
  * This interface abstracts the dependency injection mechanism used by the mediator
- * to resolve handlers for queries, commands, and notifications. Implementations
+ * to resolve handlers for requests and notifications. Implementations
  * should integrate with specific DI frameworks (Spring, Koin, etc.).
  *
  * @see Mediator
- * @see QueryHandler
- * @see CommandHandler
+ * @see RequestHandler
  * @see NotificationHandler
  */
 interface DependencyProvider {
   /**
    * Gets a single instance of the specified class.
    *
-   * This method is used to resolve handler instances for queries and commands,
+   * This method is used to resolve handler instances for requests,
    * which should have exactly one handler per type.
    *
    * @param T The type of instance to resolve

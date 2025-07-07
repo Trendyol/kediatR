@@ -15,8 +15,7 @@ import java.lang.reflect.ParameterizedType
  * Example usage:
  * ```kotlin
  * val handlers = listOf(
- *     MyQueryHandler(),
- *     MyCommandHandler(),
+ *     MyRequestHandler(),
  *     MyNotificationHandler(),
  *     LoggingPipelineBehavior()
  * )
@@ -62,7 +61,7 @@ class HandlerRegistryProvider(
    *
    * This method performs sophisticated type checking that handles:
    * - Direct class inheritance and interface implementation
-   * - Generic interface implementations (e.g., QueryHandler<MyQuery, String>)
+   * - Generic interface implementations (e.g., RequestHandler<MyRequest, String>)
    * - Inheritance chains with generic interfaces
    * - Complex type hierarchies
    *
@@ -106,16 +105,15 @@ class HandlerRegistryProvider(
      * a full dependency injection framework.
      *
      * The handlers list can contain:
-     * - QueryHandler implementations
-     * - CommandHandler implementations
+     * - RequestHandler implementations for queries and commands
      * - NotificationHandler implementations
      * - PipelineBehavior implementations
      *
      * Example:
      * ```kotlin
      * val handlers = listOf(
-     *     GetUserQueryHandler(),
-     *     CreateUserCommandHandler(),
+     *     GetUserRequestHandler(),
+     *     CreateUserRequestHandler(),
      *     UserCreatedNotificationHandler(),
      *     LoggingPipelineBehavior()
      * )
@@ -128,10 +126,9 @@ class HandlerRegistryProvider(
      * ```
      *
      * @param handlers The handlers to be used by the mediator. Can include any combination of
-     *                 QueryHandler, CommandHandler, NotificationHandler, and PipelineBehavior instances
+     *                 RequestHandler, NotificationHandler, and PipelineBehavior instances
      * @return A configured mediator instance ready for use
-     * @see QueryHandler
-     * @see CommandHandler
+     * @see RequestHandler
      * @see NotificationHandler
      * @see PipelineBehavior
      */

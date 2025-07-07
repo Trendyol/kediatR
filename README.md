@@ -15,15 +15,16 @@ Documentation is available at [https://trendyol.github.io/kediatR/](https://tren
 ## Show me the code
 
 ```kotlin
-class PingCommand : Command.Unit // or
-class PingQuery : Query<String> // or
+class PingCommand : Request.Unit // or
+class PingQuery : Request<String> // or
 class PingNotification : Notification
-class PingCommandHandler : CommandHandler.Unit<PingCommand> {
-  override suspend fun handle(command: PingCommand) {
+
+class PingCommandHandler : RequestHandler.Unit<PingCommand> {
+  override suspend fun handle(command: PingCommand) : Unit {
     println("Pong!")
   }
 }
-class PingQueryHandler : QueryHandler<PingQuery, String> {
+class PingQueryHandler : RequestHandler<PingQuery, String> {
   override suspend fun handle(query: PingQuery): String {
     return "Pong!"
   }
