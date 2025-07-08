@@ -9,6 +9,7 @@ quarkus = "3.24.2"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
 spring-boot-3x = "3.5.3"
+ktlint = "1.6.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
@@ -25,6 +26,7 @@ spring-boot-3x-starter-test = { module = "org.springframework.boot:spring-boot-s
 
 spring-boot-2x-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot-2x" }
 spring-boot-2x-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot-2x" }
+ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 
 # test
 kotest-property-jvm = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }
@@ -41,6 +43,6 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.1" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-spotless = { id = "com.diffplug.spotless", version = "7.0.4" }
+spotless = { id = "com.diffplug.spotless", version = "7.1.0" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
 maven-publish = { id = "com.vanniktech.maven.publish", version = "0.33.0" }

@@ -1,5 +1,4 @@
 import org.gradle.api.*
-import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.invoke
 
 fun Project.subprojectsOf(
@@ -20,8 +19,4 @@ fun Collection<Project>.of(
   except: List<String> = emptyList(),
 ): List<Project> = this.filter {
   parentProjects.contains(it.parent?.name) && !except.contains(it.name)
-}
-
-infix fun <T> Property<T>.by(value: T) {
-  set(value)
 }

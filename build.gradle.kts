@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 group = "com.trendyol"
 
 plugins {
@@ -21,7 +19,7 @@ subprojectsOf("projects") {
 
   spotless {
     kotlin {
-      ktlint()
+      ktlint(rootProject.libs.ktlint.cli.get().version)
         .setEditorConfigPath(rootProject.layout.projectDirectory.file(".editorconfig"))
     }
   }
@@ -32,7 +30,7 @@ subprojectsOf("projects") {
 
   mavenPublishing {
     coordinates(groupId = rootProject.group.toString(), artifactId = project.name, version = rootProject.version.toString())
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     pom {
       name.set(project.name)
       description.set(project.properties["projectDescription"].toString())
