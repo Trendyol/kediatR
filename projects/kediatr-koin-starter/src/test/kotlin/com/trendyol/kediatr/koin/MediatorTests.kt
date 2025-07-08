@@ -38,20 +38,20 @@ class MediatorTests :
         single { TestInheritedRequestHandlerForSpecificCommand() }
         single { TestRequestHandlerWithoutInjection() }
         single { TestRequestHandlerForTypeLimitedInheritance() }
-        single { ParameterizedRequestHandler<String>() }
-        single { ParameterizedRequestHandlerForInheritance<String>() }
-        single { ParameterizedCommandWithResultHandler<Long, String>() }
-        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<String>() }
+        single { ParameterizedRequestHandler<Any>() }
+        single { ParameterizedRequestHandlerForInheritance<Any>() }
+        single { ParameterizedCommandWithResultHandler<Any, Any>() }
+        single { ParameterizedCommandWithResultHandlerOfInheritedHandler<Any>() }
         single { APingHandler() }
         single { AnotherPingHandler() }
         single { Handler1ForNotificationOfMultipleHandlers() }
         single { Handler2ForNotificationOfMultipleHandlers() }
         single { InheritedNotificationHandler() }
-        single { ParameterizedNotificationHandler<String>() }
-        single { ParameterizedNotificationHandlerForInheritance<String>() }
+        single { ParameterizedNotificationHandler<Any>() }
+        single { ParameterizedNotificationHandlerForInheritance<Any>() }
         single { TestPipelineRequestHandlerWithoutInjection() }
         single { TestPipelineRequestHandlerThatFails() }
-        single { ParameterizedQueryHandler<Long, String>() }
+        single { ParameterizedQueryHandler<Any, Any>() }
         single { RequestHandlerThatPassesThroughOrderedPipelineBehaviours() }
         single { QueryHandlerThatPassesThroughOrderedPipelineBehaviours() }
         single { NotificationHandlerThatPassesThroughOrderedPipelineBehaviours() }
@@ -64,8 +64,8 @@ class MediatorTests :
         // New Edge Case Handlers (that actually exist)
         single { RequestWithNullableResultHandler() }
         single { RequestWithNullParameterHandler() }
-        single { NestedGenericRequestHandler<String, Int>() }
-        single { WildcardGenericRequestHandler<Double>() }
+        single { NestedGenericRequestHandler<Any, Any>() }
+        single { WildcardGenericRequestHandler<Any>() }
         single { ConcurrentRequestHandler() }
         single { LongRunningRequestHandler() }
         single { MultiInterfaceRequestHandler() }
