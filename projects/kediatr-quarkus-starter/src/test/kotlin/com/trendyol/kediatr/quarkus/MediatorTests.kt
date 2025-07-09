@@ -77,6 +77,9 @@ class MediatorTests : MediatorUseCases() {
   fun handler16() = InheritedNotificationHandler()
 
   @Produces
+  fun handler16Second() = InheritedNotificationHandler2()
+
+  @Produces
   fun <T> handler17() = ParameterizedNotificationHandler<T>()
 
   @Produces

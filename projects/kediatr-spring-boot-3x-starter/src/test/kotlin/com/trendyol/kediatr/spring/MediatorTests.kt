@@ -30,6 +30,7 @@ import org.springframework.context.annotation.*
     Handler1ForNotificationOfMultipleHandlers::class,
     Handler2ForNotificationOfMultipleHandlers::class,
     InheritedNotificationHandler::class,
+    InheritedNotificationHandler2::class,
     ParameterizedNotificationHandler::class,
     ParameterizedNotificationHandlerForInheritance::class,
     TestPipelineRequestHandlerWithoutInjection::class,

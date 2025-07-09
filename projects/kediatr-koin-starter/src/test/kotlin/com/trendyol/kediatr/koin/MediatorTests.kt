@@ -47,6 +47,7 @@ class MediatorTests :
         single { Handler1ForNotificationOfMultipleHandlers() }
         single { Handler2ForNotificationOfMultipleHandlers() }
         single { InheritedNotificationHandler() }
+        single { InheritedNotificationHandler2() }
         single { ParameterizedNotificationHandler<Any>() }
         single { ParameterizedNotificationHandlerForInheritance<Any>() }
         single { TestPipelineRequestHandlerWithoutInjection() }

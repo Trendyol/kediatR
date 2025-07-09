@@ -49,7 +49,10 @@ internal class RegistryImpl(
   ): RequestHandler<TRequest, TResult> {
     val handler = registry.requestHandlerMap[classOfRequest]?.get()
       ?: registry.requestHandlerMap[baseClassOrItself(classOfRequest, Request::class.java)]?.get()
-      ?: throw HandlerNotFoundException("handler could not be found for ${classOfRequest.name}")
+      ?: throw HandlerNotFoundException(
+        requestType = classOfRequest,
+        availableHandlers = registry.requestHandlerMap.keys.toList()
+      )
     return handler as RequestHandler<TRequest, TResult>
   }
 

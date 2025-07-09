@@ -2,6 +2,10 @@ package com.trendyol.kediatr
 
 import com.trendyol.kediatr.HandlerRegistryProvider.Companion.createMediator
 import com.trendyol.kediatr.testing.*
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Test
 
 class MediatorTests : MediatorUseCases() {
   override fun provideMediator(): Mediator = createMediator(
@@ -23,6 +27,7 @@ class MediatorTests : MediatorUseCases() {
       Handler1ForNotificationOfMultipleHandlers(),
       Handler2ForNotificationOfMultipleHandlers(),
       InheritedNotificationHandler(),
+      InheritedNotificationHandler2(),
       ParameterizedNotificationHandler<String>(),
       ParameterizedNotificationHandlerForInheritance<String>(),
       TestPipelineRequestHandlerWithoutInjection(),
@@ -70,4 +75,23 @@ class MediatorTests : MediatorUseCases() {
       ComplexDataRequestHandler()
     )
   )
+
+  @Test
+  fun command_with_multiple_handlers_should_fail() = runTest {
+    // Arrange - Test that when multiple handlers are registered for the same command type,
+    val handlers = listOf(
+      FirstHandlerForCommand(),
+      SecondHandlerForCommand()
+    )
+
+    // Act
+    val exception = shouldThrow<IllegalStateException> {
+      createMediator(handlers)
+    }
+
+    // Assert
+    exception.message shouldBe "Multiple handlers registered for request type: com.trendyol.kediatr.testing.CommandWithMultipleHandlers\n" +
+      "Existing handler: com.trendyol.kediatr.testing.FirstHandlerForCommand\n" +
+      "Duplicate handler: com.trendyol.kediatr.testing.SecondHandlerForCommand"
+  }
 }

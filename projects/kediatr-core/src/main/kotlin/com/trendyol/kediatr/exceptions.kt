@@ -13,8 +13,15 @@ package com.trendyol.kediatr
  * @see DependencyProvider
  */
 class HandlerNotFoundException(
-  message: String
-) : Exception(message)
+  val requestType: Class<*>,
+  val availableHandlers: List<Class<*>>
+) : Exception() {
+  override val message: String
+    get() = buildString {
+      appendLine("Handler not found for ${requestType.typeName}")
+      appendLine("Available handlers: ${availableHandlers.map { it.simpleName }}")
+    }
+}
 
 /**
  * A container for one or more exceptions that occurred during multiple task execution.

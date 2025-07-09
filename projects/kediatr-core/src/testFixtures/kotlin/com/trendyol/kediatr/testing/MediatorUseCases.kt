@@ -32,7 +32,8 @@ abstract class MediatorUseCases : MediatorTestConvention() {
       testMediator.send(TestNonExistCommand())
     }
 
-    exception.message shouldBe "handler could not be found for ${TestNonExistCommand::class.java.typeName}"
+    exception.message shouldContain "Handler not found for ${TestNonExistCommand::class.java.typeName}"
+    exception.message shouldContain "Available handlers: "
   }
 
   @Test
@@ -41,7 +42,8 @@ abstract class MediatorUseCases : MediatorTestConvention() {
       testMediator.send(NonExistCommandWithResult())
     }
 
-    exception.message shouldBe "handler could not be found for ${NonExistCommandWithResult::class.java.typeName}"
+    exception.message shouldContain "Handler not found for ${NonExistCommandWithResult::class.java.typeName}"
+    exception.message shouldContain "Available handlers: "
   }
 
   @Test
@@ -74,7 +76,8 @@ abstract class MediatorUseCases : MediatorTestConvention() {
       testMediator.send(NonExistQuery())
     }
 
-    exception.message shouldBe "handler could not be found for ${NonExistQuery::class.java.typeName}"
+    exception.message shouldContain "Handler not found for ${NonExistQuery::class.java.typeName}"
+    exception.message shouldContain "Available handlers: "
   }
 
   @Test
@@ -151,7 +154,8 @@ abstract class MediatorUseCases : MediatorTestConvention() {
       testMediator.send(TestNonExistCommand())
     }
 
-    exception.message shouldBe "handler could not be found for ${TestNonExistCommand::class.java.typeName}"
+    exception.message shouldContain "Handler not found for ${TestNonExistCommand::class.java.typeName}"
+    exception.message shouldContain "Available handlers: "
   }
 
   @Test
@@ -218,7 +222,7 @@ abstract class MediatorUseCases : MediatorTestConvention() {
   fun inherited_notification_handler_should_be_called() = runTest {
     val notification = PingForInherited()
     testMediator.publish(notification)
-    notification.invocationCount().get() shouldBe 1
+    notification.invocationCount().get() shouldBe 2
   }
 
   @Test

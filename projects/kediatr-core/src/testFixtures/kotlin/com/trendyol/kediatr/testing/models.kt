@@ -142,6 +142,12 @@ class InheritedNotificationHandler : NotificationHandlerBase<PingForInherited>()
   }
 }
 
+class InheritedNotificationHandler2 : NotificationHandlerBase<PingForInherited>() {
+  override suspend fun handle(notification: PingForInherited) {
+    notification.incrementInvocationCount()
+  }
+}
+
 class ParameterizedNotification<T>(
   val param: T
 ) : EnrichedWithMetadata(),
@@ -306,12 +312,20 @@ class ParameterizedCommandForInheritedRequestHandler<T>(
   Request.Unit
 
 abstract class ParameterizedRequestHandlerBaseForInheritedRequestHandler<A> :
-  RequestHandler.Unit<ParameterizedCommandForInheritedRequestHandler<A>>
+  RequestHandler.Unit<ParameterizedCommandForInheritedRequestHandler<A>> {
+  override suspend fun handle(request: ParameterizedCommandForInheritedRequestHandler<A>) {
+    request.invokedFrom("Base Handler: ParameterizedRequestHandlerBaseForInheritedRequestHandler")
+    handleInternal(request)
+  }
+
+  abstract suspend fun handleInternal(request: ParameterizedCommandForInheritedRequestHandler<A>)
+}
 
 class ParameterizedRequestHandlerForInheritance<A> : ParameterizedRequestHandlerBaseForInheritedRequestHandler<A>() {
-  override suspend fun handle(request: ParameterizedCommandForInheritedRequestHandler<A>) {
+  override suspend fun handleInternal(request: ParameterizedCommandForInheritedRequestHandler<A>) {
     request.param shouldNotBe null
     request.incrementInvocationCount()
+    request.invokedFrom("Actual Handler: ParameterizedRequestHandlerForInheritance")
   }
 }
 
@@ -974,4 +988,14 @@ class ComplexDataRequestHandler : RequestHandler<ComplexDataRequest, ComplexData
       processedNested = request.nested.copy(value = "processed-${request.nested.value}")
     )
   }
+}
+
+class CommandWithMultipleHandlers : Request.Unit
+
+class FirstHandlerForCommand : RequestHandler.Unit<CommandWithMultipleHandlers> {
+  override suspend fun handle(request: CommandWithMultipleHandlers) = Unit
+}
+
+class SecondHandlerForCommand : RequestHandler.Unit<CommandWithMultipleHandlers> {
+  override suspend fun handle(request: CommandWithMultipleHandlers) = Unit
 }

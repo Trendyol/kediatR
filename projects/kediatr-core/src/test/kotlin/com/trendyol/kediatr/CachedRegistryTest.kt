@@ -51,7 +51,7 @@ class CachedRegistryTest :
         var exceptionCount = 0
         try {
           cachedRegistry.resolveHandler(TestCommandForWithoutInjection::class.java)
-        } catch (e: HandlerNotFoundException) {
+        } catch (_: HandlerNotFoundException) {
           exceptionCount++
         }
 

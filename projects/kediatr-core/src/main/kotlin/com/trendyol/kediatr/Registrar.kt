@@ -35,11 +35,14 @@ internal abstract class Registrar {
   protected inline fun <reified THandler : Any, TParameter> registerFor(
     dependencyProvider: DependencyProvider,
     registrar: (key: Class<TParameter>, value: Class<THandler>) -> Unit
-  ) = dependencyProvider.getSubTypesOf(THandler::class.java).forEach {
-    registerFor<THandler, TParameter>(it) { key, value ->
-      registrar(key as Class<TParameter>, value as Class<THandler>)
+  ) = dependencyProvider
+    .getSubTypesOf(THandler::class.java)
+    .filter { Modifier.isAbstract(it.modifiers).not() }
+    .forEach {
+      registerFor<THandler, TParameter>(it) { key, value ->
+        registrar(key as Class<TParameter>, value as Class<THandler>)
+      }
     }
-  }
 
   /**
    * Registers a specific handler class with its parameter type.

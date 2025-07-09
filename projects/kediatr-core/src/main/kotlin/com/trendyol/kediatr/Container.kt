@@ -42,6 +42,13 @@ internal class Container(
 
   init {
     registerFor<RequestHandler<Request<*>, *>, Request<*>>(dependencyProvider) { key, value ->
+      if (requestHandlerMap.containsKey(key)) {
+        error(
+          "Multiple handlers registered for request type: ${key.name}" +
+            "\nExisting handler: ${requestHandlerMap[key]!!.get().javaClass.name}" +
+            "\nDuplicate handler: ${value.name}"
+        )
+      }
       requestHandlerMap[key] = RequestProvider(dependencyProvider, value)
     }
 
