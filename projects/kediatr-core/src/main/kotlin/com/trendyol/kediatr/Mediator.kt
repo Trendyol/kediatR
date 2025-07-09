@@ -63,13 +63,17 @@ interface Mediator {
      * - NotificationHandler implementations for each notification type
      * - PipelineBehavior implementations for cross-cutting concerns
      *
+     * By default, this method creates a mediator with caching enabled for improved performance.
+     * Handler resolution results are cached to avoid repeated lookups for the same request/notification types.
+     *
      * @param dependencyProvider The dependency provider that will resolve handler instances
      * @return A configured Mediator instance ready for use
      *
      * @see DependencyProvider
      * @see RequestHandler
      * @see NotificationHandler
+     * @see CachedRegistry
      */
-    fun build(dependencyProvider: DependencyProvider): Mediator = MediatorImpl(RegistryImpl(dependencyProvider))
+    fun build(dependencyProvider: DependencyProvider): Mediator = MediatorImpl(CachedRegistry(RegistryImpl(dependencyProvider)))
   }
 }
