@@ -72,7 +72,8 @@ class MediatorTests : MediatorUseCases() {
       ConditionalPipelineBehavior(),
       TimingPipelineBehavior(),
       ComplexPipelineRequestHandler(),
-      ComplexDataRequestHandler()
+      ComplexDataRequestHandler(),
+      CatchAllNotificationsHandler()
     )
   )
 

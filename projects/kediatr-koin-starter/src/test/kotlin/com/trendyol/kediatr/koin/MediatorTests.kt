@@ -86,6 +86,7 @@ class MediatorTests :
         single { SlowNotificationHandler2() }
         single { SlowNotificationHandler3() }
         single { SelfReferencingRequestHandler(get()) }
+        single { CatchAllNotificationsHandler() }
 
         // Extra
         single<MediatorAccessor> { { get<Mediator>() } }

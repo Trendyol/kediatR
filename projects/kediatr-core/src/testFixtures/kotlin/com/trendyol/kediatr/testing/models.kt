@@ -20,10 +20,12 @@ abstract class EnrichedWithMetadata {
 
   fun invocationCount(): AtomicInteger = getMetadata(INVOCATION_COUNT) as? AtomicInteger ?: AtomicInteger(0)
 
-  fun whereItWasInvokedFrom(): String = getMetadata("invokedFrom") as? String ?: "unknown"
+  fun whereItWasInvokedFrom(): List<String> = invokedPlaces()
 
   fun invokedFrom(nameOfTheHandler: String) {
-    addMetadata("invokedFrom", nameOfTheHandler)
+    val invokedPlaces = invokedPlaces().toMutableList()
+    invokedPlaces.add(nameOfTheHandler)
+    addMetadata(INVOKED_FROM, invokedPlaces)
   }
 
   internal fun visitedPipeline(pipeline: String) {
@@ -41,6 +43,8 @@ abstract class EnrichedWithMetadata {
   }
 
   fun orderedVisitedPipelines(): List<String> = getMetadata(ORDERED_VISITED_PIPELINES) as? List<String> ?: emptyList()
+
+  fun invokedPlaces(): List<String> = getMetadata(INVOKED_FROM) as? List<String> ?: emptyList()
 
   internal fun recordExecutionTime(time: Long) {
     addMetadata("executionTime", time)
@@ -66,6 +70,7 @@ abstract class EnrichedWithMetadata {
     private const val INVOCATION_COUNT = "invocationCount"
     private const val VISITED_PIPELINES = "visitedPipelines"
     private const val ORDERED_VISITED_PIPELINES = "orderedVisitedPipelines"
+    private const val INVOKED_FROM = "invokedFrom"
   }
 }
 
@@ -93,6 +98,7 @@ class TestNotificationHandler(
   override suspend fun handle(notification: TestNotification) {
     mediator shouldNotBe null
     notification.incrementInvocationCount()
+    notification.invokedFrom("TestNotificationHandler")
   }
 }
 
@@ -998,4 +1004,12 @@ class FirstHandlerForCommand : RequestHandler.Unit<CommandWithMultipleHandlers> 
 
 class SecondHandlerForCommand : RequestHandler.Unit<CommandWithMultipleHandlers> {
   override suspend fun handle(request: CommandWithMultipleHandlers) = Unit
+}
+
+class CatchAllNotificationsHandler : NotificationHandler<Notification> {
+  override suspend fun handle(notification: Notification) {
+    when (notification) {
+      is EnrichedWithMetadata -> notification.invokedFrom("CatchAllNotificationsHandler")
+    }
+  }
 }

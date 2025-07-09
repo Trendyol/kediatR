@@ -109,12 +109,12 @@ abstract class MediatorUseCases : MediatorTestConvention() {
     val command = TestCommandForInheritanceWithFallback.TestCommandInherited1("id")
     testMediator.send(command)
     command.invocationCount().get() shouldBe 1
-    command.whereItWasInvokedFrom() shouldBe TestCommandForInheritanceWithFallbackHandlerHandler::class.java.name
+    command.whereItWasInvokedFrom() shouldContain TestCommandForInheritanceWithFallbackHandlerHandler::class.java.name
 
     val command2 = TestCommandForInheritanceWithFallback.TestCommandInherited2("id")
     testMediator.send(command2)
     command2.invocationCount().get() shouldBe 1
-    command2.whereItWasInvokedFrom() shouldBe TestRequestHandlerForCommandInherited2::class.java.name
+    command2.whereItWasInvokedFrom() shouldContain TestRequestHandlerForCommandInherited2::class.java.name
   }
 
   @Test
@@ -600,5 +600,14 @@ abstract class MediatorUseCases : MediatorTestConvention() {
 
     result shouldBe 2
     request.invocationCount().get() shouldBe 1
+  }
+
+  @Test
+  fun notification_handling_is_contravariant_and_catch_all() = runTest {
+    val notification = TestNotification()
+    testMediator.publish(notification)
+    notification.invocationCount().get() shouldBe 1
+    notification.whereItWasInvokedFrom() shouldContain "CatchAllNotificationsHandler"
+    notification.whereItWasInvokedFrom() shouldContain "TestNotificationHandler"
   }
 }

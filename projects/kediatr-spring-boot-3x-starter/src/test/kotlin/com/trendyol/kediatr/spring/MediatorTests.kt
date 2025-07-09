@@ -71,7 +71,8 @@ import org.springframework.context.annotation.*
     SlowNotificationHandler1::class,
     SlowNotificationHandler2::class,
     SlowNotificationHandler3::class,
-    SelfReferencingRequestHandler::class
+    SelfReferencingRequestHandler::class,
+    CatchAllNotificationsHandler::class
   ]
 )
 class MediatorTests : MediatorUseCases() {

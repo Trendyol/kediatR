@@ -198,4 +198,7 @@ class MediatorTests : MediatorUseCases() {
 
   @Produces
   fun selfReferencingRequestHandler(mediator: Mediator) = SelfReferencingRequestHandler { mediator }
+
+  @Produces
+  fun catchAllNotificationsHandler() = CatchAllNotificationsHandler()
 }
