@@ -490,20 +490,6 @@ abstract class MediatorUseCases : MediatorTestConvention() {
   }
 
   @Test
-  fun slow_notification_with_parallel_no_wait_strategy_should_return_immediately() = runTest {
-    val notification = SlowNotification(100)
-    val startTime = System.currentTimeMillis()
-
-    testMediator.publish(notification, PublishStrategy.PARALLEL_NO_WAIT)
-
-    val endTime = System.currentTimeMillis()
-    val executionTime = endTime - startTime
-
-    // Should return quickly without waiting for handlers - allow more variance for CI environments
-    executionTime shouldBeLessThan 500
-  }
-
-  @Test
   fun slow_notification_with_parallel_when_all_strategy_should_wait_for_all_handlers() = runTest {
     val notification = SlowNotification(500)
     val startTime = System.currentTimeMillis()

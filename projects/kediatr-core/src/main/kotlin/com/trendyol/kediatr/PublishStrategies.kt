@@ -31,11 +31,6 @@ interface PublishStrategy {
     val CONTINUE_ON_EXCEPTION: PublishStrategy = ContinueOnExceptionPublishStrategy()
 
     /**
-     * Publish strategy that executes handlers in parallel without waiting for completion.
-     */
-    val PARALLEL_NO_WAIT: PublishStrategy = ParallelNoWaitPublishStrategy()
-
-    /**
      * Publish strategy that executes handlers in parallel and waits for all to complete.
      */
     val PARALLEL_WHEN_ALL: PublishStrategy = ParallelWhenAllPublishStrategy()
@@ -89,28 +84,6 @@ interface PublishStrategy {
       notificationHandlers: Collection<NotificationHandler<T>>,
       dispatcher: CoroutineDispatcher
     ) = withContext(dispatcher) { notificationHandlers.forEach { it.handle(notification) } }
-  }
-
-  /**
-   * Publish strategy that executes all handlers in parallel without waiting for completion.
-   * This is a "fire-and-forget" approach where the publish method returns immediately
-   * after launching all handler coroutines.
-   */
-  class ParallelNoWaitPublishStrategy : PublishStrategy {
-    /**
-     * Publishes the notification to all handlers in parallel without waiting for completion.
-     * Each handler is launched in its own coroutine and the method returns immediately.
-     *
-     * @param T The type of notification to publish
-     * @param notification The notification instance to publish
-     * @param notificationHandlers Collection of handlers that will process the notification
-     * @param dispatcher The coroutine dispatcher to use for execution
-     */
-    override suspend fun <T : Notification> publish(
-      notification: T,
-      notificationHandlers: Collection<NotificationHandler<T>>,
-      dispatcher: CoroutineDispatcher
-    ) = withContext(dispatcher) { notificationHandlers.forEach { launch { it.handle(notification) } } }
   }
 
   /**
