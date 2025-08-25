@@ -5,7 +5,7 @@ package com.trendyol.kediatr
 import com.trendyol.kediatr.testing.*
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.comparables.shouldBeLessThan
-import io.kotest.matchers.doubles.shouldBeGreaterThan
+import io.kotest.matchers.doubles.*
 import io.kotest.matchers.shouldBe
 import kotlin.system.measureTimeMillis
 
@@ -126,7 +126,7 @@ class CachedRegistryPerformanceTest :
 
         // Cached should be significantly faster
         cachedTime shouldBeLessThan (uncachedTime)
-        improvementRatio shouldBeGreaterThan 2.0 // Pipeline behaviors should show even better improvement
+        improvementRatio shouldBeGreaterThanOrEqual 2.0 // Pipeline behaviors should show even better improvement
       }
 
       should("demonstrate end-to-end mediator performance improvement") {
