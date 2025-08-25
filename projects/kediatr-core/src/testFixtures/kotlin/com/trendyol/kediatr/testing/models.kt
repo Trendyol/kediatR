@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 typealias MediatorAccessor = () -> Mediator
 
-abstract class EnrichedWithMetadata {
+sealed class EnrichedWithMetadata {
   private val metadata = ConcurrentHashMap<String, Any>()
 
   internal fun incrementInvocationCount() {
@@ -413,6 +413,8 @@ class ExceptionPipelineBehavior : PipelineBehavior {
         request as EnrichedWithMetadata
         request.visitedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     next(request)
   } catch (ex: Exception) {
@@ -432,6 +434,8 @@ class LoggingPipelineBehavior : PipelineBehavior {
         request as EnrichedWithMetadata
         request.visitedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     return next(request)
   }
@@ -451,6 +455,8 @@ class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
         request as EnrichedWithMetadata
         request.visitedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     return next(request)
   }
@@ -505,6 +511,8 @@ class FirstPipelineBehaviour : PipelineBehavior {
         request as EnrichedWithMetadata
         request.visitedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     return next(request)
   }
@@ -522,6 +530,8 @@ class SecondPipelineBehaviour : PipelineBehavior {
         request as EnrichedWithMetadata
         request.visitedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     return next(request)
   }
@@ -539,6 +549,8 @@ class ThirdPipelineBehaviour : PipelineBehavior {
         request as EnrichedWithMetadata
         request.visitedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     return next(request)
   }
@@ -897,6 +909,8 @@ class ModifyingPipelineBehavior : PipelineBehavior {
         request as EnrichedWithMetadata
         request.addOrderedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
     val result = next(request)
 
@@ -945,6 +959,8 @@ class TimingPipelineBehavior : PipelineBehavior {
         request as EnrichedWithMetadata
         request.addOrderedPipeline(this::class.java.simpleName)
       }
+
+      else -> Unit
     }
 
     val result = next(request)
@@ -954,6 +970,8 @@ class TimingPipelineBehavior : PipelineBehavior {
         val endTime = System.currentTimeMillis()
         request.recordExecutionTime(endTime - startTime)
       }
+
+      else -> {}
     }
 
     return result

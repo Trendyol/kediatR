@@ -35,8 +35,10 @@ subprojects {
 
   dependencies {
     testImplementation(rootProject.libs.kotlinx.coroutines.test)
-    testImplementation(rootProject.libs.kotest.property.jvm)
-    testImplementation(rootProject.libs.kotest.datatests)
+    testImplementation(rootProject.libs.kotest.assertions.core)
+    testImplementation(rootProject.libs.kotest.assertions.table)
+    testImplementation(rootProject.libs.kotest.framework.engine)
+    testImplementation(rootProject.libs.kotest.runner.junit5)
   }
 
   tasks.test {
