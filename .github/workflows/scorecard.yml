@@ -35,19 +35,19 @@ jobs:
       id-token: write
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@8edcb1bdb4e267140fa742c62e395cd74f332709
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
 
       - name: "Run analysis"
-        uses: ossf/scorecard-action@f35c64557cf912815708bb1126d9948f3e459487
+        uses: ossf/scorecard-action@v2.4.2
         with:
           results_file: results.sarif
           results_format: sarif
           publish_results: true
 
       - name: "Upload artifact"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: SARIF file
           path: results.sarif
@@ -56,7 +56,7 @@ jobs:
       # Upload the results to GitHub's code scanning dashboard (optional).
       # Commenting out will disable upload of results to your repo's Code Scanning dashboard
       - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@3c3833e0f8c1c83d449a7478aa59c036a9165498 # v3.29.11
+        uses: github/codeql-action/upload-sarif@v3.29.11
         with:
           sarif_file: results.sarif
 
