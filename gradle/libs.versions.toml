@@ -1,11 +1,11 @@
 [versions]
 kotlin = "2.2.10"
 kotlinx = "1.10.2"
-kotest = "6.0.3"
+kotest = "6.0.4"
 detekt = "1.23.8"
 junit = "5.14.0"
 koin = "4.1.1"
-quarkus = "3.28.2"
+quarkus = "3.28.3"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
 spring-boot-3x = "3.5.6"
