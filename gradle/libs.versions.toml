@@ -5,7 +5,7 @@ kotest = "6.0.4"
 detekt = "1.23.8"
 junit = "5.14.0"
 koin = "4.1.1"
-quarkus = "3.28.3"
+quarkus = "3.28.4"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
 spring-boot-3x = "3.5.6"
@@ -41,7 +41,7 @@ quarkus-junit5 = { module = "io.quarkus:quarkus-junit5", version.ref = "quarkus"
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 [plugins]
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.2" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.spotless", version = "8.0.0" }
