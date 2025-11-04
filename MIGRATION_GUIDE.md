@@ -235,7 +235,7 @@ val user = mediator.send(GetUserQuery("123"))
 
 // Notifications now require explicit PublishStrategy (with default)
 mediator.publish(UserCreatedNotification(user.id)) // Uses default strategy
-mediator.publish(UserCreatedNotification(user.id), PublishStrategy.PARALLEL_NO_WAIT)
+mediator.publish(UserCreatedNotification(user.id), PublishStrategy.CONTINUE_ON_EXCEPTION)
 ```
 
 ### 5. Update Mediator Creation
@@ -243,7 +243,7 @@ mediator.publish(UserCreatedNotification(user.id), PublishStrategy.PARALLEL_NO_W
 **Before:**
 ```kotlin
 val mediator = MediatorBuilder(dependencyProvider)
-  .withPublishStrategy(ParallelNoWaitPublishStrategy())
+  .withPublishStrategy(ContinueOnExceptionPublishStrategy())
   .build()
 ```
 

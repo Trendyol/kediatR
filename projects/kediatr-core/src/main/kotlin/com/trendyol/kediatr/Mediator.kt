@@ -48,7 +48,6 @@ interface Mediator {
    *
    * @see PublishStrategy.DEFAULT
    * @see PublishStrategy.CONTINUE_ON_EXCEPTION
-   * @see PublishStrategy.PARALLEL_NO_WAIT
    * @see PublishStrategy.PARALLEL_WHEN_ALL
    */
   suspend fun <T : Notification> publish(notification: T, publishStrategy: PublishStrategy = PublishStrategy.DEFAULT)
