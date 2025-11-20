@@ -1,15 +1,15 @@
 [versions]
 kotlin = "2.2.10"
 kotlinx = "1.10.2"
-kotest = "6.0.4"
+kotest = "6.0.5"
 detekt = "1.23.8"
 junit = "5.14.1"
 koin = "4.1.1"
-quarkus = "3.29.2"
+quarkus = "3.30.0"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
-spring-boot-3x = "3.5.7"
-ktlint = "1.7.1"
+spring-boot-3x = "3.5.8"
+ktlint = "1.8.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
@@ -44,6 +44,6 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-spotless = { id = "com.diffplug.spotless", version = "8.0.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.1.0" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }
