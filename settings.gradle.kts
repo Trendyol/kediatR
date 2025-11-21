@@ -10,6 +10,7 @@ include(
   "projects:kediatr-quarkus-starter",
   "projects:kediatr-spring-boot-2x-starter",
   "projects:kediatr-spring-boot-3x-starter",
+  "projects:kediatr-spring-boot-4x-starter",
 )
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
