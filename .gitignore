@@ -75,3 +75,5 @@ outTmp/
 /kotlin-native/dist
 kotlin-ide/
 site/
+kotlin-js-store/
+.kotlin/

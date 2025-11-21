@@ -4,6 +4,6 @@ dependencies {
 }
 
 dependencies {
-  testImplementation(testFixtures(projects.projects.kediatrCore))
+  testImplementation(projects.projects.kediatrTesting)
   testImplementation(libs.spring.boot.get4x().starter.test)
 }
