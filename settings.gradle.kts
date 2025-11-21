@@ -6,6 +6,7 @@ import dev.aga.gradle.versioncatalogs.GeneratorConfig
 rootProject.name = "kediatR"
 include(
   "projects:kediatr-core",
+  "projects:kediatr-testing",
   "projects:kediatr-koin-starter",
   "projects:kediatr-quarkus-starter",
   "projects:kediatr-spring-boot-2x-starter",
@@ -40,4 +41,3 @@ dependencyResolutionManagement {
     }
   }
 }
-

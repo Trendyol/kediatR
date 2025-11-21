@@ -4,18 +4,19 @@ package com.trendyol.kediatr.spring
 
 import com.trendyol.kediatr.DependencyProvider
 import org.springframework.context.ApplicationContext
+import kotlin.reflect.KClass
 
 class KediatRSpringBeanProvider(
   private val applicationContext: ApplicationContext
 ) : DependencyProvider {
-  override fun <T> getSingleInstanceOf(clazz: Class<T>): T = applicationContext
-    .getBeanNamesForType(clazz)
+  override fun <T : Any> getSingleInstanceOf(clazz: KClass<T>): T = applicationContext
+    .getBeanNamesForType(clazz.java)
     .single()
     .let { applicationContext.getBean(it) as T }
 
-  override fun <T> getSubTypesOf(
-    clazz: Class<T>
-  ): Collection<Class<T>> = applicationContext
-    .getBeanNamesForType(clazz)
-    .map { applicationContext.getType(it) as Class<T> }
+  override fun <T : Any> getSubTypesOf(
+    clazz: KClass<T>
+  ): Collection<KClass<T>> = applicationContext
+    .getBeanNamesForType(clazz.java)
+    .map { applicationContext.getType(it)!!.kotlin as KClass<T> }
 }

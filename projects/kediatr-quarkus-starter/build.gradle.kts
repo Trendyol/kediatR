@@ -11,7 +11,7 @@ dependencies {
 }
 
 dependencies {
-  testImplementation(testFixtures(projects.projects.kediatrCore))
+  testImplementation(projects.projects.kediatrTesting)
   testImplementation(libs.quarkus.junit5)
 }
 
