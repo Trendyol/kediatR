@@ -28,6 +28,10 @@ your spring-boot version.
   // or
 
  implementation("com.trendyol:kediatr-spring-boot-3x-starter:$version")
+
+ // or
+
+ implementation("com.trendyol:kediatr-spring-boot-4x-starter:$version")
 ```
 
 kediatR-koin-starter
