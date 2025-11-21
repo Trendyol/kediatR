@@ -414,7 +414,9 @@ class ExceptionPipelineBehavior : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     next(request)
   } catch (ex: Exception) {
@@ -435,7 +437,9 @@ class LoggingPipelineBehavior : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     return next(request)
   }
@@ -456,7 +460,9 @@ class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     return next(request)
   }
@@ -512,7 +518,9 @@ class FirstPipelineBehaviour : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     return next(request)
   }
@@ -531,7 +539,9 @@ class SecondPipelineBehaviour : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     return next(request)
   }
@@ -550,7 +560,9 @@ class ThirdPipelineBehaviour : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     return next(request)
   }
@@ -910,7 +922,9 @@ class ModifyingPipelineBehavior : PipelineBehavior {
         request.addOrderedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
     val result = next(request)
 
@@ -941,7 +955,9 @@ class ConditionalPipelineBehavior : PipelineBehavior {
       }
     }
 
-    else -> next(request)
+    else -> {
+      next(request)
+    }
   }
 }
 
@@ -960,7 +976,9 @@ class TimingPipelineBehavior : PipelineBehavior {
         request.addOrderedPipeline(this::class.java.simpleName)
       }
 
-      else -> Unit
+      else -> {
+        Unit
+      }
     }
 
     val result = next(request)

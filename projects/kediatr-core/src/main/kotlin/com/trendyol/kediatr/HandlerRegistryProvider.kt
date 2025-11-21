@@ -91,8 +91,13 @@ class HandlerRegistryProvider(
           .any { it.rawType == interfaceOrBaseClass }
       }
 
-      is Class<*> -> interfaceOrBaseClass.isAssignableFrom(superclass)
-      else -> false
+      is Class<*> -> {
+        interfaceOrBaseClass.isAssignableFrom(superclass)
+      }
+
+      else -> {
+        false
+      }
     }
   }
 

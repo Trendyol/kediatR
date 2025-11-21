@@ -143,7 +143,10 @@ internal abstract class Registrar {
    */
   protected fun extractParameter(genericInterface: ParameterizedType): Class<*> =
     when (val typeArgument = genericInterface.actualTypeArguments[0]) {
-      is ParameterizedType -> typeArgument.rawType as Class<*>
+      is ParameterizedType -> {
+        typeArgument.rawType as Class<*>
+      }
+
       is TypeVariable<*> -> {
         val rawType = (genericInterface.rawType as Class<*>)
         when {
@@ -152,6 +155,8 @@ internal abstract class Registrar {
         }
       }
 
-      else -> typeArgument as Class<*>
+      else -> {
+        typeArgument as Class<*>
+      }
     }
 }
