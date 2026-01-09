@@ -1,26 +1,42 @@
 plugins {
-  `java-test-fixtures`
-}
-
-val testFixturesImplementation: Configuration by configurations.getting {
-  extendsFrom(configurations.implementation.get())
-}
-
-dependencies {
-  testFixturesImplementation(libs.kotest.assertions.core)
-  testFixturesImplementation(libs.kotest.runner.junit5)
-  testFixturesImplementation(junitLibs.junitJupiterApi)
-  testFixturesImplementation(libs.kotlinx.coroutines.test)
-  testFixturesRuntimeOnly(junitLibs.junitJupiterEngine)
+  kotlin("multiplatform")
 }
 
 kotlin {
-  jvmToolchain(11)
-}
+  jvm()
 
-val javaComponent = components["java"] as AdhocComponentWithVariants
-javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
-javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
-afterEvaluate {
-  javaComponent.withVariantsFromConfiguration(configurations["testFixturesSourcesElements"]) { skip() }
+  js(IR) {
+    browser()
+    nodejs()
+  }
+
+  iosArm64()
+  iosX64()
+  iosSimulatorArm64()
+
+  macosArm64()
+  macosX64()
+
+  linuxX64()
+  linuxArm64()
+
+  mingwX64()
+
+  sourceSets {
+    commonMain {
+      dependencies {
+        implementation(libs.kotlinx.coroutines.core)
+      }
+    }
+    jvmTest {
+      dependencies {
+        implementation(projects.projects.kediatrTesting)
+        implementation(libs.kotest.assertions.core)
+        implementation(libs.kotest.framework.engine)
+        implementation(libs.kotlinx.coroutines.test)
+        implementation(libs.kotest.runner.junit5)
+        implementation(kotlin("test"))
+      }
+    }
+  }
 }
