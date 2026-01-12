@@ -3,13 +3,16 @@ package com.trendyol.kediatr.quarkus
 import com.trendyol.kediatr.*
 import io.quarkus.runtime.Startup
 import jakarta.enterprise.context.ApplicationScoped
+import kotlin.reflect.KClass
 
 class KediatRBeanProvider(
   private val resolver: QuarkusTypeResolver
 ) : DependencyProvider {
-  override fun <T> getSingleInstanceOf(clazz: Class<T>): T = resolver.resolveOrThrow(clazz)
+  override fun <T : Any> getSingleInstanceOf(clazz: KClass<T>): T = resolver.resolveOrThrow(clazz.java)
 
-  override fun <T> getSubTypesOf(clazz: Class<T>): Collection<Class<T>> = resolver.resolveTypesOrEmpty(clazz)
+  override fun <T : Any> getSubTypesOf(clazz: KClass<T>): Collection<KClass<T>> = resolver
+    .resolveTypesOrEmpty(clazz.java)
+    .map { it.kotlin as KClass<T> }
 }
 
 @ApplicationScoped
