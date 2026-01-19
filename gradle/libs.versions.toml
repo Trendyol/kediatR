@@ -45,4 +45,4 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 spotless = { id = "com.diffplug.spotless", version = "8.1.0" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
