@@ -16,7 +16,7 @@ include(
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 plugins {
-  id("dev.aga.gradle.version-catalog-generator") version ("4.0.0")
+  id("dev.aga.gradle.version-catalog-generator") version ("4.1.0")
 }
 
 dependencyResolutionManagement {
