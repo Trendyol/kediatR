@@ -1,14 +1,14 @@
 [versions]
-kotlin = "2.2.10"
+kotlin = "2.3.21"
 kotlinx = "1.10.2"
 kotest = "6.1.11"
-junit = "5.14.3"
+junit = "5.14.4"
 koin = "4.2.1"
-quarkus = "3.34.3"
+quarkus = "3.35.0"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
-spring-boot-3x = "3.5.13"
-spring-boot-4x = "4.0.5"
+spring-boot-3x = "3.5.14"
+spring-boot-4x = "4.0.6"
 ktlint = "1.8.0"
 
 [libraries]
