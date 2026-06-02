@@ -43,6 +43,6 @@ quarkus-junit5 = { module = "io.quarkus:quarkus-junit5", version.ref = "quarkus"
 [plugins]
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.8" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
-spotless = { id = "com.diffplug.spotless", version = "8.5.1" }
+spotless = { id = "com.diffplug.spotless", version = "8.6.0" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
 maven-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
