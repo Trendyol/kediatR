@@ -22,5 +22,3 @@ tasks.compileKotlin {
 tasks.sourcesJar {
   mustRunAfter(tasks.compileQuarkusGeneratedSourcesJava)
 }
-
-

@@ -2,7 +2,7 @@
 kotlin = "2.4.0"
 kotlinx = "1.11.0"
 kotest = "6.2.1"
-junit = "5.14.4"
+junit = "6.1.0"
 koin = "4.2.2"
 quarkus = "3.37.0"
 jakarta = "4.1.0"
@@ -31,7 +31,7 @@ spring-boot-2x-starter-test = { module = "org.springframework.boot:spring-boot-s
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 
 # test
-kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit6", version.ref = "kotest" }
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-assertions-table = { module = "io.kotest:kotest-assertions-table", version.ref = "kotest" }

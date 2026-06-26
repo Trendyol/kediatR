@@ -1,8 +1,12 @@
+@file:Suppress("UnstableApiUsage")
+
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
   `java-test-fixtures`
 }
 
-val testFixturesImplementation: Configuration by configurations.getting {
+val testFixturesImplementation: Configuration = configurations.getByName("testFixturesImplementation") {
   extendsFrom(configurations.implementation.get())
 }
 
@@ -14,8 +18,21 @@ dependencies {
   testFixturesRuntimeOnly(junitLibs.junitJupiterEngine)
 }
 
-kotlin {
-  jvmToolchain(11)
+testing {
+  suites {
+    named<JvmTestSuite>("test") {
+      useJUnitJupiter(libs.versions.junit.get())
+    }
+  }
+}
+
+// Published main artifacts stay JDK 11-compatible even though the build runs on JDK 17.
+tasks.compileKotlin {
+  compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+}
+
+tasks.compileJava {
+  options.release.set(11)
 }
 
 val javaComponent = components["java"] as AdhocComponentWithVariants

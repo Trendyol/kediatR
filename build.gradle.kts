@@ -7,7 +7,7 @@ plugins {
   alias(libs.plugins.maven.publish)
 }
 
-version = properties["version"]!!
+version = property("version")!!
 
 subprojectsOf("projects") {
   apply {
@@ -27,10 +27,21 @@ subprojectsOf("projects") {
           )
         )
     }
+
+    kotlinGradle {
+      ktlint(rootProject.libs.ktlint.cli.get().version)
+    }
   }
 
   java {
     withSourcesJar()
+  }
+
+  // Build on JDK 17 — JUnit 6 / Kotest junit6 (used by every module's tests) require a
+  // JVM 17 runtime. Modules whose published main artifacts must stay JDK 11-compatible
+  // downgrade only their main bytecode to 11 in their own build script.
+  kotlin {
+    jvmToolchain(17)
   }
 
   mavenPublishing {
@@ -38,12 +49,12 @@ subprojectsOf("projects") {
     publishToMavenCentral()
     pom {
       name.set(project.name)
-      description.set(project.properties["projectDescription"].toString())
-      url.set(project.properties["projectUrl"].toString())
+      description.set(project.property("projectDescription")!!.toString())
+      url.set(project.property("projectUrl")!!.toString())
       licenses {
         license {
-          name.set(project.properties["licence"].toString())
-          url.set(project.properties["licenceUrl"].toString())
+          name.set(project.property("licence")!!.toString())
+          url.set(project.property("licenceUrl")!!.toString())
         }
       }
       developers {
@@ -56,7 +67,7 @@ subprojectsOf("projects") {
       scm {
         connection.set("scm:git@github.com:Trendyol/kediatR.git")
         developerConnection.set("scm:git:ssh://github.com:Trendyol/kediatR.git")
-        url.set(project.properties["projectUrl"].toString())
+        url.set(project.findProperty("projectUrl")!!.toString())
       }
     }
     signAllPublications()
