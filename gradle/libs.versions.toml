@@ -2,7 +2,7 @@
 kotlin = "2.4.0"
 kotlinx = "1.11.0"
 kotest = "6.2.1"
-junit = "5.14.4"
+junit = "6.1.0"
 koin = "4.2.2"
 quarkus = "3.37.0"
 jakarta = "4.1.0"
