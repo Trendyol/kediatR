@@ -38,7 +38,7 @@ kotest-assertions-table = { module = "io.kotest:kotest-assertions-table", versio
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
-quarkus-junit5 = { module = "io.quarkus:quarkus-junit5", version.ref = "quarkus" }
+quarkus-junit5 = { module = "io.quarkus:quarkus-junit", version.ref = "quarkus" }
 
 [plugins]
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.8" }
