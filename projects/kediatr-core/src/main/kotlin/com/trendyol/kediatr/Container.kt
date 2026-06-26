@@ -20,9 +20,7 @@ package com.trendyol.kediatr
  * @see PipelineProvider
  */
 @Suppress("UNCHECKED_CAST")
-internal class Container(
-  dependencyProvider: DependencyProvider
-) : Registrar() {
+internal class Container(dependencyProvider: DependencyProvider) : Registrar() {
   /**
    * Map storing request handlers where the key is the request class and the value is the request provider.
    * Each request type should have exactly one handler.

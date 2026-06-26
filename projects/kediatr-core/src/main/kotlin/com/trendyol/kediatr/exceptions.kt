@@ -12,10 +12,7 @@ package com.trendyol.kediatr
  * @see Registry.resolveHandler
  * @see DependencyProvider
  */
-class HandlerNotFoundException(
-  val requestType: Class<*>,
-  val availableHandlers: List<Class<*>>
-) : Exception() {
+class HandlerNotFoundException(val requestType: Class<*>, val availableHandlers: List<Class<*>>) : Exception() {
   override val message: String
     get() = buildString {
       appendLine("Handler not found for ${requestType.typeName}")

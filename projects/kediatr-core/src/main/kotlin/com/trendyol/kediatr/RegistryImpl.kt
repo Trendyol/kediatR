@@ -20,9 +20,7 @@ package com.trendyol.kediatr
  * @see Container
  * @see DependencyProvider
  */
-internal class RegistryImpl(
-  dependencyProvider: DependencyProvider
-) : Registry {
+internal class RegistryImpl(dependencyProvider: DependencyProvider) : Registry {
   /**
    * Internal container that manages the registration and storage of all handlers and behaviors.
    */

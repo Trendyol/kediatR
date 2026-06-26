@@ -13,9 +13,7 @@ package com.trendyol.kediatr
  * @see PipelineBehavior
  */
 @Suppress("UNCHECKED_CAST")
-internal class MediatorImpl(
-  private val registry: Registry
-) : Mediator {
+internal class MediatorImpl(private val registry: Registry) : Mediator {
   /**
    * Pipeline behaviors sorted by their order in descending order.
    * Behaviors with lower order values (higher precedence) are executed first.

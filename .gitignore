@@ -12,6 +12,7 @@
 /android-studio/sdk
 out/
 .idea/
+.kotlin/
 /tmp
 /intellij
 workspace.xml

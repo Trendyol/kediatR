@@ -21,6 +21,11 @@ subprojectsOf("projects") {
     kotlin {
       ktlint(rootProject.libs.ktlint.cli.get().version)
         .setEditorConfigPath(rootProject.layout.projectDirectory.file(".editorconfig"))
+        .editorConfigOverride(
+          mapOf(
+            "ktlint_standard_when-entry-bracing" to "disabled"
+          )
+        )
     }
   }
 

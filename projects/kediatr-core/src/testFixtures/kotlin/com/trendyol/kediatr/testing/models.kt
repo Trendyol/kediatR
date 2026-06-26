@@ -7,6 +7,7 @@ import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.delay
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration.Companion.milliseconds
 
 typealias MediatorAccessor = () -> Mediator
 
@@ -74,9 +75,7 @@ sealed class EnrichedWithMetadata {
   }
 }
 
-class Result(
-  val value: Int = 0
-)
+class Result(val value: Int = 0)
 
 class TestNonExistCommand : Request.Unit
 
@@ -92,9 +91,7 @@ class TestNotification :
   EnrichedWithMetadata(),
   Notification
 
-class TestNotificationHandler(
-  private val mediator: MediatorAccessor
-) : NotificationHandler<TestNotification> {
+class TestNotificationHandler(private val mediator: MediatorAccessor) : NotificationHandler<TestNotification> {
   override suspend fun handle(notification: TestNotification) {
     mediator shouldNotBe null
     notification.incrementInvocationCount()
@@ -154,9 +151,8 @@ class InheritedNotificationHandler2 : NotificationHandlerBase<PingForInherited>(
   }
 }
 
-class ParameterizedNotification<T>(
-  val param: T
-) : EnrichedWithMetadata(),
+class ParameterizedNotification<T>(val param: T) :
+  EnrichedWithMetadata(),
   Notification
 
 class ParameterizedNotificationHandler<A> : NotificationHandler<ParameterizedNotification<A>> {
@@ -166,9 +162,8 @@ class ParameterizedNotificationHandler<A> : NotificationHandler<ParameterizedNot
   }
 }
 
-class ParameterizedNotificationForInheritance<T>(
-  val param: T
-) : EnrichedWithMetadata(),
+class ParameterizedNotificationForInheritance<T>(val param: T) :
+  EnrichedWithMetadata(),
   Notification
 
 class ParameterizedNotificationHandlerForInheritance<T> : NotificationHandlerBase<ParameterizedNotificationForInheritance<T>>() {
@@ -196,23 +191,18 @@ class TestCommand :
   EnrichedWithMetadata(),
   Request.Unit
 
-class TestRequestHandler(
-  private val mediator: MediatorAccessor
-) : RequestHandler.Unit<TestCommand> {
+class TestRequestHandler(private val mediator: MediatorAccessor) : RequestHandler.Unit<TestCommand> {
   override suspend fun handle(request: TestCommand) {
     mediator() shouldNotBe null
     request.incrementInvocationCount()
   }
 }
 
-data class TestCommandWithResult(
-  val invoked: Int = 0
-) : EnrichedWithMetadata(),
+data class TestCommandWithResult(val invoked: Int = 0) :
+  EnrichedWithMetadata(),
   Request<Result>
 
-class TestCommandWithResultRequestHandler(
-  val mediator: MediatorAccessor
-) : RequestHandler<TestCommandWithResult, Result> {
+class TestCommandWithResultRequestHandler(val mediator: MediatorAccessor) : RequestHandler<TestCommandWithResult, Result> {
   override suspend fun handle(
     request: TestCommandWithResult
   ): Result = Result(request.invoked + 1).also {
@@ -228,9 +218,7 @@ class CommandThatPassesThroughPipelineBehaviours :
   CanPassExceptionPipelineBehaviour,
   CanPassInheritedPipelineBehaviour
 
-class TestPipelineRequestHandler(
-  private val mediator: MediatorAccessor
-) : RequestHandler.Unit<CommandThatPassesThroughPipelineBehaviours> {
+class TestPipelineRequestHandler(private val mediator: MediatorAccessor) : RequestHandler.Unit<CommandThatPassesThroughPipelineBehaviours> {
   override suspend fun handle(request: CommandThatPassesThroughPipelineBehaviours) {
     mediator shouldNotBe null
     request.incrementInvocationCount()
@@ -265,9 +253,7 @@ class TestCommandThatFailsWithException :
   EnrichedWithMetadata(),
   Request.Unit
 
-class TestBrokenRequestHandler(
-  private val mediator: MediatorAccessor
-) : RequestHandler.Unit<TestCommandThatFailsWithException> {
+class TestBrokenRequestHandler(private val mediator: MediatorAccessor) : RequestHandler.Unit<TestCommandThatFailsWithException> {
   override suspend fun handle(request: TestCommandThatFailsWithException) {
     mediator shouldNotBe null
     request.incrementInvocationCount()
@@ -300,9 +286,8 @@ class TestRequestHandlerForTypeLimitedInheritance :
   }
 }
 
-class ParameterizedCommand<T>(
-  val param: T
-) : EnrichedWithMetadata(),
+class ParameterizedCommand<T>(val param: T) :
+  EnrichedWithMetadata(),
   Request.Unit
 
 class ParameterizedRequestHandler<T> : RequestHandler.Unit<ParameterizedCommand<T>> {
@@ -312,9 +297,8 @@ class ParameterizedRequestHandler<T> : RequestHandler.Unit<ParameterizedCommand<
   }
 }
 
-class ParameterizedCommandForInheritedRequestHandler<T>(
-  val param: T
-) : EnrichedWithMetadata(),
+class ParameterizedCommandForInheritedRequestHandler<T>(val param: T) :
+  EnrichedWithMetadata(),
   Request.Unit
 
 abstract class ParameterizedRequestHandlerBaseForInheritedRequestHandler<A> :
@@ -335,10 +319,8 @@ class ParameterizedRequestHandlerForInheritance<A> : ParameterizedRequestHandler
   }
 }
 
-class ParameterizedCommandWithResult<TParam, TReturn>(
-  val param: TParam,
-  val retFn: suspend (TParam) -> TReturn
-) : EnrichedWithMetadata(),
+class ParameterizedCommandWithResult<TParam, TReturn>(val param: TParam, val retFn: suspend (TParam) -> TReturn) :
+  EnrichedWithMetadata(),
   Request<TReturn>
 
 class ParameterizedCommandWithResultHandler<TParam, TReturn> : RequestHandler<ParameterizedCommandWithResult<TParam, TReturn>, TReturn> {
@@ -349,9 +331,8 @@ class ParameterizedCommandWithResultHandler<TParam, TReturn> : RequestHandler<Pa
   }
 }
 
-data class ParameterizedCommandWithResultForInheritance<TParam>(
-  val param: TParam
-) : EnrichedWithMetadata(),
+data class ParameterizedCommandWithResultForInheritance<TParam>(val param: TParam) :
+  EnrichedWithMetadata(),
   Request<String>
 
 abstract class ParameterizedCommandWithResultHandlerBase<TParam : Request<String>> : RequestHandler<TParam, String>
@@ -369,14 +350,11 @@ class ParameterizedCommandWithResultHandlerOfInheritedHandler<TParam> :
  * Queries
  */
 
-class TestQuery(
-  val id: Int
-) : EnrichedWithMetadata(),
+class TestQuery(val id: Int) :
+  EnrichedWithMetadata(),
   Request<String>
 
-class TestQueryHandler(
-  private val mediator: MediatorAccessor
-) : RequestHandler<TestQuery, String> {
+class TestQueryHandler(private val mediator: MediatorAccessor) : RequestHandler<TestQuery, String> {
   override suspend fun handle(request: TestQuery): String {
     mediator shouldNotBe null
     request.incrementInvocationCount()
@@ -384,10 +362,8 @@ class TestQueryHandler(
   }
 }
 
-class ParameterizedQuery<TParam, TResponse>(
-  val param: TParam,
-  val retFn: suspend (TParam) -> TResponse
-) : EnrichedWithMetadata(),
+class ParameterizedQuery<TParam, TResponse>(val param: TParam, val retFn: suspend (TParam) -> TResponse) :
+  EnrichedWithMetadata(),
   Request<TResponse>
 
 class ParameterizedQueryHandler<TParam, TResponse> : RequestHandler<ParameterizedQuery<TParam, TResponse>, TResponse> {
@@ -414,9 +390,7 @@ class ExceptionPipelineBehavior : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     next(request)
   } catch (ex: Exception) {
@@ -437,9 +411,7 @@ class LoggingPipelineBehavior : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     return next(request)
   }
@@ -460,9 +432,7 @@ class InheritedPipelineBehaviour : MyBasePipelineBehaviour() {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     return next(request)
   }
@@ -518,9 +488,7 @@ class FirstPipelineBehaviour : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     return next(request)
   }
@@ -539,9 +507,7 @@ class SecondPipelineBehaviour : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     return next(request)
   }
@@ -560,9 +526,7 @@ class ThirdPipelineBehaviour : PipelineBehavior {
         request.visitedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     return next(request)
   }
@@ -573,13 +537,9 @@ sealed class TestCommandBase :
   Request.Unit {
   abstract val id: String
 
-  data class TestCommandInherited1(
-    override val id: String
-  ) : TestCommandBase()
+  data class TestCommandInherited1(override val id: String) : TestCommandBase()
 
-  data class TestCommandInherited2(
-    override val id: String
-  ) : TestCommandBase()
+  data class TestCommandInherited2(override val id: String) : TestCommandBase()
 }
 
 class TestCommandBaseHandler : RequestHandler.Unit<TestCommandBase> {
@@ -593,13 +553,9 @@ sealed class TestQueryBase :
   Request<String> {
   abstract val id: String
 
-  data class TestQueryInherited1(
-    override val id: String
-  ) : TestQueryBase()
+  data class TestQueryInherited1(override val id: String) : TestQueryBase()
 
-  data class TestQueryInherited2(
-    override val id: String
-  ) : TestQueryBase()
+  data class TestQueryInherited2(override val id: String) : TestQueryBase()
 }
 
 class TestQueryBaseHandler : RequestHandler<TestQueryBase, String> {
@@ -614,13 +570,9 @@ sealed class TestCommandWithResultBase :
   Request<String> {
   abstract val id: String
 
-  data class TestCommandWithResultInherited1(
-    override val id: String
-  ) : TestCommandWithResultBase()
+  data class TestCommandWithResultInherited1(override val id: String) : TestCommandWithResultBase()
 
-  data class TestCommandWithResultInherited2(
-    override val id: String
-  ) : TestCommandWithResultBase()
+  data class TestCommandWithResultInherited2(override val id: String) : TestCommandWithResultBase()
 }
 
 class TestCommandWithResultBaseHandler : RequestHandler<TestCommandWithResultBase, String> {
@@ -635,13 +587,9 @@ sealed class TestCommandForInheritanceWithFallback :
   Request.Unit {
   abstract val id: String
 
-  data class TestCommandInherited1(
-    override val id: String
-  ) : TestCommandForInheritanceWithFallback()
+  data class TestCommandInherited1(override val id: String) : TestCommandForInheritanceWithFallback()
 
-  data class TestCommandInherited2(
-    override val id: String
-  ) : TestCommandForInheritanceWithFallback()
+  data class TestCommandInherited2(override val id: String) : TestCommandForInheritanceWithFallback()
 }
 
 class TestCommandForInheritanceWithFallbackHandlerHandler : RequestHandler.Unit<TestCommandForInheritanceWithFallback> {
@@ -665,9 +613,8 @@ class RequestWithNullableResultHandler : RequestHandler<RequestWithNullableResul
   override suspend fun handle(request: RequestWithNullableResult): String? = null
 }
 
-class RequestWithNullParameter(
-  val nullValue: String?
-) : EnrichedWithMetadata(),
+class RequestWithNullParameter(val nullValue: String?) :
+  EnrichedWithMetadata(),
   Request<String>
 
 class RequestWithNullParameterHandler : RequestHandler<RequestWithNullParameter, String> {
@@ -678,10 +625,8 @@ class RequestWithNullParameterHandler : RequestHandler<RequestWithNullParameter,
 }
 
 // Complex Generic Scenarios
-class NestedGenericRequest<T, U>(
-  val outer: T,
-  val inner: U
-) : EnrichedWithMetadata(),
+class NestedGenericRequest<T, U>(val outer: T, val inner: U) :
+  EnrichedWithMetadata(),
   Request<Pair<T, U>>
 
 class NestedGenericRequestHandler<T, U> : RequestHandler<NestedGenericRequest<T, U>, Pair<T, U>> {
@@ -692,9 +637,8 @@ class NestedGenericRequestHandler<T, U> : RequestHandler<NestedGenericRequest<T,
 }
 
 // Wildcard Generic Handling
-class WildcardGenericRequest<T>(
-  val value: T
-) : EnrichedWithMetadata(),
+class WildcardGenericRequest<T>(val value: T) :
+  EnrichedWithMetadata(),
   Request<Double>
 
 class WildcardGenericRequestHandler<T> : RequestHandler<WildcardGenericRequest<T>, Double> {
@@ -705,9 +649,8 @@ class WildcardGenericRequestHandler<T> : RequestHandler<WildcardGenericRequest<T
 }
 
 // Concurrent Execution Testing
-class ConcurrentRequest(
-  val id: Int
-) : EnrichedWithMetadata(),
+class ConcurrentRequest(val id: Int) :
+  EnrichedWithMetadata(),
   Request<String>
 
 class ConcurrentRequestHandler : RequestHandler<ConcurrentRequest, String> {
@@ -719,22 +662,21 @@ class ConcurrentRequestHandler : RequestHandler<ConcurrentRequest, String> {
     request.incrementInvocationCount()
     request.recordThreadId(Thread.currentThread().id)
     val execution = executionCounter.incrementAndGet()
-    delay(10) // Simulate some work
+    delay(10.milliseconds) // Simulate some work
     return "concurrent-${request.id}-execution-$execution"
   }
 }
 
 // Long Running Request
-class LongRunningRequest(
-  val duration: Long
-) : EnrichedWithMetadata(),
+class LongRunningRequest(val duration: Long) :
+  EnrichedWithMetadata(),
   Request<String>
 
 class LongRunningRequestHandler : RequestHandler<LongRunningRequest, String> {
   override suspend fun handle(request: LongRunningRequest): String {
     request.incrementInvocationCount()
     val startTime = System.currentTimeMillis()
-    delay(request.duration)
+    delay(request.duration.milliseconds)
     val endTime = System.currentTimeMillis()
     request.recordExecutionTime(endTime - startTime)
     return "completed-after-${request.duration}ms"
@@ -742,14 +684,11 @@ class LongRunningRequestHandler : RequestHandler<LongRunningRequest, String> {
 }
 
 // Self-Referencing Request
-class SelfReferencingRequest(
-  val depth: Int
-) : EnrichedWithMetadata(),
+class SelfReferencingRequest(val depth: Int) :
+  EnrichedWithMetadata(),
   Request<Int>
 
-class SelfReferencingRequestHandler(
-  private val mediator: MediatorAccessor
-) : RequestHandler<SelfReferencingRequest, Int> {
+class SelfReferencingRequestHandler(private val mediator: MediatorAccessor) : RequestHandler<SelfReferencingRequest, Int> {
   override suspend fun handle(request: SelfReferencingRequest): Int {
     request.incrementInvocationCount()
     return if (request.depth > 0) {
@@ -796,9 +735,8 @@ class VoidResultRequestHandler : RequestHandler<VoidResultRequest, Unit> {
 }
 
 // Collection Handling
-class CollectionRequest(
-  val items: List<String>
-) : EnrichedWithMetadata(),
+class CollectionRequest(val items: List<String>) :
+  EnrichedWithMetadata(),
   Request<Set<String>>
 
 class CollectionRequestHandler : RequestHandler<CollectionRequest, Set<String>> {
@@ -862,9 +800,8 @@ class NotificationThatThrowsExceptionHandler3 : NotificationHandler<Notification
 }
 
 // Slow Notification Handlers
-class SlowNotification(
-  val handlerDelay: Long
-) : EnrichedWithMetadata(),
+class SlowNotification(val handlerDelay: Long) :
+  EnrichedWithMetadata(),
   Notification
 
 class SlowNotificationHandler1 : NotificationHandler<SlowNotification> {
@@ -872,7 +809,7 @@ class SlowNotificationHandler1 : NotificationHandler<SlowNotification> {
     notification.incrementInvocationCount()
     notification.recordThreadId(Thread.currentThread().id)
     val startTime = System.currentTimeMillis()
-    delay(notification.handlerDelay)
+    delay(notification.handlerDelay.milliseconds)
     val endTime = System.currentTimeMillis()
     notification.recordExecutionTime(endTime - startTime)
   }
@@ -882,7 +819,7 @@ class SlowNotificationHandler2 : NotificationHandler<SlowNotification> {
   override suspend fun handle(notification: SlowNotification) {
     notification.incrementInvocationCount()
     notification.recordThreadId(Thread.currentThread().id)
-    delay(notification.handlerDelay / 2)
+    delay((notification.handlerDelay / 2).milliseconds)
   }
 }
 
@@ -890,7 +827,7 @@ class SlowNotificationHandler3 : NotificationHandler<SlowNotification> {
   override suspend fun handle(notification: SlowNotification) {
     notification.incrementInvocationCount()
     notification.recordThreadId(Thread.currentThread().id)
-    delay(notification.handlerDelay * 2)
+    delay((notification.handlerDelay * 2).milliseconds)
   }
 }
 
@@ -922,9 +859,7 @@ class ModifyingPipelineBehavior : PipelineBehavior {
         request.addOrderedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
     val result = next(request)
 
@@ -976,9 +911,7 @@ class TimingPipelineBehavior : PipelineBehavior {
         request.addOrderedPipeline(this::class.java.simpleName)
       }
 
-      else -> {
-        Unit
-      }
+      else -> Unit
     }
 
     val result = next(request)
@@ -1006,10 +939,7 @@ data class ComplexDataRequest(
 ) : EnrichedWithMetadata(),
   Request<ComplexDataResponse>
 
-data class NestedData(
-  val value: String,
-  val count: Int
-)
+data class NestedData(val value: String, val count: Int)
 
 data class ComplexDataResponse(
   val processedId: Long,

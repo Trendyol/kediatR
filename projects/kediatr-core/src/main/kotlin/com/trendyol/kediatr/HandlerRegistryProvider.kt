@@ -27,9 +27,7 @@ import java.lang.reflect.ParameterizedType
  * @see DependencyProvider
  * @see Mediator
  */
-class HandlerRegistryProvider(
-  private val handlerMap: HashMap<Class<*>, Any>
-) : DependencyProvider {
+class HandlerRegistryProvider(private val handlerMap: HashMap<Class<*>, Any>) : DependencyProvider {
   /**
    * Gets a single instance of the specified class from the handler map.
    *

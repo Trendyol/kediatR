@@ -15,10 +15,7 @@ package com.trendyol.kediatr
  * @see DependencyProvider
  * @see Registry
  */
-internal class PipelineProvider<H : PipelineBehavior>(
-  private val dependencyProvider: DependencyProvider,
-  private val type: Class<H>
-) {
+internal class PipelineProvider<H : PipelineBehavior>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
   /**
    * Creates and returns a new instance of the pipeline behavior.
    *

@@ -8,9 +8,7 @@ import java.lang.reflect.*
 import java.util.concurrent.ConcurrentHashMap
 
 @ApplicationScoped
-class QuarkusTypeResolver(
-  private val beanManager: BeanManager
-) {
+class QuarkusTypeResolver(private val beanManager: BeanManager) {
   private val resolveCache = ConcurrentHashMap<Class<*>, Any>()
   private val typesCache = ConcurrentHashMap<Class<*>, Collection<Class<*>>>()
   private val beanTypes = beanManager

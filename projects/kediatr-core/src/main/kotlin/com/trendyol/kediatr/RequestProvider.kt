@@ -13,10 +13,7 @@ package com.trendyol.kediatr
  * @see DependencyProvider
  * @see Registry
  */
-internal class RequestProvider<H : RequestHandler<*, *>>(
-  private val dependencyProvider: DependencyProvider,
-  private val type: Class<H>
-) {
+internal class RequestProvider<H : RequestHandler<*, *>>(private val dependencyProvider: DependencyProvider, private val type: Class<H>) {
   /**
    * Creates and returns a new instance of the request handler.
    *

@@ -24,9 +24,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @see Registry
  * @see RegistryImpl
  */
-internal class CachedRegistry(
-  private val delegate: Registry
-) : Registry {
+internal class CachedRegistry(private val delegate: Registry) : Registry {
   /**
    * Cache for request handlers. Key is the request class, value is the resolved handler.
    * Uses ConcurrentHashMap for thread-safe access without explicit synchronization.
