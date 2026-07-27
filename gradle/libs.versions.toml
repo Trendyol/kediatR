@@ -1,10 +1,10 @@
 [versions]
 kotlin = "2.4.10"
 kotlinx = "1.11.0"
-kotest = "6.2.2"
+kotest = "6.2.3"
 junit = "6.1.2"
 koin = "4.2.2"
-quarkus = "3.37.3"
+quarkus = "3.38.0"
 jakarta = "4.1.0"
 spring-boot-2x = "2.7.18"
 spring-boot-3x = "3.5.16"
@@ -43,6 +43,6 @@ quarkus-junit5 = { module = "io.quarkus:quarkus-junit", version.ref = "quarkus" 
 [plugins]
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.9" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
-spotless = { id = "com.diffplug.spotless", version = "8.8.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.9.0" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
 maven-publish = { id = "com.vanniktech.maven.publish", version = "0.37.0" }
