@@ -298,6 +298,8 @@ class UserService(private val mediator: Mediator) {
 
 ### Quarkus
 
+The Quarkus starter uses Quarkus 4 and requires Java 21 or later.
+
 Add the starter and register handlers as CDI beans (`@ApplicationScoped`). A `Mediator` is produced for you.
 
 Quarkus does not index third-party libraries unless told to. Add this to `application.properties`:

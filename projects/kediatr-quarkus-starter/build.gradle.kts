@@ -3,6 +3,11 @@ plugins {
   java
 }
 
+// Quarkus 4 requires Java 21.
+kotlin {
+  jvmToolchain(21)
+}
+
 dependencies {
   api(projects.projects.kediatrCore)
   implementation(platform(libs.quarkusBom))
