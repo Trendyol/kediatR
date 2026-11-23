@@ -365,6 +365,7 @@ abstract class MediatorUseCases : MediatorTestConvention() {
     allThreadIds.size shouldBeGreaterThan 0
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun long_running_request_should_complete_successfully() = runTest {
     val request = LongRunningRequest(500)
@@ -372,7 +373,7 @@ abstract class MediatorUseCases : MediatorTestConvention() {
 
     result shouldBe "completed-after-500ms-modified"
     request.invocationCount().get() shouldBe 1
-    request.executionTime() shouldBeGreaterThan 0L // Allow more variance for test environments
+    testScheduler.currentTime shouldBe request.duration
   }
 
   @Test

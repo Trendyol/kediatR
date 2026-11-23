@@ -80,53 +80,22 @@ class CachedRegistryPerformanceTest :
         improvementRatio shouldBeGreaterThan 1.5 // At least 1.5x improvement expected
       }
 
-      should("demonstrate significant performance improvement for pipeline behavior resolution") {
-        // Arrange
-        val handlers = listOf(
-          ExceptionPipelineBehavior(),
-          LoggingPipelineBehavior(),
-          InheritedPipelineBehaviour(),
-          FirstPipelineBehaviour(),
-          SecondPipelineBehaviour(),
-          ThirdPipelineBehaviour()
-        )
-
-        val provider = HandlerRegistryProvider(handlers.associateBy { it.javaClass } as HashMap<Class<*>, Any>)
-        val uncachedRegistry = RegistryImpl(provider)
-        val cachedRegistry = CachedRegistry(uncachedRegistry)
-
-        val iterations = 10000
-
-        // Warm up both registries
-        repeat(100) {
-          uncachedRegistry.getPipelineBehaviors()
-          cachedRegistry.getPipelineBehaviors()
-        }
-
-        // Benchmark uncached registry
-        val uncachedTime = measureTimeMillis {
-          repeat(iterations) {
-            uncachedRegistry.getPipelineBehaviors()
+      should("reuse the resolved pipeline behaviors") {
+        val behavior = ExceptionPipelineBehavior()
+        val delegate = RegistryImpl(HandlerRegistryProvider(hashMapOf(behavior.javaClass to behavior)))
+        var pipelineResolutions = 0
+        val countingRegistry = object : Registry by delegate {
+          override fun getPipelineBehaviors(): Collection<PipelineBehavior> {
+            pipelineResolutions++
+            return delegate.getPipelineBehaviors()
           }
         }
+        val cachedRegistry = CachedRegistry(countingRegistry)
 
-        // Benchmark cached registry
-        val cachedTime = measureTimeMillis {
-          repeat(iterations) {
-            cachedRegistry.getPipelineBehaviors()
-          }
+        repeat(2) {
+          cachedRegistry.getPipelineBehaviors().toList() shouldBe listOf(behavior)
         }
-
-        // Assert performance improvement
-        println("Pipeline Behavior Resolution Performance:")
-        println("Uncached registry: ${uncachedTime}ms")
-        println("Cached registry: ${cachedTime}ms")
-        val improvementRatio = uncachedTime.toDouble() / cachedTime.toDouble()
-        println("Performance improvement: ${String.format("%.2f", improvementRatio)}x")
-
-        // Cached should be significantly faster
-        cachedTime shouldBeLessThan (uncachedTime)
-        improvementRatio shouldBeGreaterThanOrEqual 2.0 // Pipeline behaviors should show even better improvement
+        pipelineResolutions shouldBe 1
       }
 
       should("demonstrate end-to-end mediator performance improvement") {

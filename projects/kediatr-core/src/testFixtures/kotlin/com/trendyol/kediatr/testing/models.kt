@@ -675,10 +675,7 @@ class LongRunningRequest(val duration: Long) :
 class LongRunningRequestHandler : RequestHandler<LongRunningRequest, String> {
   override suspend fun handle(request: LongRunningRequest): String {
     request.incrementInvocationCount()
-    val startTime = System.currentTimeMillis()
     delay(request.duration.milliseconds)
-    val endTime = System.currentTimeMillis()
-    request.recordExecutionTime(endTime - startTime)
     return "completed-after-${request.duration}ms"
   }
 }
